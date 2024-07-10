@@ -9,6 +9,127 @@ Import-Module "$((Get-Location).Path)\constants.ps1" -Force
   Reversed = 8
   Strike = 16
 }
+
+
+$BorderTypes = @{
+  "Normal"    = @{
+    "Top"          = "─"
+    "Bottom"       = "─"
+    "Left"         = "│"
+    "Right"        = "│"
+    "TopLeft"      = "┌"
+    "TopRight"     = "┐"
+    "BottomLeft"   = "└"
+    "BottomRight"  = "┘"
+    "MiddleLeft"   = "├"
+    "MiddleRight"  = "┤"
+    "Middle"       = "┼"
+    "MiddleTop"    = "┬"
+    "MiddleBottom" = "┴"
+  }
+  "Rounded"   = @{
+    "Top"          = "─"
+    "Bottom"       = "─"
+    "Left"         = "│"
+    "Right"        = "│"
+    "TopLeft"      = "╭"
+    "TopRight"     = "╮"
+    "BottomLeft"   = "╰"
+    "BottomRight"  = "╯"
+    "MiddleLeft"   = "├"
+    "MiddleRight"  = "┤"
+    "Middle"       = "┼"
+    "MiddleTop"    = "┬"
+    "MiddleBottom" = "┴"
+  }
+  "Block"     = @{
+    "Top"          = "█"
+    "Bottom"       = "█"
+    "Left"         = "█"
+    "Right"        = "█"
+    "TopLeft"      = "█"
+    "TopRight"     = "█"
+    "BottomLeft"   = "█"
+    "BottomRight"  = "█"
+    "MiddleLeft"   = "█"
+    "MiddleRight"  = "█"
+    "Middle"       = "█"
+    "MiddleTop"    = "█"
+    "MiddleBottom" = "█"
+  }
+  "OuterHalf" = @{
+    "Top"         = "▀"
+    "Bottom"      = "▄"
+    "Left"        = "▌"
+    "Right"       = "▐"
+    "TopLeft"     = "▛"
+    "TopRight"    = "▜"
+    "BottomLeft"  = "▙"
+    "BottomRight" = "▟"
+  }
+  "InnerHalf" = @{
+    "Top"         = "▄"
+    "Bottom"      = "▀"
+    "Left"        = "▐"
+    "Right"       = "▌"
+    "TopLeft"     = "▗"
+    "TopRight"    = "▖"
+    "BottomLeft"  = "▝"
+    "BottomRight" = "▘"
+  }
+  "Thick"     = @{
+    "Top"          = "━"
+    "Bottom"       = "━"
+    "Left"         = "┃"
+    "Right"        = "┃"
+    "TopLeft"      = "┏"
+    "TopRight"     = "┓"
+    "BottomLeft"   = "┗"
+    "BottomRight"  = "┛"
+    "MiddleLeft"   = "┣"
+    "MiddleRight"  = "┫"
+    "Middle"       = "╋"
+    "MiddleTop"    = "┳"
+    "MiddleBottom" = "┻"
+  }
+  "Double"    = @{
+    "Top"          = "═"
+    "Bottom"       = "═"
+    "Left"         = "║"
+    "Right"        = "║"
+    "TopLeft"      = "╔"
+    "TopRight"     = "╗"
+    "BottomLeft"   = "╚"
+    "BottomRight"  = "╝"
+    "MiddleLeft"   = "╠"
+    "MiddleRight"  = "╣"
+    "Middle"       = "╬"
+    "MiddleTop"    = "╦"
+    "MiddleBottom" = "╩"
+  }
+  "Hidden"    = @{
+    "Top"          = " "
+    "Bottom"       = " "
+    "Left"         = " "
+    "Right"        = " "
+    "TopLeft"      = " "
+    "TopRight"     = " "
+    "BottomLeft"   = " "
+    "BottomRight"  = " "
+    "MiddleLeft"   = " "
+    "MiddleRight"  = " "
+    "Middle"       = " "
+    "MiddleTop"    = " "
+    "MiddleBottom" = " "
+  }
+}
+class Border {
+  static [hashtable] GetBorder(
+    [string]$type = "Normal"
+  ) {
+    return $script:BorderTypes[$type]
+  }
+}
 class Color {
   [System.Drawing.Color]$Foreground = [System.Drawing.Color]::Empty
   [System.Drawing.Color]$Background = [System.Drawing.Color]::Empty
@@ -328,6 +449,9 @@ class List {
   [Color]$SearchColor
   [Color]$SelectedColor
   [bool]$limit = $false
+  [bool]$border = $false
+  [bool]$fullscreen = $true
+  [hashtable]$borderType = [Border]::GetBorder("Rounded")
   # TODO: Rendre paramétrable le style de sélection
   List (
     [System.Collections.Generic.List[ListItem]]$items
@@ -350,9 +474,13 @@ class List {
   }
 
   [Void] DrawFooter() {
-    [console]::setcursorposition(0, $this.height + 2)
+    $footerOffset = 2
+    if ($this.border) {
+      $footerOffset = 4
+    }
+    [console]::setcursorposition(0, $this.height + $footerOffset)
     [Console]::Write((" " * $this.width))
-    [console]::setcursorposition(0, $this.height + 2)
+    [console]::setcursorposition(0, $this.height + $footerOffset)
     $footer = "◖ $($this.page)/$($this.pages)"
     if ($this.filter -and ($this.filter -ne "")) {
       $FilterColor = [Color]::new($script:theme.list.FilterColor)
@@ -385,12 +513,25 @@ class List {
     [System.Collections.Generic.List[ListItem]]$items
   ) {
     $i = 0
+    $offset = 0
+    if ($this.limit) {
+      $baseoffset = 0
+    }
+    else {
+      $baseoffset = -1
+    }
     if ($items) {
       $buffer = $items | ForEach-Object {
-        $text = $_.text.PadRight($this.linelen, " ")
+        if ($_.Icon) {
+          $offset = $baseoffset -2
+        } else {
+          $offset = $baseoffset
+        }
+        $text = $_.text.PadRight(($this.linelen + $offset), " ")
         $icon = $_.Icon
         if ($icon) {
           $text = "$icon $text"
+          
         }
         if ($_.Color -ne [System.Drawing.Color]::Empty) {
           $c = [Color]::new($_.Color)
@@ -398,10 +539,10 @@ class List {
         }
         if ($this.limit) {
           if ($this.index -eq $i) {
-            $this.SelectedColor.render($text)
+            $text = $this.SelectedColor.render($text)
           }
           else {
-            $text
+            $text = $text
           }
         }
         else {
@@ -412,17 +553,32 @@ class List {
             $text = "▢ $text"
           }
           if ($this.index -eq $i) {
-            $this.SelectedColor.render("$($this.selector) $($text)")
+            $text = $this.SelectedColor.render("$($this.selector) $($text)")
           }
           else {
-            "  $($text)"
+            $text = "  $($text)"
           }
         }
+        if ($this.border) {
+          $this.borderType.Left + $text + $this.borderType.Right
+        }
+        else {
+          $text
+        }
+        # $this.borderType.Left + $text + $this.borderType.Right
         $i++
       } | Out-String
     }
     else {
       $buffer = "Too much filter ? 😊"
+    }
+    if ($this.border) {
+      while ($i -lt $this.height) {
+        $buffer += $this.borderType.Left + "".PadRight(($this.linelen + 4 + $offset), " ") + $this.borderType.Right + "`n"
+        $i++
+      }
+      $buffer = $this.borderType.TopLeft + "".PadLeft(($this.linelen + 4 + $offset), $this.borderType.Top) + $this.borderType.TopRight + "`n" + $buffer
+      $buffer = $buffer + $this.borderType.BottomLeft + "".PadLeft(($this.linelen + 4 + $offset), $this.borderType.Bottom) + $this.borderType.BottomRight
     }
     return $buffer
   }
@@ -437,9 +593,14 @@ class List {
     $search = $false
     $continue = $false
     # $this.linelen = ($this.items | select-object -ExpandProperty text | Measure-Object -Property Length, {($_ -replace "\e\[[\d;]*m", '')} -Maximum).Maximum
-    $this.linelen = ($this.items | Measure-Object -Maximum {
-      ($_.text).Length
-      }).Maximum
+    if ($this.fullscreen) {
+      $this.linelen = $this.width - 4
+    } else {
+      $this.linelen = ($this.items | Measure-Object -Maximum {
+        ($_.text).Length
+        }).Maximum
+    }
+    
     # $this.linelen = ($this.items | Measure-Object -Maximum {
     #   ($_.text -replace "\e\[[\d;]*m", '').Length
     # }).Maximum
@@ -601,11 +762,16 @@ class List {
     [Console]::Clear()
     if ($continue) {
       $fields = "text", "value", "chained"
-    } else {
+    }
+    else {
       $fields = "text", "value"
     }
     
     return $result | Select-Object -Property $fields
   }
+
+}
+
+class Confirm {
 
 }

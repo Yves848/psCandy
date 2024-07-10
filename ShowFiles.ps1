@@ -28,7 +28,7 @@ $result = $null
 $Theme.list.SelectedColor = [System.Drawing.Color]::yellow
 while ($true) {
   $List = [List]::new($items)
-  $list.SetHeight(25)
+  $list.SetHeight(15)
   $list.SetLimit($True)
   $choice = $List.Display()
   if ($choice) {
