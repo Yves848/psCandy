@@ -265,12 +265,18 @@ Example :
 ```
 Import-Module "$((Get-Location).Path)\classes.ps1" -Force
 
-$spinner = [Spinner]::new("Dots")
-$Spinner.Start("Loading List...")
-Start-Sleep -Seconds 5
-$Spinner.Stop()
+("Circle","Dots","Line","Square","Bubble","Arrow","Pulse") | ForEach-Object {
+  $spinner = [Spinner]::new($_)
+  $Spinner.Start("$($_) Testing Spinner...")
+  Start-Sleep -Seconds 3
+  $Spinner.Stop()
+} 
+
+
+
+Remove-Module -name classes -Force
 ```
 
 Result :
 
-![](./Images/Spinner1.png)
+![](./Images/Spinners1.gif)
