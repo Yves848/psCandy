@@ -12,4 +12,5 @@ $items = [System.Collections.Generic.List[ListItem]]::new()
 }
 $List = [List]::new($items)
 $list.SetHeight(25)
+# $list.SetLimit($True)
 $List.Display()

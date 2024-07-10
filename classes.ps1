@@ -269,6 +269,7 @@ class ListItem {
   [bool]$checked = $false
   [Color]$SearchColor 
   [Color]$SelectedColor
+  [bool]$chained = $true
 
   ListItem(
     [string]$text,
@@ -292,6 +293,7 @@ class List {
   [char]$selector = ">"
   [Color]$SearchColor
   [Color]$SelectedColor
+  [bool]$limit = $false
   # TODO: Rendre paramétrable le style de sélection
   List (
     [System.Collections.Generic.List[ListItem]]$items
@@ -322,7 +324,8 @@ class List {
       $FilterColor = [Color]::new([System.Drawing.Color]::OrangeRed)
       $FilterColor.style = [Styles]::Underline
       $filtertext = $FilterColor.render("$($this.filter)")
-    } else {
+    }
+    else {
       $FilterColor = [Color]::new([System.Drawing.Color]::Green)
       $FilterColor.style = [Styles]::Underline
       $filtertext = $FilterColor.render("None")
@@ -338,33 +341,50 @@ class List {
     $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   }
 
+  [void]  SetLimit(
+    [Bool]$limit
+  ) {
+    $this.limit = $limit
+  }
+
   [String] MakeBufer(
     [System.Collections.Generic.List[ListItem]]$items
   ) {
     $i = 0
     if ($items) {
-    $buffer = $items | ForEach-Object {
-      $text = $_.text.PadRight($this.linelen," ")
-      $add = $true
-      if ($add) {
-        if ($_.checked) {
-          $text = "▣ $text"
+      $buffer = $items | ForEach-Object {
+        $text = $_.text.PadRight($this.linelen, " ")
+      
+        if ($this.limit) {
+          if ($this.index -eq $i) {
+            $this.SelectedColor.render($text)
+          }
+          else {
+            $text
+          }
         }
         else {
-          $text = "▢ $text"
+          if ($_.checked) {
+            $text = "▣ $text"
+          }
+          else {
+            $text = "▢ $text"
+          }
+          if ($this.index -eq $i) {
+            $this.SelectedColor.render("$($this.selector) $($text)")
+          }
+          else {
+            "  $($text)"
+          }
         }
-        if ($this.index -eq $i) {
-          $this.SelectedColor.render("$($this.selector) $($text)")
-        }
-        else {
-          "  $($text)"
-        }
-      }
-      $i++
-    } | Out-String
-  } else {
-    $buffer = ""
-  }
+        
+      
+        $i++
+      } | Out-String
+    }
+    else {
+      $buffer = ""
+    }
     return $buffer
   }
 
@@ -376,10 +396,11 @@ class List {
     [console]::CursorVisible = $false
     $redraw = $true
     $search = $false
+    $continue = $false
     # $this.linelen = ($this.items | select-object -ExpandProperty text | Measure-Object -Property Length, {($_ -replace "\e\[[\d;]*m", '')} -Maximum).Maximum
     $this.linelen = ($this.items | Measure-Object -Maximum {
       ($_.text).Length
-    }).Maximum
+      }).Maximum
     # $this.linelen = ($this.items | Measure-Object -Maximum {
     #   ($_.text -replace "\e\[[\d;]*m", '').Length
     # }).Maximum
@@ -414,7 +435,7 @@ class List {
         [Console]::setcursorposition(0, 0)
         [Console]::Write($this.blanks)
         [Console]::setcursorposition(0, 1)
-        if ($this.index -gt $VisibleItems.Count -1 ) {
+        if ($this.index -gt $VisibleItems.Count - 1 ) {
           $this.index = 0
 
         }
@@ -484,29 +505,50 @@ class List {
             }
           }
           37 {
-            if ($this.page -gt 1) {
-              $this.page--
-              $redraw = $true
-              [System.Collections.Generic.List[ListItem]]$VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
+            # Left
+            if ($key.ControlKeyState -eq "LeftCtrlPressed") {
+
+            }
+            else {
+              if ($this.page -gt 1) {
+                $this.page--
+                $redraw = $true
+                [System.Collections.Generic.List[ListItem]]$VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
+              }
             }
           }
           39 {
-            if ($this.page -lt $this.pages) {
-              $this.page++
-              $redraw = $true
-              [System.Collections.Generic.List[ListItem]]$VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
+            # Right
+            if ($key.ControlKeyState -eq "LeftCtrlPressed") {
+
+            }
+            else {
+              if ($this.page -lt $this.pages) {
+                $this.page++
+                $redraw = $true
+                [System.Collections.Generic.List[ListItem]]$VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
+              }
             }
           }
           9 {
+            # Tab
             $VisibleItems[$this.index].checked = -not $VisibleItems[$this.index].checked
             $redraw = $true
           }
           13 {
+            # Enter
             $stop = $true
-
-            $this.Items | ForEach-Object {
-              if ($_.checked) {
-                $result += $_
+            if ($this.limit) {
+              if ($key.ControlKeyState -eq "LeftCtrlPressed") {
+                $continue = $true
+              }
+              $result = $VisibleItems[$this.index]
+            }
+            else {
+              $this.items | ForEach-Object {
+                if ($_.checked) {
+                  $result += $_
+                }
               }
             }
           }
@@ -519,7 +561,13 @@ class List {
     }
     [console]::CursorVisible = $true
     [Console]::Clear()
-    return $result | Select-Object -Property text, value
+    if ($continue) {
+      $fields = "text", "value", "chained"
+    } else {
+      $fields = "text", "value"
+    }
+    
+    return $result | Select-Object -Property $fields
   }
 
 }
