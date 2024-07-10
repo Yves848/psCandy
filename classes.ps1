@@ -272,7 +272,7 @@ class ListItem {
 
   ListItem(
     [string]$text,
-    [int]$value
+    [PSCustomObject]$value
   ) {
     $this.text = $text
     $this.value = $value
@@ -288,11 +288,11 @@ class List {
   [int]$width = $Host.UI.RawUI.BufferSize.Width
   [string]$filter = ""
   [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
-
+  [int]$linelen = 0
   [char]$selector = ">"
   [Color]$SearchColor
   [Color]$SelectedColor
-
+  # TODO: Rendre paramétrable le style de sélection
   List (
     [System.Collections.Generic.List[ListItem]]$items
   ) {
@@ -331,10 +331,11 @@ class List {
     [console]::WriteLine($footer)
   }
 
-  [void] Height(
+  [void] SetHeight(
     [int]$height
   ) {
     $this.height = $height
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   }
 
   [String] MakeBufer(
@@ -342,7 +343,7 @@ class List {
   ) {
     $i = 0
     $buffer = $items | ForEach-Object {
-      $text = $_.text
+      $text = $_.text.PadRight($this.linelen," ")
       $add = $true
       if ($add) {
         if ($_.checked) {
@@ -371,6 +372,13 @@ class List {
     [console]::CursorVisible = $false
     $redraw = $true
     $search = $false
+    # $this.linelen = ($this.items | select-object -ExpandProperty text | Measure-Object -Property Length, {($_ -replace "\e\[[\d;]*m", '')} -Maximum).Maximum
+    $this.linelen = ($this.items | Measure-Object -Maximum {
+      ($_.text).Length
+    }).Maximum
+    # $this.linelen = ($this.items | Measure-Object -Maximum {
+    #   ($_.text -replace "\e\[[\d;]*m", '').Length
+    # }).Maximum
     [System.Console]::Clear()
     # TODO: Gérer les couleurs à partir du thème
     while (-not $stop) {
@@ -411,17 +419,21 @@ class List {
       if ($global:Host.UI.RawUI.KeyAvailable) {
         [System.Management.Automation.Host.KeyInfo]$key = $($global:host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown'))
         if ($env:DEBUGVISUAL -eq $true) {
-          [Console]::setcursorposition(0, 24)
+          $bottom = $this.height + 2
+          [Console]::setcursorposition(0, $bottom)
           if ($this.filter -and ($this.filter -ne "")) {
             Write-Host "Filter : $($this.filter)"
           }
           else {
             Write-Host "No Filter                    "
           }
-          [Console]::setcursorposition(0, 25)
+          [Console]::setcursorposition(0, ($bottom + 1))
           [Console]::write("Key: $($key.VirtualKeyCode)  Char : $($key.Character)")
-          [Console]::setcursorposition(0, 26)
+          [Console]::setcursorposition(0, ($bottom + 2))
           [Console]::write("Key: $($key.ControlKeyState)  ")
+          [Console]::setcursorposition(20, ($bottom + 1))
+          [Console]::write("LineLen: $($this.linelen)  ")
+          
         }
         switch ($key.VirtualKeyCode) {
           { (($_ -ge 65) -and ($_ -le 101)) -or (($_ -ge 48) -and ($_ -le 57)) } {
