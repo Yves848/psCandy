@@ -537,8 +537,9 @@ class List {
     if ($items) {
       $buffer = $items | ForEach-Object {
         if ($_.Icon) {
-          $offset = $baseoffset -2
-        } else {
+          $offset = $baseoffset - 2
+        }
+        else {
           $offset = $baseoffset
         }
         $text = $_.text.PadRight(($this.linelen + $offset), " ")
@@ -609,7 +610,8 @@ class List {
     # $this.linelen = ($this.items | select-object -ExpandProperty text | Measure-Object -Property Length, {($_ -replace "\e\[[\d;]*m", '')} -Maximum).Maximum
     if ($this.fullscreen) {
       $this.linelen = $this.width - 4
-    } else {
+    }
+    else {
       $this.linelen = ($this.items | Measure-Object -Maximum {
         ($_.text).Length
         }).Maximum
@@ -787,12 +789,11 @@ class List {
 }
 
 class Confirm {
-  [string]$Message =""
+  [string]$Message = ""
   [Option[]]$Choices
-  [int]$width = $Host.UI.RawUI.BufferSize.Width -2
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
   [bool]$fullscreen = $false
-  [Color]$SeletedForeground = [Color]::new($script:Theme.Choice.SelectedForeground)
-  [Color]$SeletedBackground = [Color]::new($script:Theme.Choice.SelectedBackground)
+  [Color]$SeletedColor = [Color]::new($script:Theme.Choice.SelectedForeground,$script:Theme.Choice.SelectedBackground)
   [Color]$OptionColor = [Color]::new($script:Theme.Choice.OptionColor)
   [Color]$MessageColor = [Color]::new($script:Theme.Choice.MessageColor)
 
@@ -820,20 +821,66 @@ class Confirm {
   [Option] Display() {
     $result = $null
     $title = $this.Message
-    $padding = [Math]::Ceiling(($this.width - $title.Length)/2) #
-    $filler = "".padleft($padding," ")
+    $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
+    $filler = "".padleft($padding, " ")
     [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
     $nbChoices = $this.Choices.Count
     $choiceWidth = [Math]::Floor($this.width / $nbChoices) - 4
     [Console]::WriteLine()
-    $this.choices | ForEach-Object {
+    $buffer = $this.choices | ForEach-Object {
       $text = $_.text
-      $padding = [Math]::Ceiling(($choiceWidth - $text.Length)/2)
-      $filler = "".padleft($padding,".")
-      $text = $filler.Remove([math]::Floor($padding/2),[math]::Floor($text.Length/2)).Insert([math]::Floor($padding/2),$text)
+      $padding = [Math]::Ceiling(($choiceWidth - $text.Length) / 2)
+      $filler = "".padleft($padding, " ")
+      $text = $filler.Remove([math]::Floor($padding / 2), [math]::Floor($text.Length / 2)).Insert([math]::Floor($padding / 2), $text)
       
-      [Console]::Write("$($this.OptionColor.render($text))    ")
+      $_.text = $text
     }
+    $buttonswidth = 0
+    $this.Choices | ForEach-Object {
+      $buttonswidth += $_.text.Length
+    }
+    $spaceleft = $this.width - $buttonswidth
+    $filler = [math]::Floor($spaceleft / ($this.Choices.Count + 1))
+    $space = "".padleft($filler, " ")
+    # Write-Host $space -NoNewline
+    $stop = $false
+    $y = [Console]::CursorTop
+    [console]::CursorVisible = $false
+    $index = 0
+    $this.Choices[$index].selected = $true
+    while (-not $stop) {
+      $buffer = $this.Choices | ForEach-Object {
+        if ($_.selected) {
+          $text = $this.SeletedColor.render($_.text)
+        }
+        else {
+          $text = $this.OptionColor.render($_.text)
+        }
+        "$space$($text)"
+      } | Out-String 
+      [Console]::SetCursorPosition(0, $y)
+      [Console]::Write(($buffer -split "`r`n") -join '')
+      if ($global:Host.UI.RawUI.KeyAvailable) {
+        [System.Management.Automation.Host.KeyInfo]$key = $($global:host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown'))
+        if ($key.VirtualKeyCode -eq 13) {
+          $stop = $true
+          $result = $this.Choices | Where-Object { $_.selected }
+        }
+        if ($key.VirtualKeyCode -eq 37) {
+          # Left
+          $this.Choices[$index].selected = $false
+          $index--
+          $this.Choices[$index].selected = $true
+        }
+        if ($key.VirtualKeyCode -eq 39) {
+          # Right
+          $this.Choices[$index].selected = $false
+          $index++
+          $this.Choices[$index].selected = $true
+        }
+      }
+    }
+    [console]::CursorVisible = $true
     return $result
   }
 }
