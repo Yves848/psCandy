@@ -1,4 +1,4 @@
-$VerbosePreference = 'Continue'
+# $VerbosePreference = 'Continue'
 Import-Module "$((Get-Location).Path)\classes.ps1" -Force
 
 

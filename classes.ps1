@@ -138,6 +138,7 @@ class Spinner {
   [bool]$running = $false
   [Int32]$width = $Host.UI.RawUI.BufferSize.Width
   [System.Drawing.Color]$SpinColor = [System.Drawing.Color]::MediumOrchid
+  [bool]$CuirsorState = [System.Console]::CursorVisible
 
   $Spinners = @{
     "Circle" = @{
@@ -256,7 +257,7 @@ class Spinner {
       $this.runspace.Close()
       $this.runspace.Dispose()
       [System.Console]::setcursorposition($this.X, $this.Y)
-      [system.Console]::CursorVisible = $true
+      [system.Console]::CursorVisible = $this.CuirsorState
     } 
   }
 }
