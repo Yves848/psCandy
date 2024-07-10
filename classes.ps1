@@ -422,7 +422,7 @@ class List {
       } | Out-String
     }
     else {
-      $buffer = ""
+      $buffer = "Too much filter ? 😊"
     }
     return $buffer
   }

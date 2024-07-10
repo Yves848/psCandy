@@ -1,4 +1,3 @@
-# $VerbosePreference = 'Continue'
 param (
   [string]$Path = "..\"
 )

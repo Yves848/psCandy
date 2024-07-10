@@ -1,4 +1,3 @@
-# $VerbosePreference = 'Continue'
 Import-Module "$((Get-Location).Path)\classes.ps1" -Force
 
 
@@ -12,5 +11,4 @@ $items = [System.Collections.Generic.List[ListItem]]::new()
 }
 $List = [List]::new($items)
 $list.SetHeight(25)
-# $list.SetLimit($True)
 $List.Display()
