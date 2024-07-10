@@ -224,7 +224,7 @@ $result
 ```
 Result :
 
-![](./Images/list2.png)
+![](./Images/list2.gif)
 
 In this "mini" *functionnal* file explorer, the files are redered in green, with a icon "📄" and the Folders are in Orange with an icon "📂"
 
