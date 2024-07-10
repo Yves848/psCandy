@@ -14,22 +14,19 @@ function getDirContent {
   $items = [System.Collections.Generic.List[ListItem]]::new()
   $items.Add([ListItem]::new("..", $path))
   Get-ChildItem -Path $path -File  | ForEach-Object {
-    
-    [psCustomObject]$color = [color]::new([System.Drawing.Color]::Green)
-    $Name = $Color.render("📄 $($_.Name)")
-    $items.Add([ListItem]::new($Name, $_))
+    $Name = $_.Name
+    $items.Add([ListItem]::new($Name, $_,"📄",[System.Drawing.Color]::Green))
   }
   Get-ChildItem -Path $path -Directory  | ForEach-Object {
-    
-    [psCustomObject]$color = [color]::new([System.Drawing.Color]::OrangeRed)
-    $Name = $Color.render("📂 $($_.Name)")
-    $items.Add([ListItem]::new($Name, $_))
+    $Name = $_.Name
+    $items.Add([ListItem]::new($Name,$_, "📂", [System.Drawing.Color]::OrangeRed))
   }
   return $items
 }
 
 $items = getDirContent -path $Path
 $result = $null
+$Theme.list.SelectedColor = [System.Drawing.Color]::yellow
 while ($true) {
   $List = [List]::new($items)
   $list.SetHeight(25)
@@ -55,7 +52,6 @@ while ($true) {
     }
     $items = getDirContent -path $p
     $List.setItems($items)
-
   }
   else {
     break

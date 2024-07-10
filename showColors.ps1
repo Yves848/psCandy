@@ -7,8 +7,8 @@ $items = [System.Collections.Generic.List[ListItem]]::new()
 [system.Drawing.color] | Get-Member -Static -MemberType Properties | ForEach-Object {
   
   [psCustomObject]$color = [color]::new([System.Drawing.Color]::"$($_.Name)")
-  $colorName = $color.render($_.Name)
-  $items.Add([ListItem]::new($colorName, $color))
+  $colorName = $_.Name
+  $items.Add([ListItem]::new($colorName, $color,[System.Drawing.Color]::"$($_.Name)"))
 }
 $List = [List]::new($items)
 $list.SetHeight(25)
