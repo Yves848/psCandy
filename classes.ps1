@@ -1,4 +1,6 @@
-. "$((Get-Location).Path)\constants.ps1"
+Import-Module "$((Get-Location).Path)\themes.ps1" -Force
+Import-Module "$((Get-Location).Path)\constants.ps1" -Force
+
 
 [Flags()] enum Styles {
   Normal = 1
@@ -303,9 +305,9 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    $this.SearchColor = [Color]::new([System.Drawing.Color]::BlueViolet)
-    $this.SelectedColor = [Color]::new([System.Drawing.Color]::BlueViolet)
-    $this.SelectedColor.style = [Styles]::Underline
+    $this.SearchColor = [Color]::new($script:theme.list.SearchColor)
+    $this.SelectedColor = [Color]::new($script:theme.list.SelectedColor)
+    $this.SelectedColor.style = $script:theme.list.SelectedStyle
   }
 
   [Void] DrawTitle(
@@ -321,13 +323,13 @@ class List {
     [console]::setcursorposition(0, $this.height + 2)
     $footer = "◖ $($this.page)/$($this.pages)"
     if ($this.filter -and ($this.filter -ne "")) {
-      $FilterColor = [Color]::new([System.Drawing.Color]::OrangeRed)
-      $FilterColor.style = [Styles]::Underline
+      $FilterColor = [Color]::new($script:theme.list.FilterColor)
+      $FilterColor.style = $script:theme.list.FilterStyle
       $filtertext = $FilterColor.render("$($this.filter)")
     }
     else {
       $FilterColor = [Color]::new([System.Drawing.Color]::Green)
-      $FilterColor.style = [Styles]::Underline
+      $FilterColor.style = [Styles]::Normal
       $filtertext = $FilterColor.render("None")
     }
     $footer += "⋮ [Filter: $($filtertext)] ◗"
