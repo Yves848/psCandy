@@ -19,4 +19,10 @@ $Script:Theme = @{
   "spinner" = @{
     "spincolor"= [System.Drawing.Color]::MediumOrchid
   }
+  "choice" = @{
+    "SelectedForeground" = [System.Drawing.Color]::BlueViolet
+    "SelectedBackground" = [System.Drawing.Color]::WhiteSmoke
+    "OptionColor" = [System.Drawing.Color]::MediumOrchid
+    "MessageColor" = [System.Drawing.Color]::IndianRed
+  }
 }

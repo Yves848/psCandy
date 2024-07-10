@@ -123,6 +123,19 @@ $BorderTypes = @{
     "MiddleBottom" = " "
   }
 }
+
+class Option {
+  [String]$text
+  [PSCustomObject]$value
+
+  Option(
+    [String]$text,
+    [PSCustomObject]$value
+  ) {
+    $this.text = $text
+    $this.value = $value
+  }
+}
 class Border {
   static [hashtable] GetBorder(
     [string]$type = "Normal"
@@ -773,5 +786,46 @@ class List {
 }
 
 class Confirm {
+  [string]$Message =""
+  [Option[]]$Choices
+  [int]$width = $Host.UI.RawUI.BufferSize.Width -2
+  [bool]$fullscreen = $false
+  [Color]$SeletedForeground = [Color]::new($script:Theme.Choice.SelectedForeground)
+  [Color]$SeletedBackground = [Color]::new($script:Theme.Choice.SelectedBackground)
+  [Color]$OptionColor = [Color]::new($script:Theme.Choice.OptionColor)
+  [Color]$MessageColor = [Color]::new($script:Theme.Choice.MessageColor)
 
+  Confirm(
+    [string]$Message,
+    [Option[]]$Choices,
+    [int]$width
+  ) {
+    $this.Message = $Message
+    $this.Choices = $Choices
+    $this.fullscreen = $false
+    $this.width = $width
+  }
+
+  Confirm(
+    [string]$Message,
+    [Option[]]$Choices,
+    [bool]$fullscreen
+  ) {
+    $this.Message = $Message
+    $this.Choices = $Choices
+    $this.fullscreen = $true
+  }
+
+  [Option] Display() {
+    $result = $null
+    $title = $this.Message
+    $padding = [Math]::Ceiling(($this.width - $title.Length)/2) #
+    $filler = "".padleft($padding," ")
+    [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
+    $this.choices | ForEach-Object {
+      $text = $_.text
+      [Console]::Write("$($text)")
+    }
+    return $result
+  }
 }
