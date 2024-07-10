@@ -153,7 +153,7 @@ Remove-Module -name classes -Force
 ```
 Result :
 
-![](./Images/list1.png)
+![](./Images/list1.gif)
 
 ```
 ListItem([string]$text,[PSCustomObject]$value,[string]$Icon,[System.Drawing.Color]$Color)
@@ -255,3 +255,22 @@ Result :
 
 ![](./Images/list3.png)
 
+
+## Spinner
+The Spinner is a class than can display an animated spinner while performing long tasks.
+There are 7 styles of Spinners (Circle,Dots,Line,Square,Bubble,Arrow,Pulse).  By default, "Dots" is used.
+The Spinner can be "themed" with the [Color] class.
+
+Example :
+```
+Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+
+$spinner = [Spinner]::new("Dots")
+$Spinner.Start("Loading List...")
+Start-Sleep -Seconds 5
+$Spinner.Stop()
+```
+
+Result :
+
+![](./Images/Spinner1.png)
