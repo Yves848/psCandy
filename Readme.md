@@ -253,7 +253,7 @@ $List.Display()
 
 Result :
 
-![](./Images/list3.png)
+![](./Images/list3.gif)
 
 
 ## Spinner
