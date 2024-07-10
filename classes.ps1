@@ -267,11 +267,42 @@ class Spinner {
 class ListItem {
   [string]$text
   [PSCustomObject]$value
+  [string]$Icon
   [bool]$selected = $false
   [bool]$checked = $false
-  [Color]$SearchColor 
-  [Color]$SelectedColor
   [bool]$chained = $true
+  [System.Drawing.Color]$Color = $None
+
+  ListItem(
+    [string]$text,
+    [PSCustomObject]$value,
+    [string]$Icon
+  ) {
+    $this.text = $text
+    $this.value = $value
+    $this.Icon = $Icon
+  }
+
+  ListItem(
+    [string]$text,
+    [PSCustomObject]$value,
+    [string]$Icon,
+    [System.Drawing.Color]$Color
+  ) {
+    $this.text = $text
+    $this.value = $value
+    $this.Icon = $Icon
+    $this.Color = $Color
+  }
+  ListItem(
+    [string]$text,
+    [PSCustomObject]$value,
+    [System.Drawing.Color]$Color
+  ) {
+    $this.text = $text
+    $this.value = $value
+    $this.Color = $Color
+  }
 
   ListItem(
     [string]$text,
@@ -279,6 +310,7 @@ class ListItem {
   ) {
     $this.text = $text
     $this.value = $value
+    $this.Icon = ""
   }
 }
 
@@ -356,7 +388,14 @@ class List {
     if ($items) {
       $buffer = $items | ForEach-Object {
         $text = $_.text.PadRight($this.linelen, " ")
-      
+        $icon = $_.Icon
+        if ($icon) {
+          $text = "$icon $text"
+        }
+        if ($_.Color -ne [System.Drawing.Color]::Empty) {
+          $c = [Color]::new($_.Color)
+          $text = $c.render($text)
+        }
         if ($this.limit) {
           if ($this.index -eq $i) {
             $this.SelectedColor.render($text)
@@ -379,8 +418,6 @@ class List {
             "  $($text)"
           }
         }
-        
-      
         $i++
       } | Out-String
     }
@@ -407,7 +444,6 @@ class List {
     #   ($_.text -replace "\e\[[\d;]*m", '').Length
     # }).Maximum
     [System.Console]::Clear()
-    # TODO: Gérer les couleurs à partir du thème
     while (-not $stop) {
       if ($redraw) {
         if ($search) {
