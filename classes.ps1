@@ -127,6 +127,7 @@ $BorderTypes = @{
 class Option {
   [String]$text
   [PSCustomObject]$value
+  [bool]$selected = $false
 
   Option(
     [String]$text,
@@ -822,9 +823,16 @@ class Confirm {
     $padding = [Math]::Ceiling(($this.width - $title.Length)/2) #
     $filler = "".padleft($padding," ")
     [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
+    $nbChoices = $this.Choices.Count
+    $choiceWidth = [Math]::Floor($this.width / $nbChoices) - 4
+    [Console]::WriteLine()
     $this.choices | ForEach-Object {
       $text = $_.text
-      [Console]::Write("$($text)")
+      $padding = [Math]::Ceiling(($choiceWidth - $text.Length)/2)
+      $filler = "".padleft($padding,".")
+      $text = $filler.Remove([math]::Floor($padding/2),[math]::Floor($text.Length/2)).Insert([math]::Floor($padding/2),$text)
+      
+      [Console]::Write("$($this.OptionColor.render($text))    ")
     }
     return $result
   }
