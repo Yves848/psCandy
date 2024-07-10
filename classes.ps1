@@ -342,6 +342,7 @@ class List {
     [System.Collections.Generic.List[ListItem]]$items
   ) {
     $i = 0
+    if ($items) {
     $buffer = $items | ForEach-Object {
       $text = $_.text.PadRight($this.linelen," ")
       $add = $true
@@ -361,6 +362,9 @@ class List {
       }
       $i++
     } | Out-String
+  } else {
+    $buffer = ""
+  }
     return $buffer
   }
 
@@ -410,9 +414,13 @@ class List {
         [Console]::setcursorposition(0, 0)
         [Console]::Write($this.blanks)
         [Console]::setcursorposition(0, 1)
-        
+        if ($this.index -gt $VisibleItems.Count -1 ) {
+          $this.index = 0
+
+        }
         $buffer = $this.MakeBufer($VisibleItems)
         [System.Console]::Write($buffer)
+        
         $this.DrawFooter()
       }
       $redraw = $false
@@ -496,7 +504,7 @@ class List {
           13 {
             $stop = $true
 
-            $VisibleItems | ForEach-Object {
+            $this.Items | ForEach-Object {
               if ($_.checked) {
                 $result += $_
               }
