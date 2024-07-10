@@ -21,8 +21,8 @@ $Script:Theme = @{
   }
   "choice" = @{
     "SelectedForeground" = [System.Drawing.Color]::BlueViolet
-    "SelectedBackground" = [System.Drawing.Color]::WhiteSmoke
-    "OptionColor" = [System.Drawing.Color]::MediumOrchid
+    "SelectedBackground" = [System.Drawing.Color]::White
+    "OptionColor" = [System.Drawing.Color]::SkyBlue
     "MessageColor" = [System.Drawing.Color]::IndianRed
   }
 }

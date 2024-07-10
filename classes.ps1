@@ -136,6 +136,15 @@ class Option {
     $this.text = $text
     $this.value = $value
   }
+  Option(
+    [String]$text,
+    [PSCustomObject]$value,
+    [bool]$selected
+  ) {
+    $this.text = $text
+    $this.value = $value
+    $this.selected = $selected
+  }
 }
 class Border {
   static [hashtable] GetBorder(
@@ -796,7 +805,7 @@ class Confirm {
   [Color]$SeletedColor = [Color]::new($script:Theme.Choice.SelectedForeground,$script:Theme.Choice.SelectedBackground)
   [Color]$OptionColor = [Color]::new($script:Theme.Choice.OptionColor)
   [Color]$MessageColor = [Color]::new($script:Theme.Choice.MessageColor)
-
+  [int]$index = 0
   Confirm(
     [string]$Message,
     [Option[]]$Choices,
@@ -818,7 +827,7 @@ class Confirm {
     $this.fullscreen = $true
   }
 
-  [Option] Display() {
+  [PSCustomObject] Display() {
     $result = $null
     $title = $this.Message
     $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
@@ -846,8 +855,15 @@ class Confirm {
     $stop = $false
     $y = [Console]::CursorTop
     [console]::CursorVisible = $false
-    $index = 0
-    $this.Choices[$index].selected = $true
+    $this.index = 0
+    $i = 0
+    $this.Choices | ForEach-Object {
+      if ($_.selected) {
+        $this.index = $i
+      }
+      $i++
+    }
+    # $this.Choices[$index].selected = $true
     while (-not $stop) {
       $buffer = $this.Choices | ForEach-Object {
         if ($_.selected) {
@@ -864,23 +880,34 @@ class Confirm {
         [System.Management.Automation.Host.KeyInfo]$key = $($global:host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown'))
         if ($key.VirtualKeyCode -eq 13) {
           $stop = $true
-          $result = $this.Choices | Where-Object { $_.selected }
+          $result = $this.Choices | Where-Object { $_.selected -eq $true }
         }
         if ($key.VirtualKeyCode -eq 37) {
           # Left
-          $this.Choices[$index].selected = $false
-          $index--
-          $this.Choices[$index].selected = $true
+          $this.Choices[$this.index].selected = $false
+          if ($this.index -eq 0) {
+            $this.index = $this.Choices.Count - 1
+          }
+          else {
+            $this.index--
+          }
+          $this.Choices[$this.index].selected = $true
         }
         if ($key.VirtualKeyCode -eq 39) {
           # Right
-          $this.Choices[$index].selected = $false
-          $index++
-          $this.Choices[$index].selected = $true
+          $this.Choices[$this.index].selected = $false
+          if ($this.index -eq ($this.Choices.Count - 1)) {
+            $this.index = 0
+          }
+          else {
+            $this.index++
+          }
+          $this.Choices[$this.index].selected = $true
         }
       }
     }
     [console]::CursorVisible = $true
-    return $result
+    $fields = "value"
+    return $result | Select-Object -Property $fields
   }
 }
