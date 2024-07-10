@@ -8,11 +8,11 @@ Import-Module "$((Get-Location).Path)\classes.ps1" -Force
 #   write-host "This $($color.render("$($_.Name)",0)) a test of the color function"
 # }
 
-# [$spinner = [Spinner]::new("Dots")
-# $spinner.SetColor([System.Drawing.Color]::Red)
-# $Spinner.Start("Spinner Test")
-# Start-Sleep -Seconds 1
-# $Spinner.Stop()
+
+$spinner = [Spinner]::new("Dots")
+$Spinner.Start("Loading List...")
+Start-Sleep -Seconds 5
+$Spinner.Stop()
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 $items = [System.Collections.Generic.List[ListItem]]::new()
