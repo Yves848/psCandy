@@ -26,7 +26,9 @@ function getDirContent {
 
 $items = getDirContent -path $Path
 $result = $null
-$Theme.list.SelectedColor = [System.Drawing.Color]::yellow
+if ($theme) {
+  $Theme.list.SelectedColor = [System.Drawing.Color]::yellow
+}
 while ($true) {
   $List = [List]::new($items)
   $list.SetHeight(15)

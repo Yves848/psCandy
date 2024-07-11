@@ -1,8 +1,5 @@
-
-. "$PSScriptRoot\constants.ps1" -Force
-. "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\Colors.ps1" -Force
-. "$PSScriptRoot\classes.ps1" -Force
+# . "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\psCandy.ps1" -Force
 
 $options = @(
   [Option]::new("Yes", "Yes"),

@@ -819,9 +819,9 @@ class Confirm {
   [Option[]]$Choices
   [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
   [bool]$fullscreen = $false
-  [Color]$SeletedColor = [Color]::new($script:Theme.Choice.SelectedForeground,$script:Theme.Choice.SelectedBackground)
-  [Color]$OptionColor = [Color]::new($script:Theme.Choice.OptionColor)
-  [Color]$MessageColor = [Color]::new($script:Theme.Choice.MessageColor)
+  [Color]$SeletedColor 
+  [Color]$OptionColor 
+  [Color]$MessageColor 
   [int]$index = 0
   Confirm(
     [string]$Message,
@@ -844,7 +844,17 @@ class Confirm {
     $this.fullscreen = $true
   }
 
-  [PSCustomObject] Display() {
+  [void] LoadTheme() {
+    $this.SeletedColor = [Color]::new($script:Theme.Choice.SelectedForeground ? $script:Theme.Choice.SelectedForeground : [System.Drawing.Color]::White
+    ,
+    $script:Theme.Choice.SelectedBackground ? $script:Theme.Choice.SelectedBackground : [System.Drawing.Color]::BlueViolet)
+    $this.OptionColor = [Color]::new($script:Theme.Choice.OptionColor ? $script:Theme.Choice.OptionColor : [System.Drawing.Color]::Cyan)
+    $this.MessageColor = [Color]::new($script:Theme.Choice.MessageColor ? $script:Theme.Choice.MessageColor : [System.Drawing.Color]::White)  
+  }
+
+  [PSCustomObject] Display() 
+  {
+    $this.LoadTheme()
     $result = $null
     $title = $this.Message
     $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
