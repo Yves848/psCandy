@@ -1,6 +1,246 @@
-. "$PSScriptRoot\constants.ps1" 
-. "$PSScriptRoot\colors.ps1"
-. "$PSScriptRoot\themes.ps1"
+$None = [System.Drawing.Color]::Empty
+
+[Flags()] enum Styles {
+  Normal = 1
+  Underline = 2
+  Bold = 4
+  Reversed = 8
+  Strike = 16
+}
+
+$BorderTypes = @{
+  "Normal"    = @{
+    "Top"          = "─"
+    "Bottom"       = "─"
+    "Left"         = "│"
+    "Right"        = "│"
+    "TopLeft"      = "┌"
+    "TopRight"     = "┐"
+    "BottomLeft"   = "└"
+    "BottomRight"  = "┘"
+    "MiddleLeft"   = "├"
+    "MiddleRight"  = "┤"
+    "Middle"       = "┼"
+    "MiddleTop"    = "┬"
+    "MiddleBottom" = "┴"
+  }
+  "Rounded"   = @{
+    "Top"          = "─"
+    "Bottom"       = "─"
+    "Left"         = "│"
+    "Right"        = "│"
+    "TopLeft"      = "╭"
+    "TopRight"     = "╮"
+    "BottomLeft"   = "╰"
+    "BottomRight"  = "╯"
+    "MiddleLeft"   = "├"
+    "MiddleRight"  = "┤"
+    "Middle"       = "┼"
+    "MiddleTop"    = "┬"
+    "MiddleBottom" = "┴"
+  }
+  "Block"     = @{
+    "Top"          = "█"
+    "Bottom"       = "█"
+    "Left"         = "█"
+    "Right"        = "█"
+    "TopLeft"      = "█"
+    "TopRight"     = "█"
+    "BottomLeft"   = "█"
+    "BottomRight"  = "█"
+    "MiddleLeft"   = "█"
+    "MiddleRight"  = "█"
+    "Middle"       = "█"
+    "MiddleTop"    = "█"
+    "MiddleBottom" = "█"
+  }
+  "OuterHalf" = @{
+    "Top"         = "▀"
+    "Bottom"      = "▄"
+    "Left"        = "▌"
+    "Right"       = "▐"
+    "TopLeft"     = "▛"
+    "TopRight"    = "▜"
+    "BottomLeft"  = "▙"
+    "BottomRight" = "▟"
+  }
+  "InnerHalf" = @{
+    "Top"         = "▄"
+    "Bottom"      = "▀"
+    "Left"        = "▐"
+    "Right"       = "▌"
+    "TopLeft"     = "▗"
+    "TopRight"    = "▖"
+    "BottomLeft"  = "▝"
+    "BottomRight" = "▘"
+  }
+  "Thick"     = @{
+    "Top"          = "━"
+    "Bottom"       = "━"
+    "Left"         = "┃"
+    "Right"        = "┃"
+    "TopLeft"      = "┏"
+    "TopRight"     = "┓"
+    "BottomLeft"   = "┗"
+    "BottomRight"  = "┛"
+    "MiddleLeft"   = "┣"
+    "MiddleRight"  = "┫"
+    "Middle"       = "╋"
+    "MiddleTop"    = "┳"
+    "MiddleBottom" = "┻"
+  }
+  "Double"    = @{
+    "Top"          = "═"
+    "Bottom"       = "═"
+    "Left"         = "║"
+    "Right"        = "║"
+    "TopLeft"      = "╔"
+    "TopRight"     = "╗"
+    "BottomLeft"   = "╚"
+    "BottomRight"  = "╝"
+    "MiddleLeft"   = "╠"
+    "MiddleRight"  = "╣"
+    "Middle"       = "╬"
+    "MiddleTop"    = "╦"
+    "MiddleBottom" = "╩"
+  }
+  "Hidden"    = @{
+    "Top"          = " "
+    "Bottom"       = " "
+    "Left"         = " "
+    "Right"        = " "
+    "TopLeft"      = " "
+    "TopRight"     = " "
+    "BottomLeft"   = " "
+    "BottomRight"  = " "
+    "MiddleLeft"   = " "
+    "MiddleRight"  = " "
+    "Middle"       = " "
+    "MiddleTop"    = " "
+    "MiddleBottom" = " "
+  }
+}
+
+class Color {
+  [System.Drawing.Color]$Foreground = [System.Drawing.Color]::Empty
+  [System.Drawing.Color]$Background = [System.Drawing.Color]::Empty
+  [Styles]$style
+  
+  static [string] color16 (
+    [string]$Text,
+    [int]$ForegroundColor = -1,
+    [int]$BackgroundColor = -1,
+    [switch]$Underline,
+    [switch]$Strike
+  ) {
+    $esc = $([char]0x1b)
+  
+    $fore = ""
+    $back = ""
+    $Under = ""
+    $Stri = ""
+    if ($ForegroundColor -ne -1) {
+      $fore = "$esc[38;5;$($ForegroundColor)m"
+    }
+    if ( $BackgroundColor -ne -1 ) {
+      $back = "$esc[48;5;$($BackgroundColor)m"
+    }
+    if ($Underline) {
+      $under = "$esc[4m"
+    }
+    if ($Strike) {
+      $stri = "$esc[9m"
+    }
+    $close = "$esc[0m"
+    $result = "$under$stri$fore$back$Text$close"
+    return $result
+  }
+
+  static [string] colorRGB (
+    [string]$Text,
+    [System.Drawing.Color]$Foreground,
+    [System.Drawing.Color]$Background,
+    [switch]$Underline,
+    [switch]$Strike
+  ) {
+    $esc = $([char]0x1b)
+  
+    $Fore = ""
+    $Back = ""
+    $Under = ""
+    $Stri = ""
+    
+    if ($null -ne $Foreground) {
+      $fore = "$esc[38;2;$($Foreground.R);$($Foreground.G);$($Foreground.B)m"
+    }
+    if ($null -ne $Background) {
+      $back = "$esc[48;2;$($Background.R);$($Background.G);$($Background.B)m"
+    }
+    if ($Underline) {
+      $under = "$esc[4m"
+    }
+    if ($Strike) {
+      $stri = "$esc[9m"
+    }
+    $close = "$esc[0m"
+    $result = "$under$stri$fore$back$Text$close"
+    return $result
+  }
+
+  color (
+    [System.Drawing.Color]$Foreground,
+    [System.Drawing.Color]$Background = [System.Drawing.Color]::Empty
+  ) {
+    $this.Foreground = $Foreground
+    $this.Background = $Background
+  }
+
+  color (
+    [System.Drawing.Color]$Foreground
+  ) {
+    $this.Foreground = $Foreground
+  }    
+  
+  [string]render (
+    [string]$text
+  ) {
+    $esc = $([char]0x1b)
+  
+    $Fore = ""
+    $Back = ""
+    $Under = ""
+    $Stri = ""
+    $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+    
+    if ($this.Background -ne [System.Drawing.Color]::Empty) {
+      $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
+    }
+    if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
+      $under = "$esc[4m"
+    }
+    
+    
+    if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
+      $stri = "$esc[9m"
+    }
+    $close = "$esc[0m"
+    $result = "$under$stri$fore$back$Text$close"
+    return $result
+  }
+
+  [string]render (
+    [string]$text,
+    [Styles]$style
+  ) {
+    $oldStyle = $this.style
+    $this.style = $style
+
+    $result = $this.render($text)
+
+    $this.style = $oldStyle
+    return $result
+  }
+}
 
 
 class Option {
@@ -42,7 +282,7 @@ class Spinner {
   [Int32]$Y = $Host.UI.RawUI.CursorPosition.Y
   [bool]$running = $false
   [Int32]$width = $Host.UI.RawUI.BufferSize.Width
-  [System.Drawing.Color]$SpinColor = $script:theme.spinner.spincolor
+  [System.Drawing.Color]$SpinColor = ($script:theme.spinner.spincolor) ? $script:theme.spinner.spincolor : [System.Drawing.Color]::MediumOrchid
   [bool]$CuirsorState = [System.Console]::CursorVisible
 
   $Spinners = @{
@@ -229,11 +469,18 @@ class List {
   [char]$selector = ">"
   [Color]$SearchColor
   [Color]$SelectedColor
+  [Color]$FilterColor
   [bool]$limit = $false
   [bool]$border = $false
   [bool]$fullscreen = $true
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
   # TODO: Rendre paramétrable le style de sélection
+
+  [void] LoadTheme() {
+    $this.SearchColor = [Color]::new($script:theme.list.SearchColor ? $script:theme.list.SearchColor : [System.Drawing.Color]::BlueViolet)
+    $this.SelectedColor = [Color]::new($script:theme.list.SelectedColor ? $script:theme.list.SelectedColor : [System.Drawing.Color]::Green)
+    $this.SelectedColor.style = $script:theme.list.SelectedStyle ? $script:theme.list.SelectedStyle : [Styles]::Underline
+  }
   List (
     [System.Collections.Generic.List[ListItem]]$items
   ) {
@@ -242,9 +489,7 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    $this.SearchColor = [Color]::new($script:theme.list.SearchColor)
-    $this.SelectedColor = [Color]::new($script:theme.list.SelectedColor)
-    $this.SelectedColor.style = $script:theme.list.SelectedStyle
+    $this.LoadTheme()
   }
 
   [Void] DrawTitle(
@@ -264,14 +509,14 @@ class List {
     [console]::setcursorposition(0, $this.height + $footerOffset)
     $footer = "◖ $($this.page)/$($this.pages)"
     if ($this.filter -and ($this.filter -ne "")) {
-      $FilterColor = [Color]::new($script:theme.list.FilterColor)
-      $FilterColor.style = $script:theme.list.FilterStyle
-      $filtertext = $FilterColor.render("$($this.filter)")
+      $this.FilterColor = [Color]::new($script:theme.list.FilterColor ? $script:theme.list.FilterColor : [System.Drawing.Color]::Orange)
+      $this.FilterColor.style = $script:theme.list.FilterStyle ? $script:theme.list.FilterStyle : [Styles]::Underline 
+      $filtertext = $this.FilterColor.render("$($this.filter)")
     }
     else {
-      $FilterColor = [Color]::new([System.Drawing.Color]::Green)
-      $FilterColor.style = [Styles]::Normal
-      $filtertext = $FilterColor.render("None")
+      $this.FilterColor = [Color]::new([System.Drawing.Color]::Green)
+      $this.FilterColor.style = [Styles]::Normal
+      $filtertext = $this.FilterColor.render("None")
     }
     $footer += "⋮ [Filter: $($filtertext)] ◗"
     [console]::WriteLine($footer)
@@ -293,6 +538,8 @@ class List {
   [String] MakeBufer(
     [System.Collections.Generic.List[ListItem]]$items
   ) {
+    $checked = $script:theme.list.Checked ? $script:theme.list.Checked : "▣"
+    $unchecked = $script:theme.list.UnChecked ? $script:theme.list.UnChecked : "▢"
     $i = 0
     $offset = 0
     if ($this.limit) {
@@ -329,10 +576,10 @@ class List {
         }
         else {
           if ($_.checked) {
-            $text = "$($theme.list.checked) $text"
+            $text = "$($checked) $text"
           }
           else {
-            $text = "$($theme.list.unchecked) $text"
+            $text = "$($unchecked) $text"
           }
           if ($this.index -eq $i) {
             $text = $this.SelectedColor.render("$($this.selector) $($text)")

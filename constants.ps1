@@ -1,5 +1,125 @@
 $None = [System.Drawing.Color]::Empty
 
+[Flags()] enum Styles {
+  Normal = 1
+  Underline = 2
+  Bold = 4
+  Reversed = 8
+  Strike = 16
+}
+
+$BorderTypes = @{
+  "Normal"    = @{
+    "Top"          = "─"
+    "Bottom"       = "─"
+    "Left"         = "│"
+    "Right"        = "│"
+    "TopLeft"      = "┌"
+    "TopRight"     = "┐"
+    "BottomLeft"   = "└"
+    "BottomRight"  = "┘"
+    "MiddleLeft"   = "├"
+    "MiddleRight"  = "┤"
+    "Middle"       = "┼"
+    "MiddleTop"    = "┬"
+    "MiddleBottom" = "┴"
+  }
+  "Rounded"   = @{
+    "Top"          = "─"
+    "Bottom"       = "─"
+    "Left"         = "│"
+    "Right"        = "│"
+    "TopLeft"      = "╭"
+    "TopRight"     = "╮"
+    "BottomLeft"   = "╰"
+    "BottomRight"  = "╯"
+    "MiddleLeft"   = "├"
+    "MiddleRight"  = "┤"
+    "Middle"       = "┼"
+    "MiddleTop"    = "┬"
+    "MiddleBottom" = "┴"
+  }
+  "Block"     = @{
+    "Top"          = "█"
+    "Bottom"       = "█"
+    "Left"         = "█"
+    "Right"        = "█"
+    "TopLeft"      = "█"
+    "TopRight"     = "█"
+    "BottomLeft"   = "█"
+    "BottomRight"  = "█"
+    "MiddleLeft"   = "█"
+    "MiddleRight"  = "█"
+    "Middle"       = "█"
+    "MiddleTop"    = "█"
+    "MiddleBottom" = "█"
+  }
+  "OuterHalf" = @{
+    "Top"         = "▀"
+    "Bottom"      = "▄"
+    "Left"        = "▌"
+    "Right"       = "▐"
+    "TopLeft"     = "▛"
+    "TopRight"    = "▜"
+    "BottomLeft"  = "▙"
+    "BottomRight" = "▟"
+  }
+  "InnerHalf" = @{
+    "Top"         = "▄"
+    "Bottom"      = "▀"
+    "Left"        = "▐"
+    "Right"       = "▌"
+    "TopLeft"     = "▗"
+    "TopRight"    = "▖"
+    "BottomLeft"  = "▝"
+    "BottomRight" = "▘"
+  }
+  "Thick"     = @{
+    "Top"          = "━"
+    "Bottom"       = "━"
+    "Left"         = "┃"
+    "Right"        = "┃"
+    "TopLeft"      = "┏"
+    "TopRight"     = "┓"
+    "BottomLeft"   = "┗"
+    "BottomRight"  = "┛"
+    "MiddleLeft"   = "┣"
+    "MiddleRight"  = "┫"
+    "Middle"       = "╋"
+    "MiddleTop"    = "┳"
+    "MiddleBottom" = "┻"
+  }
+  "Double"    = @{
+    "Top"          = "═"
+    "Bottom"       = "═"
+    "Left"         = "║"
+    "Right"        = "║"
+    "TopLeft"      = "╔"
+    "TopRight"     = "╗"
+    "BottomLeft"   = "╚"
+    "BottomRight"  = "╝"
+    "MiddleLeft"   = "╠"
+    "MiddleRight"  = "╣"
+    "Middle"       = "╬"
+    "MiddleTop"    = "╦"
+    "MiddleBottom" = "╩"
+  }
+  "Hidden"    = @{
+    "Top"          = " "
+    "Bottom"       = " "
+    "Left"         = " "
+    "Right"        = " "
+    "TopLeft"      = " "
+    "TopRight"     = " "
+    "BottomLeft"   = " "
+    "BottomRight"  = " "
+    "MiddleLeft"   = " "
+    "MiddleRight"  = " "
+    "Middle"       = " "
+    "MiddleTop"    = " "
+    "MiddleBottom" = " "
+  }
+}
 
 
 # $Theme = @{

@@ -1,12 +1,18 @@
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+
+. "$PSScriptRoot\constants.ps1" -Force
+. "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\Colors.ps1" -Force
+. "$PSScriptRoot\classes.ps1" -Force
+
 $options = @(
   [Option]::new("Yes", "Yes"),
   [Option]::new("No", "No",$true),
   [Option]::new("Maybe", "?")
 )
 $confirm = [Confirm]::new("Do you want to continue?",$options,$true)
-$result = $confirm.Display()
 [console]::Clear()
+$result = $confirm.Display()
+[console]::WriteLine()
 switch ($result.value) {
   "Yes" {
     Write-Host "You chose Yes"

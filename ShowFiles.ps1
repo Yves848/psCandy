@@ -1,7 +1,8 @@
 param (
   [string]$Path = "..\"
 )
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+# . "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\PSCandy.ps1" -Force
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 

@@ -1,9 +1,6 @@
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+# . "$PSScriptRoot\themes.ps1"
+. "$PSScriptRoot\psCandy.ps1"
 
-$spinner = [Spinner]::new("Dots")
-$Spinner.Start("Loading List...")
-Start-Sleep -Seconds 5
-$Spinner.Stop()
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 $items = [System.Collections.Generic.List[ListItem]]::new()
@@ -24,5 +21,3 @@ $items.Add([ListItem]::new("Potato 6", 14,"🥔"))
 
 $list = [List]::new($items)  
 $list.Display()
-
-Remove-Module -name classes -Force

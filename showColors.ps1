@@ -1,4 +1,5 @@
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+. "$PSScriptRoot\Themes.ps1" 
+. "$PSScriptRoot\psCandy.ps1" 
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
