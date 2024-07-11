@@ -436,4 +436,4 @@ Result :
 
 ![](./Images/confirm2.gif))
 
-*The "Theme" part is still experimental and mais probably change in the future, using a JSON / YAML format.*
+*The "Theme" part is still experimental and may probably change in the future, using a JSON / YAML format.*
