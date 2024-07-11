@@ -8,7 +8,12 @@ I used Charmbracelet/gum to enhance my powershell scripts, but some limitations 
 
 So I decided to write my own visual library, 100% in powershell.
 
-So far, 3 classes are enable :
+To install, use 
+```
+  Install-module -Name psCandy -Scope CurrentUser
+```
+
+So far, 5 classes are enable :
 - Color
 - Spinner
 - List
@@ -124,9 +129,8 @@ This constructor allows the use of an icon that will be draw at the beginning of
 
 Example :
 ```
-# . "$PSScriptRoot\themes.ps1"
-. "$PSScriptRoot\psCandy.ps1"
-
+using module psCandy
+. .\themes.ps1
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 $items = [System.Collections.Generic.List[ListItem]]::new()
@@ -134,6 +138,7 @@ $items.Add([ListItem]::new("Banana", 1,"🍌"))
 $items.Add([ListItem]::new("Apple", 2, "🍎"))
 $items.Add([ListItem]::new("Mandarine", 3, "🍊"))
 $items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
+$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString"="Test"; "aBool"=$true}, "🟠"))
 $items.Add([ListItem]::new("Potato", 5,"🥔"))
 $items.Add([ListItem]::new("Potato 2", 6,"🥔"))
 $items.Add([ListItem]::new("Potato 3", 7,"🥔"))
@@ -146,9 +151,11 @@ $items.Add([ListItem]::new("Grape Fruit 2", 13,"🟠"))
 $items.Add([ListItem]::new("Potato 6", 14,"🥔"))
 
 $list = [List]::new($items)  
+$list.LoadTheme($Theme)
 $list.SetHeight(10)
 # $list.SetLimit($True)
 $list.Display()
+
 ```
 Result :
 
@@ -159,8 +166,7 @@ The [ListItem] can contain mixed return value types.
 
 Example :
 ```
-# . "$PSScriptRoot\themes.ps1"
-. "$PSScriptRoot\psCandy.ps1"
+using module psCandy
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
@@ -203,12 +209,11 @@ This constructor takes a 4th parameter : The rendering color of the [ListItem]
 
 Example :
 ```
+using module psCandy
+
 param (
   [string]$Path = "..\"
 )
-# . "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\PSCandy.ps1" -Force
-
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 
@@ -279,8 +284,8 @@ This last constructor only take a [ListItem] color, but no icon.
 
 Example :
 ```
-. "$PSScriptRoot\Themes.ps1" 
-. "$PSScriptRoot\psCandy.ps1" 
+using module psCandy
+. .\themes.ps1
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
@@ -292,6 +297,7 @@ $items = [System.Collections.Generic.List[ListItem]]::new()
   $items.Add([ListItem]::new($colorName, $color,[System.Drawing.Color]::"$($_.Name)"))
 }
 $List = [List]::new($items)
+$List.LoadTheme($Theme)
 $list.SetHeight(25)
 $List.Display()
 ```
@@ -308,8 +314,7 @@ The Spinner can be "themed" with the [Color] class.
 
 Example :
 ```
-. "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\PSCandy.ps1" -Force
+using module psCandy
 
 ("Circle","Dots","Line","Square","Bubble","Arrow","Pulse") | ForEach-Object {
   $spinner = [Spinner]::new($_)
@@ -342,8 +347,7 @@ If no [Option] has a Selected parameter, the first option of the array will be t
 
 Exammple :
 ```
-# . "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\psCandy.ps1" -Force
+using module psCandy
 
 $options = @(
   [Option]::new("Yes", "Yes"),
@@ -378,9 +382,9 @@ Result :
 Now, psCandy supports "Theming".
 Here is an example of Theme file :
 ```
-. "$PSScriptRoot\constants.ps1"
+using module psCandy
 
-$Script:Theme = @{
+$Theme = @{
   "list"= @{
     "SearchColor" = [System.Drawing.Color]::BlueViolet
     "SelectedColor" = [System.Drawing.Color]::Yellow
@@ -405,8 +409,9 @@ $Script:Theme = @{
 
 And Here is the "Confirm" example, with the Theme loaded :
 ```
-. "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\psCandy.ps1" -Force
+using module psCandy
+
+. .\themes.ps1
 
 $options = @(
   [Option]::new("Yes", "Yes"),
@@ -495,8 +500,7 @@ This method changes the width of the redered text.  By default, it's set to scre
 
 Example : 
 ```
-# . "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\PSCandy.ps1" -Force
+using module psCandy
 
 $Style = [Style]::new("Left")
 # $Style.SetStyle([Styles]::Underline)

@@ -478,13 +478,16 @@ class List {
   [bool]$border = $false
   [bool]$fullscreen = $true
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
+  [hashtable]$theme = @{}
   # TODO: Rendre paramétrable le style de sélection
 
-  [void] LoadTheme() {
-    $this.SearchColor = [Color]::new($script:theme.list.SearchColor ? $script:theme.list.SearchColor : [System.Drawing.Color]::BlueViolet)
-    $this.SelectedColor = [Color]::new($script:theme.list.SelectedColor ? $script:theme.list.SelectedColor : [System.Drawing.Color]::Green)
-    $this.SelectedColor.style = $script:theme.list.SelectedStyle ? $script:theme.list.SelectedStyle : [Styles]::Underline
+  [void] LoadTheme([hashtable]$theme) {
+    $this.theme = $theme
+    $this.SearchColor = [Color]::new($this.theme.list.SearchColor ? $theme.list.SearchColor : [System.Drawing.Color]::BlueViolet)
+    $this.SelectedColor = [Color]::new($this.theme.list.SelectedColor ? $this.theme.list.SelectedColor : [System.Drawing.Color]::Green)
+    $this.SelectedColor.style = $this.theme.list.SelectedStyle ? $this.theme.list.SelectedStyle : [Styles]::Underline
   }
+
   List (
     [System.Collections.Generic.List[ListItem]]$items
   ) {
@@ -542,8 +545,8 @@ class List {
   [String] MakeBufer(
     [System.Collections.Generic.List[ListItem]]$items
   ) {
-    $checked = $script:theme.list.Checked ? $script:theme.list.Checked : "▣"
-    $unchecked = $script:theme.list.UnChecked ? $script:theme.list.UnChecked : "▢"
+    $checked = $this.theme.list.Checked ? $this.theme.list.Checked : "▣"
+    $unchecked = $this.theme.list.UnChecked ? $this.theme.list.UnChecked : "▢"
     $i = 0
     $offset = 0
     if ($this.limit) {

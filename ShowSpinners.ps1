@@ -1,5 +1,4 @@
-. "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\PSCandy.ps1" -Force
+using module psCandy
 
 ("Circle","Dots","Line","Square","Bubble","Arrow","Pulse") | ForEach-Object {
   $spinner = [Spinner]::new($_)

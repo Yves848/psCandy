@@ -1,6 +1,5 @@
-# . "$PSScriptRoot\themes.ps1"
-. "$PSScriptRoot\psCandy.ps1"
-
+using module psCandy
+. .\themes.ps1
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 $items = [System.Collections.Generic.List[ListItem]]::new()
@@ -21,6 +20,7 @@ $items.Add([ListItem]::new("Grape Fruit 2", 13,"🟠"))
 $items.Add([ListItem]::new("Potato 6", 14,"🥔"))
 
 $list = [List]::new($items)  
+$list.LoadTheme($Theme)
 $list.SetHeight(10)
 # $list.SetLimit($True)
 $list.Display()

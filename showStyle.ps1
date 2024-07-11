@@ -1,5 +1,4 @@
-# . "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\PSCandy.ps1" -Force
+using module psCandy
 
 $Style = [Style]::new("Left")
 # $Style.SetStyle([Styles]::Underline)

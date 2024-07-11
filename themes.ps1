@@ -1,6 +1,6 @@
-. "$PSScriptRoot\constants.ps1"
+using module .\Release\psCandy.psm1
 
-$Script:Theme = @{
+$Theme = @{
   "list"= @{
     "SearchColor" = [System.Drawing.Color]::BlueViolet
     "SelectedColor" = [System.Drawing.Color]::Yellow
