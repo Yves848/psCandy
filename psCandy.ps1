@@ -367,12 +367,6 @@ class Spinner {
         [System.Console]::setcursorposition(($X + $statedata.offset) + 1, $Y)
         [system.console]::write((" " * 80))
         [System.Console]::setcursorposition(($X + $statedata.offset) + 1, $Y)
-        # if ($statedate.label -ne $statedata.oldlabel) {
-        #   $padding = $statedata.oldlabel.Length
-        #   [system.console]::write(("#" * 80))
-        #   $statedata.oldlabel = $statedata.label
-        #   [System.Console]::setcursorposition(($X + $statedata.offset) + 1, $Y)
-        # }
         [system.console]::write($statedata.label)
         $i = ($i + 1) % $Frames.Length
         Start-Sleep -Milliseconds $Statedata.Sleep
@@ -894,6 +888,7 @@ class Confirm {
       }
       $i++
     }
+    $this.Choices[$this.index].selected = $true
     while (-not $stop) {
       $buffer = $this.Choices | ForEach-Object {
         if ($_.selected) {

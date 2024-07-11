@@ -4,7 +4,8 @@
 $options = @(
   [Option]::new("Yes", "Yes"),
   [Option]::new("No", "No",$true),
-  [Option]::new("Maybe", "?")
+  [Option]::new("Maybe", "?")#,
+  # [Option]::new("MaybeNot", "??")
 )
 $confirm = [Confirm]::new("Do you want to continue?",$options,$true)
 [console]::Clear()
