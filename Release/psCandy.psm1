@@ -471,20 +471,22 @@ class List {
   [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   [int]$linelen = 0
   [char]$selector = ">"
-  [Color]$SearchColor
-  [Color]$SelectedColor
-  [Color]$FilterColor
+  [Color]$SearchColor = [Color]::new([System.Drawing.Color]::BlueViolet)
+  [Color]$SelectedColor = [Color]::new([System.Drawing.Color]::Green)
+  [Color]$FilterColor = [Color]::new([System.Drawing.Color]::Orange)
   [bool]$limit = $false
   [bool]$border = $false
   [bool]$fullscreen = $true
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
   [hashtable]$theme = @{}
+  
   # TODO: Rendre paramétrable le style de sélection
 
   [void] LoadTheme([hashtable]$theme) {
     $this.theme = $theme
     $this.SearchColor = [Color]::new($this.theme.list.SearchColor ? $theme.list.SearchColor : [System.Drawing.Color]::BlueViolet)
     $this.SelectedColor = [Color]::new($this.theme.list.SelectedColor ? $this.theme.list.SelectedColor : [System.Drawing.Color]::Green)
+    $this.FilterColor = [Color]::new($this.theme.list.FilterColorColor ? $this.theme.list.FilterColor : [System.Drawing.Color]::Orange)
     $this.SelectedColor.style = $this.theme.list.SelectedStyle ? $this.theme.list.SelectedStyle : [Styles]::Underline
   }
 
@@ -496,6 +498,7 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
+    $this.selectedColor.style = [Styles]::Underline
     # $this.LoadTheme()
   }
 

@@ -11,6 +11,6 @@ $items = [System.Collections.Generic.List[ListItem]]::new()
   $items.Add([ListItem]::new($colorName, $color,[System.Drawing.Color]::"$($_.Name)"))
 }
 $List = [List]::new($items)
-$List.LoadTheme($Theme)
+# $List.LoadTheme($Theme)
 $list.SetHeight(25)
 $List.Display()
