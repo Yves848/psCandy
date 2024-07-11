@@ -8,6 +8,12 @@ $None = [System.Drawing.Color]::Empty
   Strike = 16
 }
 
+enum Align {
+  Left
+  Center
+  Right
+}
+
 $BorderTypes = @{
   "Normal"    = @{
     "Top"          = "─"

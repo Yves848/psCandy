@@ -8,6 +8,12 @@ $None = [System.Drawing.Color]::Empty
   Strike = 16
 }
 
+enum Align {
+  Left
+  Center
+  Right
+}
+
 $BorderTypes = @{
   "Normal"    = @{
     "Top"          = "─"
@@ -731,7 +737,6 @@ class List {
             if ($key.ControlKeyState -eq "ShiftPressed") {
               $search = $true
               $redraw = $true
-              # TODO: Ajouter une recherche incrémentale SANS zone de saisie
             }
           }
           37 {
@@ -935,4 +940,89 @@ class Confirm {
     $fields = "value"
     return $result | Select-Object -Property $fields
   }
+}
+
+class Style {
+  [int]$width = $Host.UI.RawUI.BufferSize.Width -2
+  [string]$text = ""
+  [Color]$color = [Color]::new([System.Drawing.Color]::White, [System.Drawing.Color]::Empty)
+  [Styles]$style = [Styles]::Normal
+  [bool]$border = $false
+  [hashtable]$borderType = [Border]::GetBorder("Rounded")
+  [Align]$align = [Align]::right
+
+  Style(
+    [string]$text
+  ) {
+    $this.text = $text
+  }
+
+  [void] SetColor(
+    [System.Drawing.Color]$Foreground,
+    [System.Drawing.Color]$Background
+  ) {
+    $this.color = [Color]::new($Foreground, $Background)
+  }
+
+  [void] SetColor(
+    [System.Drawing.Color]$Foreground
+  ) {
+    $this.color = [Color]::new($Foreground, [System.Drawing.Color]::Empty)
+  }
+
+  [void] SetStyle(
+    [Styles]$style
+  ) {
+    $this.style = $style
+  }
+
+  [void] SetBorder(
+    [bool]$border
+  ) {
+    $this.border = $border
+  }
+
+  [void] setAlign(
+    [Align]$align
+  ) {
+    $this.align = $align
+  }
+
+  [void] SetWidth(
+    [int]$width
+  ) {
+    $this.width = $width
+  }
+
+  [String] Render() {
+    $label = $this.text
+    switch ($this.align) {
+      Center {
+        $buffer = "".PadLeft($this.width, " ")
+
+        $label = $label.PadLeft(($this.width - $label.Length) / 2, " ")
+      }
+      Right {
+        $label = $label.PadLeft($this.width, " ")
+      }
+      Left {
+        $label = $label.PadRight($this.width, " ")
+      }
+    }
+    if ($this.color -ne [Color]::Empty) {
+      $this.color.style = $this.style
+      $label = $this.color.render($label)
+    }
+    $result = $label
+    if ($this.border) {
+      $top = $this.borderType.TopLeft + "".PadLeft(($this.width), $this.borderType.Top) + $this.borderType.TopRight
+      $result = $this.borderType.Left + $label + $this.borderType.Right
+      $result = $top+ "`n" + $result + "`n" + $this.borderType.BottomLeft + "".PadLeft(($this.width), $this.borderType.Bottom) + $this.borderType.BottomRight
+    }
+
+    
+
+    return $result
+  }
+
 }
