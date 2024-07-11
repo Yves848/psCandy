@@ -15,6 +15,8 @@ $Script:Theme = @{
     "SelectedStyle" = [Styles]::Underline
     "FilterColor" = [System.Drawing.Color]::Orange
     "FilterStyle" = [Styles]::Underline
+    "Checked"="◉"
+    "Unchecked"="○"
   }
   "spinner" = @{
     "spincolor"= [System.Drawing.Color]::MediumOrchid

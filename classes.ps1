@@ -571,10 +571,10 @@ class List {
         }
         else {
           if ($_.checked) {
-            $text = "▣ $text"
+            $text = "$($theme.list.checked) $text"
           }
           else {
-            $text = "▢ $text"
+            $text = "$($theme.list.unchecked) $text"
           }
           if ($this.index -eq $i) {
             $text = $this.SelectedColor.render("$($this.selector) $($text)")
@@ -696,11 +696,12 @@ class List {
             }
             $this.filter = $this.filter + $Car
             $VisibleItems = $this.items | Where-Object {
-              $_.text -match $this.filter
+              $_.text -cmatch $this.filter
             } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
             $redraw = $true
           }
           8 {
+            # Backspace
             if ($this.filter.Length -gt 0) {
               $this.filter = $this.filter.Substring(0, $this.filter.Length - 1)
               $VisibleItems = $this.items | Where-Object {
@@ -710,12 +711,14 @@ class List {
             }
           }
           38 {
+            # Up
             if ($this.index -gt 0) {
               $this.index--
               $redraw = $true
             }
           }
           40 {
+            # Down
             if ($this.index -lt ($VisibleItems.Count - 1)) {
               $this.index++
               $redraw = $true
