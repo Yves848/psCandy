@@ -1,12 +1,16 @@
-using module psCandy
+using module psCandy.psm1
 
-$Style = [Style]::new("Left")
+$label = [Style]::new("Label")
+$Label.SetColor([System.Drawing.Color]::White, [System.Drawing.Color]::DarkGreen)
+$Label.SetStyle([Styles]::Underline)
+$lbl = $Label.Render()
+$Style = [Style]::new("`n$($lbl)`n")
 # $Style.SetStyle([Styles]::Underline)
 $Style.SetBorder($true)
 $Style.SetColor([System.Drawing.Color]::White, [System.Drawing.Color]::DarkBlue)
 $Style.setAlign([Align]::Left)
 $Style.Render()
-$Style.SetLabel("Center")
+$Style.SetLabel("Center`nSecond")
 $Style.setAlign([Align]::Center)
 $Style.Render()
 # $Style.SetWidth(50)
