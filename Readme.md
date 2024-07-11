@@ -12,6 +12,7 @@ So far, 3 classes are enable :
 - Color
 - Spinner
 - List
+- Confirm
 
 ## Color
 The class provides 2 static metods :
@@ -165,7 +166,8 @@ Example :
 param (
   [string]$Path = "..\"
 )
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+# . "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\PSCandy.ps1" -Force
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
@@ -189,10 +191,12 @@ function getDirContent {
 
 $items = getDirContent -path $Path
 $result = $null
-$Theme.list.SelectedColor = [System.Drawing.Color]::yellow
+if ($theme) {
+  $Theme.list.SelectedColor = [System.Drawing.Color]::yellow
+}
 while ($true) {
   $List = [List]::new($items)
-  $list.SetHeight(25)
+  $list.SetHeight(15)
   $list.SetLimit($True)
   $choice = $List.Display()
   if ($choice) {
@@ -235,7 +239,8 @@ This last constructor only take a [ListItem] color, but no icon.
 
 Example :
 ```
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+. "$PSScriptRoot\Themes.ps1" 
+. "$PSScriptRoot\psCandy.ps1" 
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
@@ -263,20 +268,133 @@ The Spinner can be "themed" with the [Color] class.
 
 Example :
 ```
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+. "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\PSCandy.ps1" -Force
 
 ("Circle","Dots","Line","Square","Bubble","Arrow","Pulse") | ForEach-Object {
   $spinner = [Spinner]::new($_)
-  $Spinner.Start("$($_) Testing Spinner...")
-  Start-Sleep -Seconds 3
+  $spinner.Start("$($_) Testing Spinner for 5 seconds ...")
+  start-sleep -Milliseconds 5000
+  
   $Spinner.Stop()
 } 
-
-
-
-Remove-Module -name classes -Force
 ```
 
 Result :
 
 ![](./Images/Spinners1.gif)
+
+## Confirm
+The [Confirm] component is a simple confirmation component.
+It takes an array of [Option] in input as well as a [String]Title.
+
+[Option] Has 2 constructor overloads :
+```
+Option([String]$text,[PSCustomObject]$value)
+```
+Where [String]$Text is the label of the option and [PSCustomObject]$Value is the associated value that will be returned if the option is choosen.
+```
+Option([String]$text,[PSCustomObject]$value,[bool]$selected)
+```
+The [Bool]$Selected parameter is added to tell that this option is the selected default.
+
+If no [Option] has a Selected parameter, the first option of the array will be the default.
+
+Exammple :
+```
+# . "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\psCandy.ps1" -Force
+
+$options = @(
+  [Option]::new("Yes", "Yes"),
+  [Option]::new("No", "No",$true),
+  [Option]::new("Maybe", "?")
+)
+$confirm = [Confirm]::new("Do you want to continue?",$options,$true)
+[console]::Clear()
+$result = $confirm.Display()
+[console]::WriteLine()
+switch ($result.value) {
+  "Yes" {
+    Write-Host "You chose Yes"
+  }
+  "No" {
+    Write-Host "You chose No"
+  }
+  "?" {
+    Write-Host "You chose Maybe"
+  }
+  default {
+    Write-Host "You chose nothing"
+  }
+}
+
+```
+
+Result :
+
+![](./Images/confirm1.gif)
+
+Now, psCandy supports "Theming".
+Here is an example of Theme file :
+```
+. "$PSScriptRoot\constants.ps1"
+
+$Script:Theme = @{
+  "list"= @{
+    "SearchColor" = [System.Drawing.Color]::BlueViolet
+    "SelectedColor" = [System.Drawing.Color]::Yellow
+    "SelectedStyle" = [Styles]::Underline
+    "FilterColor" = [System.Drawing.Color]::Orange
+    "FilterStyle" = [Styles]::Underline
+    "Checked"="◉"
+    "Unchecked"="○"
+  }
+  "spinner" = @{
+    "spincolor"= [System.Drawing.Color]::MediumOrchid
+    "spinType"= "Dots"
+  }
+  "choice" = @{
+    "SelectedForeground" = [System.Drawing.Color]::BlueViolet
+    "SelectedBackground" = [System.Drawing.Color]::White
+    "OptionColor" = [System.Drawing.Color]::SkyBlue
+    "MessageColor" = [System.Drawing.Color]::IndianRed
+  }
+}
+```
+
+And Here is the "Confirm" example, with the Theme loaded :
+```
+. "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\psCandy.ps1" -Force
+
+$options = @(
+  [Option]::new("Yes", "Yes"),
+  [Option]::new("No", "No",$true),
+  [Option]::new("Maybe", "?")
+)
+$confirm = [Confirm]::new("Do you want to continue?",$options,$true)
+[console]::Clear()
+$result = $confirm.Display()
+[console]::WriteLine()
+switch ($result.value) {
+  "Yes" {
+    Write-Host "You chose Yes"
+  }
+  "No" {
+    Write-Host "You chose No"
+  }
+  "?" {
+    Write-Host "You chose Maybe"
+  }
+  default {
+    Write-Host "You chose nothing"
+  }
+}
+```
+
+Result :
+
+![](./Images/confirm2.gif))
+
+*The "Theme" part is still experimental and mais probably change in the future, using a JSON / YAML format.*

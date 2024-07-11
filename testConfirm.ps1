@@ -1,11 +1,10 @@
-# . "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\Themes.ps1" -Force
 . "$PSScriptRoot\psCandy.ps1" -Force
 
 $options = @(
   [Option]::new("Yes", "Yes"),
   [Option]::new("No", "No",$true),
-  [Option]::new("Maybe", "?")#,
-  # [Option]::new("MaybeNot", "??")
+  [Option]::new("Maybe", "?")
 )
 $confirm = [Confirm]::new("Do you want to continue?",$options,$true)
 [console]::Clear()
