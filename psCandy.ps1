@@ -949,7 +949,7 @@ class Style {
   [Styles]$style = [Styles]::Normal
   [bool]$border = $false
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
-  [Align]$align = [Align]::right
+  [Align]$align = [Align]::left
 
   Style(
     [string]$text
@@ -992,6 +992,12 @@ class Style {
     [int]$width
   ) {
     $this.width = $width
+  }
+
+  [void] SetLabel(
+    [string]$text
+  ) {
+    $this.text = $text
   }
 
   [String] Render() {

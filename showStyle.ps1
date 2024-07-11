@@ -1,14 +1,16 @@
 # . "$PSScriptRoot\Themes.ps1" -Force
 . "$PSScriptRoot\PSCandy.ps1" -Force
 
-$Style = [Style]::new("ShowStyle")
+$Style = [Style]::new("Left")
 # $Style.SetStyle([Styles]::Underline)
 $Style.SetBorder($true)
 $Style.SetColor([System.Drawing.Color]::White, [System.Drawing.Color]::DarkBlue)
 $Style.setAlign([Align]::Left)
 $Style.Render()
+$Style.SetLabel("Center")
 $Style.setAlign([Align]::Center)
 $Style.Render()
 # $Style.SetWidth(50)
+$Style.SetLabel("Right")
 $Style.setAlign([Align]::Right)
 $Style.Render()

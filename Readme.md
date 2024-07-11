@@ -13,6 +13,7 @@ So far, 3 classes are enable :
 - Spinner
 - List
 - Confirm
+- Style
 
 ## Color
 The class provides 2 static metods :
@@ -437,3 +438,81 @@ Result :
 ![](./Images/confirm2.gif))
 
 *The "Theme" part is still experimental and may probably change in the future, using a JSON / YAML format.*
+
+## Style
+
+The [Style] component allows to render text with colors, styles, alignment and borders.
+There is one constructor, that accept a [String]$Text.
+```
+Style([string]$text)
+```
+Every other parameters are set by some setters.
+### The setters :
+
+- SetColor (2 overloads)
+```
+SetColor([System.Drawing.Color]$Foreground,[System.Drawing.Color]$Background)
+```
+This overload sets the Foreground **and** the Background
+```
+SetColor([System.Drawing.Color]$Foreground)
+```
+This overload sets only the Foreground
+
+- SetStyle
+```
+SetStyle([Styles]$style)
+```
+This method sets the Style of the label (Normal,Underline,Bold,Reversed,Strike).
+These values can be combined.
+
+- SetBorder
+```
+SetBorder([bool]$border)
+```
+This method sets the border drawing (True or False)
+
+- SetAlign
+```
+setAlign([Align]$align)
+```
+
+This method sets the alignment of the text. The possibles values are Left,Center or Right
+
+- SetLabel
+```
+SetWidth([int]$width)
+```
+
+This methods override the text to be redered.
+
+-SetWidth
+```
+  SetWidth([int]$width)
+```
+
+This method changes the width of the redered text.  By default, it's set to screen width.
+
+Example : 
+```
+# . "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\PSCandy.ps1" -Force
+
+$Style = [Style]::new("Left")
+# $Style.SetStyle([Styles]::Underline)
+$Style.SetBorder($true)
+$Style.SetColor([System.Drawing.Color]::White, [System.Drawing.Color]::DarkBlue)
+$Style.setAlign([Align]::Left)
+$Style.Render()
+$Style.SetLabel("Center")
+$Style.setAlign([Align]::Center)
+$Style.Render()
+# $Style.SetWidth(50)
+$Style.SetLabel("Right")
+$Style.setAlign([Align]::Right)
+$Style.Render()
+```
+
+Result :
+
+![](./Images/Style1.png)
