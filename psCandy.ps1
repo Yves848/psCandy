@@ -998,9 +998,10 @@ class Style {
     $label = $this.text
     switch ($this.align) {
       Center {
-        $buffer = "".PadLeft($this.width, " ")
-
-        $label = $label.PadLeft(($this.width - $label.Length) / 2, " ")
+        $w = $this.width
+        $t = $label.Length
+        $lp = [math]::Floor(($w - $t) / 2)
+        $label = $label.PadLeft($lp, " ").PadRight($w, " ")
       }
       Right {
         $label = $label.PadLeft($this.width, " ")
