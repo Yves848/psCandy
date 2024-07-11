@@ -1,8 +1,9 @@
+using module psCandy
+
 param (
   [string]$Path = "..\"
 )
-# . "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\PSCandy.ps1" -Force
+
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 

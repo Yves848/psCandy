@@ -1,5 +1,4 @@
-. "$PSScriptRoot\Themes.ps1" -Force
-. "$PSScriptRoot\psCandy.ps1" -Force
+using module psCandy
 
 $options = @(
   [Option]::new("Yes", "Yes"),
