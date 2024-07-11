@@ -1,4 +1,4 @@
-. "$((Get-Location).Path)\constants.ps1"
+. "$PSScriptRoot\constants.ps1"
 
 [Flags()] enum Styles {
   Normal = 1

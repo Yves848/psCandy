@@ -1,5 +1,5 @@
-Import-Module "$((Get-Location).Path)\themes.ps1" -Force
-Import-Module "$((Get-Location).Path)\constants.ps1" -Force
+﻿Import-Module "$PSScriptRoot\themes.ps1" -Force
+Import-Module "$PSScriptRoot\constants.ps1" -Force
 
 
 [Flags()] enum Styles {
@@ -464,7 +464,7 @@ class List {
   [int]$page = 1
   [int]$height = 10
   [int]$index = 0
-  [int]$width = $Host.UI.RawUI.BufferSize.Width
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 1
   [string]$filter = ""
   [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   [int]$linelen = 0
@@ -712,17 +712,17 @@ class List {
           }
           38 {
             # Up
-            if ($this.index -gt 0) {
+            
               $this.index--
               $redraw = $true
-            }
+            
           }
           40 {
             # Down
-            if ($this.index -lt ($VisibleItems.Count - 1)) {
+            
               $this.index++
               $redraw = $true
-            }
+            
           }
           191 {
             if ($key.ControlKeyState -eq "ShiftPressed") {
@@ -760,6 +760,7 @@ class List {
           9 {
             # Tab
             $VisibleItems[$this.index].checked = -not $VisibleItems[$this.index].checked
+            $this.index++
             $redraw = $true
           }
           13 {
@@ -781,6 +782,14 @@ class List {
           }
           27 {
             $stop = $true
+          }
+        }
+        if ($redraw) {
+          if ($this.index -lt 0) {
+            $this.index = 0
+          }
+          if ($this.index -gt $VisibleItems.Count - 1) {
+            $this.index = $VisibleItems.Count - 1
           }
         }
         # [console]::Clear()
