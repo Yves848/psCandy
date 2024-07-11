@@ -1,12 +1,10 @@
-Import-Module "$((Get-Location).Path)\classes.ps1" -Force
+. "$PSScriptRoot\Themes.ps1" -Force
+. "$PSScriptRoot\PSCandy.ps1" -Force
 
 ("Circle","Dots","Line","Square","Bubble","Arrow","Pulse") | ForEach-Object {
   $spinner = [Spinner]::new($_)
-  $Spinner.Start("$($_) Testing Spinner...")
-  Start-Sleep -Seconds 3
+  $spinner.Start("$($_) Testing Spinner for 5 seconds ...")
+  start-sleep -Milliseconds 5000
+  
   $Spinner.Stop()
 } 
-
-
-
-Remove-Module -name classes -Force

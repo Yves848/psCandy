@@ -346,7 +346,8 @@ class Spinner {
     }
     $this.statedata.Frames = $ThemedFrames
     $this.statedata.Sleep = $this.Spinner.Sleep
-    $this.statedata.label = $label 
+    $this.statedata.label = $label
+    $this.statedata.oldLabel = $label
     $this.statedata.X = $this.X
     $this.statedata.Y = $this.Y
     $this.runspace.Open()
@@ -364,6 +365,14 @@ class Spinner {
         $text = $Frames[$i]    
         [system.console]::write($text)
         [System.Console]::setcursorposition(($X + $statedata.offset) + 1, $Y)
+        [system.console]::write((" " * 80))
+        [System.Console]::setcursorposition(($X + $statedata.offset) + 1, $Y)
+        # if ($statedate.label -ne $statedata.oldlabel) {
+        #   $padding = $statedata.oldlabel.Length
+        #   [system.console]::write(("#" * 80))
+        #   $statedata.oldlabel = $statedata.label
+        #   [System.Console]::setcursorposition(($X + $statedata.offset) + 1, $Y)
+        # }
         [system.console]::write($statedata.label)
         $i = ($i + 1) % $Frames.Length
         Start-Sleep -Milliseconds $Statedata.Sleep
@@ -378,12 +387,7 @@ class Spinner {
   [void] SetLabel(
     [string]$label
   ) {
-    [System.Console]::setcursorposition(($this.X + $this.statedata.offset) + 1, $this.Y)
-    [system.console]::write("".PadLeft($this.statedata.label.Length, " "))
     $this.statedata.label = $label
-    # Redraw the label to avoid flickering
-    [System.Console]::setcursorposition(($this.X + $this.statedata.offset) + 1, $this.Y)
-    [system.console]::write($label)
   }
 
   [void] SetColor(
