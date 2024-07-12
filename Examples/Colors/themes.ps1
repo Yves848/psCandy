@@ -1,4 +1,4 @@
-﻿using module ..\..\Classes\psCandy.psm1
+﻿using module psCandy
 
 $Theme = @{
   "list"= @{

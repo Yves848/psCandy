@@ -1,4 +1,4 @@
-using module ..\..\Classes\psCandy.psm1
+using module psCandy
 
 ("Circle","Dots","Line","Square","Bubble","Arrow","Pulse") | ForEach-Object {
   $spinner = [Spinner]::new($_)

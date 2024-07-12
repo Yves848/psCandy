@@ -1,11 +1,11 @@
-using module ..\..\Classes\psCandy.psm1
+using module psCandy
 
 param (
   [string]$Path = "..\"
 )
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
-
+[Console]::Clear()
 function getDirContent {
   param(
     [string]$path

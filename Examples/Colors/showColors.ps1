@@ -1,8 +1,8 @@
-﻿using module ..\..\Classes\psCandy.psm1
+﻿using module psCandy
 . .\themes.ps1
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
-# [console]::Clear()
+[console]::Clear()
 $Word1 = [Style]::New("Pick")
 $word1.width = 4
 $Word1.SetColor([Colors]::Green())

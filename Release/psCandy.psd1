@@ -3,7 +3,7 @@
     RootModule         = 'psCandy.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.0.9'
+    ModuleVersion      = '0.1.1'
 
     # ID used to uniquely identify this module
     GUID               = 'e2d0c0d5-2e33-4ec7-8db5-bc786c1eb7d3'
@@ -21,7 +21,7 @@
     Description        = 'This module provides classes for Eye-Candy in the console.'
 
     # Minimum version of the PowerShell engine required by this module
-    PowerShellVersion  = '7.0.0'
+    PowerShellVersion  = '5.1'
 
     # Modules that must be imported into the global environment prior to importing this module
     RequiredModules    = @()
@@ -54,10 +54,10 @@
     AliasesToExport    = @()
 
     # List of all modules packaged with this module
-    ModuleList         = @('candyColors.psm1')
+    ModuleList         = @()
 
     # List of all files packaged with this module
-    FileList           = @('psCandy.psm1','candyColors.psm1')
+    FileList           = @('psCandy.psm1')
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
     PrivateData       = @{

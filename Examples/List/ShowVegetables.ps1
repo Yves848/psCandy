@@ -1,7 +1,8 @@
-using module ..\..\Classes\psCandy.psm1
+using module psCandy
 # . .\themes.ps1
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+[console]::Clear()
 $items = [System.Collections.Generic.List[ListItem]]::new()
 $items.Add([ListItem]::new("Banana", 1,"🍌"))
 $items.Add([ListItem]::new("Apple", 2, "🍎"))

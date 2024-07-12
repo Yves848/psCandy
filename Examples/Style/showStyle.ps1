@@ -1,4 +1,7 @@
-using module ..\..\Classes\psCandy.psm1
+using module psCandy
+
+[console]::OutputEncoding = [System.Text.Encoding]::UTF8
+[console]::Clear()
 
 $label = [Style]::new("Label")
 $Label.SetColor([Colors]::White(), [Colors]::DarkGreen())
