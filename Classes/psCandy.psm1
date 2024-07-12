@@ -1082,7 +1082,9 @@ class Color {
     $Back = ""
     $Under = ""
     $Stri = ""
-    $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+    if ($null -ne $this.Foreground) {
+      $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+    }
     
     if ($null -ne $this.Background) {
       $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
@@ -1932,4 +1934,79 @@ class Style {
     return $result
   }
 
+}
+
+class Pager {
+  $buffer
+  [int]$height = $Host.UI.RawUI.BufferSize.Height - 2
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
+  [int]$offset = 0
+  [int]$index = 0
+  [Color]$selectedColor = [Color]::new($null, $null)
+  [hashtable]$borderType = [Border]::GetBorder("Rounded")
+  
+  Pager(
+    [string]$file
+  ) {
+    # TODO: check if bat is installed
+    [console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $this.buffer = bat $file --style='numbers' -f
+    $this.selectedColor.style = [Styles]::Underline
+  }
+
+  [void] Display() {
+    [console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    [console]::Clear()
+    $stop = $false
+    [console]::CursorVisible = $false
+    while (-not $stop) {
+      $i = 0
+      $cache = $this.buffer | Select-Object -Skip $this.offset -First $this.height | ForEach-Object {
+        if ($i -eq $this.index) {
+          $line = $this.selectedColor.render(($_ -replace "\e\[[\d;]*m", '').padright($this.width, " "))
+        }
+        else {
+          $offset = ($_ -replace "\e\[[\d;]*m", '').Length
+          $line = $_.padright(($this.width + ($_.Length - $offset)), " ")
+        }
+        
+        $i++
+        $this.borderType.Left + $line + $this.borderType.Right
+      } | Out-String
+      $cache = ($this.borderType.TopLeft + "".padleft($this.width,$this.borderType.top)+$this.borderType.TopRight) + "`n" + $cache + ($this.borderType.BottomLeft + "".padleft($this.width,$this.borderType.bottom)+$this.borderType.BottomRight)
+      [console]::setcursorposition(0, 0)
+      [console]::write($cache)
+      if ($global:Host.UI.RawUI.KeyAvailable) {
+        [System.Management.Automation.Host.KeyInfo]$key = $($global:host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown'))
+        switch ($key.VirtualKeyCode) {
+          38 {
+            # Up
+            $this.index --
+            if ($this.index -lt 0) {
+              $this.index = 0
+              if ($this.offset -gt 0) {
+                $this.offset--
+              }
+            }
+            
+          }
+          40 {
+            # Down
+            $this.index++
+            if ($this.index -gt ($this.height - 1)) {
+              $this.index = $this.height - 1
+              if ($this.offset -lt ($this.buffer.Length - $this.height)) {
+                $this.offset++
+              }
+              
+            }
+          }
+          27 {
+            $stop = $true
+          }
+        }
+      }
+    }
+    [console]::CursorVisible = $true
+  }
 }
