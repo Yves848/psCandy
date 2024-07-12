@@ -3,7 +3,7 @@
     RootModule         = 'psCandy.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.1.1'
+    ModuleVersion      = '0.1.2'
 
     # ID used to uniquely identify this module
     GUID               = 'e2d0c0d5-2e33-4ec7-8db5-bc786c1eb7d3'
@@ -74,7 +74,7 @@
             ProjectUri   = 'https://github.com/Yves848/psCandy/tree/master'
 
             # A URL to an icon representing this module.
-            IconUri      = 'https://raw.githubusercontent.com/Yves848/psCandy/master/Release/winpack.ico'
+            IconUri      = 'https://raw.githubusercontent.com/Yves848/psCandy/master/Release/psCandy.ico'
 
             # ReleaseNotes of this module
             ReleaseNotes = 'https://github.com/Yves848/psCandy/tree/master/readme.md'
