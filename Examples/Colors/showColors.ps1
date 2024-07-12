@@ -1,5 +1,5 @@
-using module psCandy
-. .\themes.ps1
+using module ..\..\Classes\psCandy.psm1
+# . .\themes.ps1
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
@@ -12,5 +12,5 @@ $items = [System.Collections.Generic.List[ListItem]]::new()
 }
 $List = [List]::new($items)
 $List.LoadTheme($Theme)
-$list.SetHeight(25)
+$list.SetHeight(15)
 $List.Display()

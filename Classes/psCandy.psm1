@@ -479,6 +479,7 @@ class List {
   [bool]$fullscreen = $true
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
   [hashtable]$theme = @{}
+  [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
   
   # TODO: Rendre paramétrable le style de sélection
 
@@ -510,9 +511,9 @@ class List {
   }
 
   [Void] DrawFooter() {
-    $footerOffset = 2
+    $footerOffset = (2 + $this.y)
     if ($this.border) {
-      $footerOffset = 4
+      $footerOffset = (4 + $this.Y)
     }
     [console]::setcursorposition(0, $this.height + $footerOffset)
     [Console]::Write((" " * $this.width))
@@ -644,12 +645,12 @@ class List {
     # $this.linelen = ($this.items | Measure-Object -Maximum {
     #   ($_.text -replace "\e\[[\d;]*m", '').Length
     # }).Maximum
-    [System.Console]::Clear()
+    # [System.Console]::Clear()
     while (-not $stop) {
       if ($redraw) {
         if ($search) {
           # TODO: Gérer les coordonnées pour intégrer le cadre
-          [Console]::setcursorposition(0, 0)
+          [Console]::setcursorposition(0, $this.Y)
           [console]::Write($this.SearchColor.Render("Search: "))
           [console]::CursorVisible = $true
           $this.filter = $global:host.UI.ReadLine()
@@ -671,9 +672,9 @@ class List {
           $VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
           $this.pages = [math]::Ceiling($this.items.Count / $this.height)
         }
-        [Console]::setcursorposition(0, 0)
+        [Console]::setcursorposition(0, $this.Y)
         [Console]::Write($this.blanks)
-        [Console]::setcursorposition(0, 1)
+        [Console]::setcursorposition(0, ($this.Y + 1))
         if ($this.index -gt $VisibleItems.Count - 1 ) {
           $this.index = 0
 
@@ -687,7 +688,7 @@ class List {
       if ($global:Host.UI.RawUI.KeyAvailable) {
         [System.Management.Automation.Host.KeyInfo]$key = $($global:host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown'))
         if ($env:DEBUGVISUAL -eq $true) {
-          $bottom = $this.height + 2
+          $bottom = ($this.height + 2) + $this.Y
           [Console]::setcursorposition(0, $bottom)
           if ($this.filter -and ($this.filter -ne "")) {
             Write-Host "Filter : $($this.filter)"
