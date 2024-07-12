@@ -3,7 +3,7 @@
     RootModule         = 'psCandy.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.0.8'
+    ModuleVersion      = '0.0.9'
 
     # ID used to uniquely identify this module
     GUID               = 'e2d0c0d5-2e33-4ec7-8db5-bc786c1eb7d3'
@@ -48,16 +48,16 @@
     CmdletsToExport    = @()
 
     # Variables to export from this module
-    VariablesToExport  = @()
+    VariablesToExport  = '*'
 
     # Aliases to export from this module
     AliasesToExport    = @()
 
     # List of all modules packaged with this module
-    ModuleList         = @()
+    ModuleList         = @('candyColors.psm1')
 
     # List of all files packaged with this module
-    FileList           = @()
+    FileList           = @('psCandy.psm1','candyColors.psm1')
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
     PrivateData       = @{

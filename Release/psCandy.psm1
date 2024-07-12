@@ -1,3 +1,5 @@
+. .\candyColors.ps1
+
 $None = [System.Drawing.Color]::Empty
 
 [Flags()] enum Styles {
