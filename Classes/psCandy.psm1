@@ -471,20 +471,22 @@ class List {
   [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   [int]$linelen = 0
   [char]$selector = ">"
-  [Color]$SearchColor
-  [Color]$SelectedColor
-  [Color]$FilterColor
+  [Color]$SearchColor = [Color]::new([System.Drawing.Color]::BlueViolet)
+  [Color]$SelectedColor = [Color]::new([System.Drawing.Color]::Green)
+  [Color]$FilterColor = [Color]::new([System.Drawing.Color]::Orange)
   [bool]$limit = $false
   [bool]$border = $false
   [bool]$fullscreen = $true
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
   [hashtable]$theme = @{}
+  
   # TODO: Rendre paramétrable le style de sélection
 
   [void] LoadTheme([hashtable]$theme) {
     $this.theme = $theme
     $this.SearchColor = [Color]::new($this.theme.list.SearchColor ? $theme.list.SearchColor : [System.Drawing.Color]::BlueViolet)
     $this.SelectedColor = [Color]::new($this.theme.list.SelectedColor ? $this.theme.list.SelectedColor : [System.Drawing.Color]::Green)
+    $this.FilterColor = [Color]::new($this.theme.list.FilterColorColor ? $this.theme.list.FilterColor : [System.Drawing.Color]::Orange)
     $this.SelectedColor.style = $this.theme.list.SelectedStyle ? $this.theme.list.SelectedStyle : [Styles]::Underline
   }
 
@@ -496,7 +498,8 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    $this.LoadTheme()
+    $this.selectedColor.style = [Styles]::Underline
+    # $this.LoadTheme()
   }
 
   [Void] DrawTitle(
@@ -725,15 +728,15 @@ class List {
           38 {
             # Up
             
-              $this.index--
-              $redraw = $true
+            $this.index--
+            $redraw = $true
             
           }
           40 {
             # Down
             
-              $this.index++
-              $redraw = $true
+            $this.index++
+            $redraw = $true
             
           }
           191 {
@@ -852,14 +855,13 @@ class Confirm {
 
   [void] LoadTheme() {
     $this.SeletedColor = [Color]::new($script:Theme.Choice.SelectedForeground ? $script:Theme.Choice.SelectedForeground : [System.Drawing.Color]::White
-    ,
-    $script:Theme.Choice.SelectedBackground ? $script:Theme.Choice.SelectedBackground : [System.Drawing.Color]::BlueViolet)
+      ,
+      $script:Theme.Choice.SelectedBackground ? $script:Theme.Choice.SelectedBackground : [System.Drawing.Color]::BlueViolet)
     $this.OptionColor = [Color]::new($script:Theme.Choice.OptionColor ? $script:Theme.Choice.OptionColor : [System.Drawing.Color]::Cyan)
     $this.MessageColor = [Color]::new($script:Theme.Choice.MessageColor ? $script:Theme.Choice.MessageColor : [System.Drawing.Color]::White)  
   }
 
-  [PSCustomObject] Display() 
-  {
+  [PSCustomObject] Display() {
     $this.LoadTheme()
     $result = $null
     $title = $this.Message
@@ -946,7 +948,7 @@ class Confirm {
 }
 
 class Style {
-  [int]$width = $Host.UI.RawUI.BufferSize.Width -2
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
   [string]$text = ""
   [Color]$color = [Color]::new([System.Drawing.Color]::White, [System.Drawing.Color]::Empty)
   [Styles]$style = [Styles]::Normal
@@ -1004,30 +1006,37 @@ class Style {
   }
 
   [String] Render() {
-    $label = $this.text
-    switch ($this.align) {
-      Center {
-        $w = $this.width
-        $t = $label.Length
-        $lp = [math]::Floor(($w - $t) / 2)
-        $label = $label.PadLeft($lp, " ").PadRight($w, " ")
+    $labels = $this.text -split "`n"
+    $label = $labels | ForEach-Object {
+      $lbl = $_
+      switch ($this.align) {
+        Center {
+          $w = $this.width 
+          $t = $lbl.Length
+          $lp = [math]::Floor(($w - $t) / 2)
+          $lbl = $lbl.PadLeft($lp, " ").PadRight($w, " ")
+        }
+        Right {
+          $lbl = $lbl.PadLeft($this.width, " ")
+        }
+        Left {
+          $lbl = $lbl.PadRight($this.width , " ")
+        }
       }
-      Right {
-        $label = $label.PadLeft($this.width, " ")
+      if ($this.color -ne [Color]::Empty) {
+        $this.color.style = $this.style
+        $lbl = $this.color.render($lbl)
       }
-      Left {
-        $label = $label.PadRight($this.width, " ")
-      }
+      $lbl
     }
-    if ($this.color -ne [Color]::Empty) {
-      $this.color.style = $this.style
-      $label = $this.color.render($label)
-    }
-    $result = $label
+    $result = $label -join "`n"
     if ($this.border) {
       $top = $this.borderType.TopLeft + "".PadLeft(($this.width), $this.borderType.Top) + $this.borderType.TopRight
-      $result = $this.borderType.Left + $label + $this.borderType.Right
-      $result = $top+ "`n" + $result + "`n" + $this.borderType.BottomLeft + "".PadLeft(($this.width), $this.borderType.Bottom) + $this.borderType.BottomRight
+      $result = $label | ForEach-Object {
+        $this.borderType.Left + $_ + $this.borderType.Right
+      } | Out-String
+      # $buffer = result -join "" # $result = $this.borderType.Left + $label + $this.borderType.Right
+      $result = $top + "`n" + $result + $this.borderType.BottomLeft + "".PadLeft(($this.width), $this.borderType.Bottom) + $this.borderType.BottomRight
     }
 
     
