@@ -1,23 +1,24 @@
-using module psCandy  
+﻿using module psCandy
 
 $Theme = @{
   "list"= @{
-    "SearchColor" = [System.Drawing.Color]::BlueViolet
-    "SelectedColor" = [System.Drawing.Color]::Yellow
+    "SearchColor" = [Colors]::BlueViolet()
+    "SelectedColor" = [Colors]::Yellow()
     "SelectedStyle" = [Styles]::Underline
-    "FilterColor" = [System.Drawing.Color]::Orange
+    "FilterColor" = [Colors]::Orange()
+    "NoFilterColor" = [Colors]::Orange()
     "FilterStyle" = [Styles]::Underline
     "Checked"="◉"
     "Unchecked"="○"
   }
   "spinner" = @{
-    "spincolor"= [System.Drawing.Color]::MediumOrchid
+    "spincolor"= [Colors]::MediumOrchid()
     "spinType"= "Dots"
   }
   "choice" = @{
-    "SelectedForeground" = [System.Drawing.Color]::BlueViolet
-    "SelectedBackground" = [System.Drawing.Color]::White
-    "OptionColor" = [System.Drawing.Color]::SkyBlue
-    "MessageColor" = [System.Drawing.Color]::IndianRed
+    "SelectedForeground" = [Colors]::BlueViolet()
+    "SelectedBackground" = [Colors]::White()
+    "OptionColor" = [Colors]::SkyBlue()
+    "MessageColor" = [Colors]::IndianRed()
   }
 }

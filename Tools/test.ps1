@@ -1,718 +1,715 @@
-$Colors=@{
-  AliceBlue= @{
-    R = 240
+  static [candyColor] AliceBlue () {
+    return @{R = 240
     G = 248
-    B = 255
+    B = 255}
   }
-  AntiqueWhite= @{
-    R = 250
+  static [candyColor] AntiqueWhite () {
+    return @{R = 250
     G = 235
-    B = 215
+    B = 215}
   }
-  Aqua= @{
-    R = 0
+  static [candyColor] Aqua () {
+    return @{R = 0
     G = 255
-    B = 255
+    B = 255}
   }
-  Aquamarine= @{
-    R = 127
+  static [candyColor] Aquamarine () {
+    return @{R = 127
     G = 255
-    B = 212
+    B = 212}
   }
-  Azure= @{
-    R = 240
+  static [candyColor] Azure () {
+    return @{R = 240
     G = 255
-    B = 255
+    B = 255}
   }
-  Beige= @{
-    R = 245
+  static [candyColor] Beige () {
+    return @{R = 245
     G = 245
-    B = 220
+    B = 220}
   }
-  Bisque= @{
-    R = 255
+  static [candyColor] Bisque () {
+    return @{R = 255
     G = 228
-    B = 196
+    B = 196}
   }
-  Black= @{
-    R = 0
+  static [candyColor] Black () {
+    return @{R = 0
     G = 0
-    B = 0
+    B = 0}
   }
-  BlanchedAlmond= @{
-    R = 255
+  static [candyColor] BlanchedAlmond () {
+    return @{R = 255
     G = 235
-    B = 205
+    B = 205}
   }
-  Blue= @{
-    R = 0
+  static [candyColor] Blue () {
+    return @{R = 0
     G = 0
-    B = 255
+    B = 255}
   }
-  BlueViolet= @{
-    R = 138
+  static [candyColor] BlueViolet () {
+    return @{R = 138
     G = 43
-    B = 226
+    B = 226}
   }
-  Brown= @{
-    R = 165
+  static [candyColor] Brown () {
+    return @{R = 165
     G = 42
-    B = 42
+    B = 42}
   }
-  BurlyWood= @{
-    R = 222
+  static [candyColor] BurlyWood () {
+    return @{R = 222
     G = 184
-    B = 135
+    B = 135}
   }
-  CadetBlue= @{
-    R = 95
+  static [candyColor] CadetBlue () {
+    return @{R = 95
     G = 158
-    B = 160
+    B = 160}
   }
-  Chartreuse= @{
-    R = 127
+  static [candyColor] Chartreuse () {
+    return @{R = 127
     G = 255
-    B = 0
+    B = 0}
   }
-  Chocolate= @{
-    R = 210
+  static [candyColor] Chocolate () {
+    return @{R = 210
     G = 105
-    B = 30
+    B = 30}
   }
-  Coral= @{
-    R = 255
+  static [candyColor] Coral () {
+    return @{R = 255
     G = 127
-    B = 80
+    B = 80}
   }
-  CornflowerBlue= @{
-    R = 100
+  static [candyColor] CornflowerBlue () {
+    return @{R = 100
     G = 149
-    B = 237
+    B = 237}
   }
-  Cornsilk= @{
-    R = 255
+  static [candyColor] Cornsilk () {
+    return @{R = 255
     G = 248
-    B = 220
+    B = 220}
   }
-  Crimson= @{
-    R = 220
+  static [candyColor] Crimson () {
+    return @{R = 220
     G = 20
-    B = 60
+    B = 60}
   }
-  Cyan= @{
-    R = 0
+  static [candyColor] Cyan () {
+    return @{R = 0
     G = 255
-    B = 255
+    B = 255}
   }
-  DarkBlue= @{
-    R = 0
+  static [candyColor] DarkBlue () {
+    return @{R = 0
     G = 0
-    B = 139
+    B = 139}
   }
-  DarkCyan= @{
-    R = 0
+  static [candyColor] DarkCyan () {
+    return @{R = 0
     G = 139
-    B = 139
+    B = 139}
   }
-  DarkGoldenrod= @{
-    R = 184
+  static [candyColor] DarkGoldenrod () {
+    return @{R = 184
     G = 134
-    B = 11
+    B = 11}
   }
-  DarkGray= @{
-    R = 169
+  static [candyColor] DarkGray () {
+    return @{R = 169
     G = 169
-    B = 169
+    B = 169}
   }
-  DarkGreen= @{
-    R = 0
+  static [candyColor] DarkGreen () {
+    return @{R = 0
     G = 100
-    B = 0
+    B = 0}
   }
-  DarkKhaki= @{
-    R = 189
+  static [candyColor] DarkKhaki () {
+    return @{R = 189
     G = 183
-    B = 107
+    B = 107}
   }
-  DarkMagenta= @{
-    R = 139
+  static [candyColor] DarkMagenta () {
+    return @{R = 139
     G = 0
-    B = 139
+    B = 139}
   }
-  DarkOliveGreen= @{
-    R = 85
+  static [candyColor] DarkOliveGreen () {
+    return @{R = 85
     G = 107
-    B = 47
+    B = 47}
   }
-  DarkOrange= @{
-    R = 255
+  static [candyColor] DarkOrange () {
+    return @{R = 255
     G = 140
-    B = 0
+    B = 0}
   }
-  DarkOrchid= @{
-    R = 153
+  static [candyColor] DarkOrchid () {
+    return @{R = 153
     G = 50
-    B = 204
+    B = 204}
   }
-  DarkRed= @{
-    R = 139
+  static [candyColor] DarkRed () {
+    return @{R = 139
     G = 0
-    B = 0
+    B = 0}
   }
-  DarkSalmon= @{
-    R = 233
+  static [candyColor] DarkSalmon () {
+    return @{R = 233
     G = 150
-    B = 122
+    B = 122}
   }
-  DarkSeaGreen= @{
-    R = 143
+  static [candyColor] DarkSeaGreen () {
+    return @{R = 143
     G = 188
-    B = 143
+    B = 143}
   }
-  DarkSlateBlue= @{
-    R = 72
+  static [candyColor] DarkSlateBlue () {
+    return @{R = 72
     G = 61
-    B = 139
+    B = 139}
   }
-  DarkSlateGray= @{
-    R = 47
+  static [candyColor] DarkSlateGray () {
+    return @{R = 47
     G = 79
-    B = 79
+    B = 79}
   }
-  DarkTurquoise= @{
-    R = 0
+  static [candyColor] DarkTurquoise () {
+    return @{R = 0
     G = 206
-    B = 209
+    B = 209}
   }
-  DarkViolet= @{
-    R = 148
+  static [candyColor] DarkViolet () {
+    return @{R = 148
     G = 0
-    B = 211
+    B = 211}
   }
-  DeepPink= @{
-    R = 255
+  static [candyColor] DeepPink () {
+    return @{R = 255
     G = 20
-    B = 147
+    B = 147}
   }
-  DeepSkyBlue= @{
-    R = 0
+  static [candyColor] DeepSkyBlue () {
+    return @{R = 0
     G = 191
-    B = 255
+    B = 255}
   }
-  DimGray= @{
-    R = 105
+  static [candyColor] DimGray () {
+    return @{R = 105
     G = 105
-    B = 105
+    B = 105}
   }
-  DodgerBlue= @{
-    R = 30
+  static [candyColor] DodgerBlue () {
+    return @{R = 30
     G = 144
-    B = 255
+    B = 255}
   }
-  Empty= @{
-    R = 0
+  static [candyColor] Empty () {
+    return @{R = 0
     G = 0
-    B = 0
+    B = 0}
   }
-  Firebrick= @{
-    R = 178
+  static [candyColor] Firebrick () {
+    return @{R = 178
     G = 34
-    B = 34
+    B = 34}
   }
-  FloralWhite= @{
-    R = 255
+  static [candyColor] FloralWhite () {
+    return @{R = 255
     G = 250
-    B = 240
+    B = 240}
   }
-  ForestGreen= @{
-    R = 34
+  static [candyColor] ForestGreen () {
+    return @{R = 34
     G = 139
-    B = 34
+    B = 34}
   }
-  Fuchsia= @{
-    R = 255
+  static [candyColor] Fuchsia () {
+    return @{R = 255
     G = 0
-    B = 255
+    B = 255}
   }
-  Gainsboro= @{
-    R = 220
+  static [candyColor] Gainsboro () {
+    return @{R = 220
     G = 220
-    B = 220
+    B = 220}
   }
-  GhostWhite= @{
-    R = 248
+  static [candyColor] GhostWhite () {
+    return @{R = 248
     G = 248
-    B = 255
+    B = 255}
   }
-  Gold= @{
-    R = 255
+  static [candyColor] Gold () {
+    return @{R = 255
     G = 215
-    B = 0
+    B = 0}
   }
-  Goldenrod= @{
-    R = 218
+  static [candyColor] Goldenrod () {
+    return @{R = 218
     G = 165
-    B = 32
+    B = 32}
   }
-  Gray= @{
-    R = 128
+  static [candyColor] Gray () {
+    return @{R = 128
     G = 128
-    B = 128
+    B = 128}
   }
-  Green= @{
-    R = 0
+  static [candyColor] Green () {
+    return @{R = 0
     G = 128
-    B = 0
+    B = 0}
   }
-  GreenYellow= @{
-    R = 173
+  static [candyColor] GreenYellow () {
+    return @{R = 173
     G = 255
-    B = 47
+    B = 47}
   }
-  Honeydew= @{
-    R = 240
+  static [candyColor] Honeydew () {
+    return @{R = 240
     G = 255
-    B = 240
+    B = 240}
   }
-  HotPink= @{
-    R = 255
+  static [candyColor] HotPink () {
+    return @{R = 255
     G = 105
-    B = 180
+    B = 180}
   }
-  IndianRed= @{
-    R = 205
+  static [candyColor] IndianRed () {
+    return @{R = 205
     G = 92
-    B = 92
+    B = 92}
   }
-  Indigo= @{
-    R = 75
+  static [candyColor] Indigo () {
+    return @{R = 75
     G = 0
-    B = 130
+    B = 130}
   }
-  Ivory= @{
-    R = 255
+  static [candyColor] Ivory () {
+    return @{R = 255
     G = 255
-    B = 240
+    B = 240}
   }
-  Khaki= @{
-    R = 240
+  static [candyColor] Khaki () {
+    return @{R = 240
     G = 230
-    B = 140
+    B = 140}
   }
-  Lavender= @{
-    R = 230
+  static [candyColor] Lavender () {
+    return @{R = 230
     G = 230
-    B = 250
+    B = 250}
   }
-  LavenderBlush= @{
-    R = 255
+  static [candyColor] LavenderBlush () {
+    return @{R = 255
     G = 240
-    B = 245
+    B = 245}
   }
-  LawnGreen= @{
-    R = 124
+  static [candyColor] LawnGreen () {
+    return @{R = 124
     G = 252
-    B = 0
+    B = 0}
   }
-  LemonChiffon= @{
-    R = 255
+  static [candyColor] LemonChiffon () {
+    return @{R = 255
     G = 250
-    B = 205
+    B = 205}
   }
-  LightBlue= @{
-    R = 173
+  static [candyColor] LightBlue () {
+    return @{R = 173
     G = 216
-    B = 230
+    B = 230}
   }
-  LightCoral= @{
-    R = 240
+  static [candyColor] LightCoral () {
+    return @{R = 240
     G = 128
-    B = 128
+    B = 128}
   }
-  LightCyan= @{
-    R = 224
+  static [candyColor] LightCyan () {
+    return @{R = 224
     G = 255
-    B = 255
+    B = 255}
   }
-  LightGoldenrodYellow= @{
-    R = 250
+  static [candyColor] LightGoldenrodYellow () {
+    return @{R = 250
     G = 250
-    B = 210
+    B = 210}
   }
-  LightGray= @{
-    R = 211
+  static [candyColor] LightGray () {
+    return @{R = 211
     G = 211
-    B = 211
+    B = 211}
   }
-  LightGreen= @{
-    R = 144
+  static [candyColor] LightGreen () {
+    return @{R = 144
     G = 238
-    B = 144
+    B = 144}
   }
-  LightPink= @{
-    R = 255
+  static [candyColor] LightPink () {
+    return @{R = 255
     G = 182
-    B = 193
+    B = 193}
   }
-  LightSalmon= @{
-    R = 255
+  static [candyColor] LightSalmon () {
+    return @{R = 255
     G = 160
-    B = 122
+    B = 122}
   }
-  LightSeaGreen= @{
-    R = 32
+  static [candyColor] LightSeaGreen () {
+    return @{R = 32
     G = 178
-    B = 170
+    B = 170}
   }
-  LightSkyBlue= @{
-    R = 135
+  static [candyColor] LightSkyBlue () {
+    return @{R = 135
     G = 206
-    B = 250
+    B = 250}
   }
-  LightSlateGray= @{
-    R = 119
+  static [candyColor] LightSlateGray () {
+    return @{R = 119
     G = 136
-    B = 153
+    B = 153}
   }
-  LightSteelBlue= @{
-    R = 176
+  static [candyColor] LightSteelBlue () {
+    return @{R = 176
     G = 196
-    B = 222
+    B = 222}
   }
-  LightYellow= @{
-    R = 255
+  static [candyColor] LightYellow () {
+    return @{R = 255
     G = 255
-    B = 224
+    B = 224}
   }
-  Lime= @{
-    R = 0
+  static [candyColor] Lime () {
+    return @{R = 0
     G = 255
-    B = 0
+    B = 0}
   }
-  LimeGreen= @{
-    R = 50
+  static [candyColor] LimeGreen () {
+    return @{R = 50
     G = 205
-    B = 50
+    B = 50}
   }
-  Linen= @{
-    R = 250
+  static [candyColor] Linen () {
+    return @{R = 250
     G = 240
-    B = 230
+    B = 230}
   }
-  Magenta= @{
-    R = 255
+  static [candyColor] Magenta () {
+    return @{R = 255
     G = 0
-    B = 255
+    B = 255}
   }
-  Maroon= @{
-    R = 128
+  static [candyColor] Maroon () {
+    return @{R = 128
     G = 0
-    B = 0
+    B = 0}
   }
-  MediumAquamarine= @{
-    R = 102
+  static [candyColor] MediumAquamarine () {
+    return @{R = 102
     G = 205
-    B = 170
+    B = 170}
   }
-  MediumBlue= @{
-    R = 0
+  static [candyColor] MediumBlue () {
+    return @{R = 0
     G = 0
-    B = 205
+    B = 205}
   }
-  MediumOrchid= @{
-    R = 186
+  static [candyColor] MediumOrchid () {
+    return @{R = 186
     G = 85
-    B = 211
+    B = 211}
   }
-  MediumPurple= @{
-    R = 147
+  static [candyColor] MediumPurple () {
+    return @{R = 147
     G = 112
-    B = 219
+    B = 219}
   }
-  MediumSeaGreen= @{
-    R = 60
+  static [candyColor] MediumSeaGreen () {
+    return @{R = 60
     G = 179
-    B = 113
+    B = 113}
   }
-  MediumSlateBlue= @{
-    R = 123
+  static [candyColor] MediumSlateBlue () {
+    return @{R = 123
     G = 104
-    B = 238
+    B = 238}
   }
-  MediumSpringGreen= @{
-    R = 0
+  static [candyColor] MediumSpringGreen () {
+    return @{R = 0
     G = 250
-    B = 154
+    B = 154}
   }
-  MediumTurquoise= @{
-    R = 72
+  static [candyColor] MediumTurquoise () {
+    return @{R = 72
     G = 209
-    B = 204
+    B = 204}
   }
-  MediumVioletRed= @{
-    R = 199
+  static [candyColor] MediumVioletRed () {
+    return @{R = 199
     G = 21
-    B = 133
+    B = 133}
   }
-  MidnightBlue= @{
-    R = 25
+  static [candyColor] MidnightBlue () {
+    return @{R = 25
     G = 25
-    B = 112
+    B = 112}
   }
-  MintCream= @{
-    R = 245
+  static [candyColor] MintCream () {
+    return @{R = 245
     G = 255
-    B = 250
+    B = 250}
   }
-  MistyRose= @{
-    R = 255
+  static [candyColor] MistyRose () {
+    return @{R = 255
     G = 228
-    B = 225
+    B = 225}
   }
-  Moccasin= @{
-    R = 255
+  static [candyColor] Moccasin () {
+    return @{R = 255
     G = 228
-    B = 181
+    B = 181}
   }
-  NavajoWhite= @{
-    R = 255
+  static [candyColor] NavajoWhite () {
+    return @{R = 255
     G = 222
-    B = 173
+    B = 173}
   }
-  Navy= @{
-    R = 0
+  static [candyColor] Navy () {
+    return @{R = 0
     G = 0
-    B = 128
+    B = 128}
   }
-  OldLace= @{
-    R = 253
+  static [candyColor] OldLace () {
+    return @{R = 253
     G = 245
-    B = 230
+    B = 230}
   }
-  Olive= @{
-    R = 128
+  static [candyColor] Olive () {
+    return @{R = 128
     G = 128
-    B = 0
+    B = 0}
   }
-  OliveDrab= @{
-    R = 107
+  static [candyColor] OliveDrab () {
+    return @{R = 107
     G = 142
-    B = 35
+    B = 35}
   }
-  Orange= @{
-    R = 255
+  static [candyColor] Orange () {
+    return @{R = 255
     G = 165
-    B = 0
+    B = 0}
   }
-  OrangeRed= @{
-    R = 255
+  static [candyColor] OrangeRed () {
+    return @{R = 255
     G = 69
-    B = 0
+    B = 0}
   }
-  Orchid= @{
-    R = 218
+  static [candyColor] Orchid () {
+    return @{R = 218
     G = 112
-    B = 214
+    B = 214}
   }
-  PaleGoldenrod= @{
-    R = 238
+  static [candyColor] PaleGoldenrod () {
+    return @{R = 238
     G = 232
-    B = 170
+    B = 170}
   }
-  PaleGreen= @{
-    R = 152
+  static [candyColor] PaleGreen () {
+    return @{R = 152
     G = 251
-    B = 152
+    B = 152}
   }
-  PaleTurquoise= @{
-    R = 175
+  static [candyColor] PaleTurquoise () {
+    return @{R = 175
     G = 238
-    B = 238
+    B = 238}
   }
-  PaleVioletRed= @{
-    R = 219
+  static [candyColor] PaleVioletRed () {
+    return @{R = 219
     G = 112
-    B = 147
+    B = 147}
   }
-  PapayaWhip= @{
-    R = 255
+  static [candyColor] PapayaWhip () {
+    return @{R = 255
     G = 239
-    B = 213
+    B = 213}
   }
-  PeachPuff= @{
-    R = 255
+  static [candyColor] PeachPuff () {
+    return @{R = 255
     G = 218
-    B = 185
+    B = 185}
   }
-  Peru= @{
-    R = 205
+  static [candyColor] Peru () {
+    return @{R = 205
     G = 133
-    B = 63
+    B = 63}
   }
-  Pink= @{
-    R = 255
+  static [candyColor] Pink () {
+    return @{R = 255
     G = 192
-    B = 203
+    B = 203}
   }
-  Plum= @{
-    R = 221
+  static [candyColor] Plum () {
+    return @{R = 221
     G = 160
-    B = 221
+    B = 221}
   }
-  PowderBlue= @{
-    R = 176
+  static [candyColor] PowderBlue () {
+    return @{R = 176
     G = 224
-    B = 230
+    B = 230}
   }
-  Purple= @{
-    R = 128
+  static [candyColor] Purple () {
+    return @{R = 128
     G = 0
-    B = 128
+    B = 128}
   }
-  RebeccaPurple= @{
-    R = 102
+  static [candyColor] RebeccaPurple () {
+    return @{R = 102
     G = 51
-    B = 153
+    B = 153}
   }
-  Red= @{
-    R = 255
+  static [candyColor] Red () {
+    return @{R = 255
     G = 0
-    B = 0
+    B = 0}
   }
-  RosyBrown= @{
-    R = 188
+  static [candyColor] RosyBrown () {
+    return @{R = 188
     G = 143
-    B = 143
+    B = 143}
   }
-  RoyalBlue= @{
-    R = 65
+  static [candyColor] RoyalBlue () {
+    return @{R = 65
     G = 105
-    B = 225
+    B = 225}
   }
-  SaddleBrown= @{
-    R = 139
+  static [candyColor] SaddleBrown () {
+    return @{R = 139
     G = 69
-    B = 19
+    B = 19}
   }
-  Salmon= @{
-    R = 250
+  static [candyColor] Salmon () {
+    return @{R = 250
     G = 128
-    B = 114
+    B = 114}
   }
-  SandyBrown= @{
-    R = 244
+  static [candyColor] SandyBrown () {
+    return @{R = 244
     G = 164
-    B = 96
+    B = 96}
   }
-  SeaGreen= @{
-    R = 46
+  static [candyColor] SeaGreen () {
+    return @{R = 46
     G = 139
-    B = 87
+    B = 87}
   }
-  SeaShell= @{
-    R = 255
+  static [candyColor] SeaShell () {
+    return @{R = 255
     G = 245
-    B = 238
+    B = 238}
   }
-  Sienna= @{
-    R = 160
+  static [candyColor] Sienna () {
+    return @{R = 160
     G = 82
-    B = 45
+    B = 45}
   }
-  Silver= @{
-    R = 192
+  static [candyColor] Silver () {
+    return @{R = 192
     G = 192
-    B = 192
+    B = 192}
   }
-  SkyBlue= @{
-    R = 135
+  static [candyColor] SkyBlue () {
+    return @{R = 135
     G = 206
-    B = 235
+    B = 235}
   }
-  SlateBlue= @{
-    R = 106
+  static [candyColor] SlateBlue () {
+    return @{R = 106
     G = 90
-    B = 205
+    B = 205}
   }
-  SlateGray= @{
-    R = 112
+  static [candyColor] SlateGray () {
+    return @{R = 112
     G = 128
-    B = 144
+    B = 144}
   }
-  Snow= @{
-    R = 255
+  static [candyColor] Snow () {
+    return @{R = 255
     G = 250
-    B = 250
+    B = 250}
   }
-  SpringGreen= @{
-    R = 0
+  static [candyColor] SpringGreen () {
+    return @{R = 0
     G = 255
-    B = 127
+    B = 127}
   }
-  SteelBlue= @{
-    R = 70
+  static [candyColor] SteelBlue () {
+    return @{R = 70
     G = 130
-    B = 180
+    B = 180}
   }
-  Tan= @{
-    R = 210
+  static [candyColor] Tan () {
+    return @{R = 210
     G = 180
-    B = 140
+    B = 140}
   }
-  Teal= @{
-    R = 0
+  static [candyColor] Teal () {
+    return @{R = 0
     G = 128
-    B = 128
+    B = 128}
   }
-  Thistle= @{
-    R = 216
+  static [candyColor] Thistle () {
+    return @{R = 216
     G = 191
-    B = 216
+    B = 216}
   }
-  Tomato= @{
-    R = 255
+  static [candyColor] Tomato () {
+    return @{R = 255
     G = 99
-    B = 71
+    B = 71}
   }
-  Transparent= @{
-    R = 255
+  static [candyColor] Transparent () {
+    return @{R = 255
     G = 255
-    B = 255
+    B = 255}
   }
-  Turquoise= @{
-    R = 64
+  static [candyColor] Turquoise () {
+    return @{R = 64
     G = 224
-    B = 208
+    B = 208}
   }
-  Violet= @{
-    R = 238
+  static [candyColor] Violet () {
+    return @{R = 238
     G = 130
-    B = 238
+    B = 238}
   }
-  Wheat= @{
-    R = 245
+  static [candyColor] Wheat () {
+    return @{R = 245
     G = 222
-    B = 179
+    B = 179}
   }
-  White= @{
-    R = 255
+  static [candyColor] White () {
+    return @{R = 255
     G = 255
-    B = 255
+    B = 255}
   }
-  WhiteSmoke= @{
-    R = 245
+  static [candyColor] WhiteSmoke () {
+    return @{R = 245
     G = 245
-    B = 245
+    B = 245}
   }
-  Yellow= @{
-    R = 255
+  static [candyColor] Yellow () {
+    return @{R = 255
     G = 255
-    B = 0
+    B = 0}
   }
-  YellowGreen= @{
-    R = 154
+  static [candyColor] YellowGreen () {
+    return @{R = 154
     G = 205
-    B = 50
+    B = 50}
   }
-}
-

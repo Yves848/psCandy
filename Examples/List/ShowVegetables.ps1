@@ -1,7 +1,8 @@
 using module psCandy
-. .\themes.ps1
+# . .\themes.ps1
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+[console]::Clear()
 $items = [System.Collections.Generic.List[ListItem]]::new()
 $items.Add([ListItem]::new("Banana", 1,"🍌"))
 $items.Add([ListItem]::new("Apple", 2, "🍎"))
@@ -20,7 +21,7 @@ $items.Add([ListItem]::new("Grape Fruit 2", 13,"🟠"))
 $items.Add([ListItem]::new("Potato 6", 14,"🥔"))
 
 $list = [List]::new($items)  
-$list.LoadTheme($Theme)
+# $list.LoadTheme($Theme)
 $list.SetHeight(10)
 # $list.SetLimit($True)
 $list.Display()

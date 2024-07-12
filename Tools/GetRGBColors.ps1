@@ -8,10 +8,10 @@ using module psCandy
   
   $color = [System.Drawing.Color]::"$($_.Name)"
   $template = @"
-  $($color.Name)= @{
-    R = $($color.R)
+  static [candyColor] $($color.Name) () {
+    return @{R = $($color.R)
     G = $($color.G)
-    B = $($color.B)
+    B = $($color.B)}
   }
 "@
   $template

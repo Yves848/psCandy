@@ -1,6 +1,6 @@
 using module psCandy
 
-. .\themes.ps1
+# . .\themes.ps1
 
 $options = @(
   [Option]::new("Yes", "Yes"),
