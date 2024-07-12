@@ -1039,8 +1039,6 @@ class Style {
       $result = $top + "`n" + $result + $this.borderType.BottomLeft + "".PadLeft(($this.width), $this.borderType.Bottom) + $this.borderType.BottomRight
     }
 
-    
-
     return $result
   }
 

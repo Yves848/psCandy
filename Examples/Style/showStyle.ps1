@@ -1,4 +1,4 @@
-using module psCandy
+using module ..\..\Classes\psCandy.psm1
 
 $label = [Style]::new("Label")
 $Label.SetColor([System.Drawing.Color]::White, [System.Drawing.Color]::DarkGreen)
