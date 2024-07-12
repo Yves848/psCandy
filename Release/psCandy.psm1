@@ -1012,10 +1012,10 @@ class Style {
       $lbl = $_
       switch ($this.align) {
         Center {
-          $w = $this.width 
-          $t = $lbl.Length
-          $lp = [math]::Floor(($w - $t) / 2)
-          $lbl = $lbl.PadLeft($lp, " ").PadRight($w, " ")
+          $padding = ($this.width - $lbl.Length) / 2
+          $leftpadding = [int][Math]::Floor($padding)
+          $rightpadding = [int][Math]::Ceiling($padding)
+          $lbl = (" " * $leftPadding) + $lbl + (" " * $rightPadding)
         }
         Right {
           $lbl = $lbl.PadLeft($this.width, " ")

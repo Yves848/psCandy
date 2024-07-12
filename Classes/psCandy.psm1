@@ -949,6 +949,8 @@ class Confirm {
 }
 
 class Style {
+  # TODO: Ajouter une gestion de la couleur et de l'alignement pat ligne
+  # TODO: Ajouter des "sections" au composant
   [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
   [string]$text = ""
   [Color]$color = [Color]::new([System.Drawing.Color]::White, [System.Drawing.Color]::Empty)
@@ -1012,10 +1014,10 @@ class Style {
       $lbl = $_
       switch ($this.align) {
         Center {
-          $w = $this.width 
-          $t = $lbl.Length
-          $lp = [math]::Floor(($w - $t) / 2)
-          $lbl = $lbl.PadLeft($lp, " ").PadRight($w, " ")
+          $padding = ($this.width - $lbl.Length) / 2
+          $leftpadding = [int][Math]::Floor($padding)
+          $rightpadding = [int][Math]::Ceiling($padding)
+          $lbl = (" " * $leftPadding) + $lbl + (" " * $rightPadding)
         }
         Right {
           $lbl = $lbl.PadLeft($this.width, " ")
