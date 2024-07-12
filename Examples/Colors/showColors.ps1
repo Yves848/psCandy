@@ -2,8 +2,17 @@ using module ..\..\Classes\psCandy.psm1
 # . .\themes.ps1
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
-
-$Title = [Style]::New("Pick colors")
+$Word1 = [Style]::New("Pick")
+$word1.width = 4
+$Word1.SetColor([System.Drawing.Color]::Green)
+$Word2 = [Style]::New("A")
+$Word2.width = 1
+$Word2.SetColor([System.Drawing.Color]::Blue)
+$Word3 = [Style]::New("Color")
+$Word3.width = 5
+$Word3.SetColor([System.Drawing.Color]::Red)
+$line = @($Word1.Render(),$Word2.Render(),$Word3.Render()) -join " "
+$Title = [Style]::New("👌🏻 $($Line)")
 $Title.SetColor([System.Drawing.Color]::Green)
 $Title.setAlign([Align]::Center)
 $Title.SetBorder($true)

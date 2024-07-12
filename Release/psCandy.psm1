@@ -1012,7 +1012,8 @@ class Style {
       $lbl = $_
       switch ($this.align) {
         Center {
-          $padding = ($this.width - $lbl.Length) / 2
+          $lbllen = ($lbl -replace "\e\[[\d;]*m", '').Length
+          $padding = ($this.width - $lbllen) / 2
           $leftpadding = [int][Math]::Floor($padding)
           $rightpadding = [int][Math]::Ceiling($padding)
           $lbl = (" " * $leftPadding) + $lbl + (" " * $rightPadding)
