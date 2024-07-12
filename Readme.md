@@ -22,6 +22,8 @@ So far, 5 classes are enable :
 - Confirm
 - Style
 
+Here is little demo https://youtu.be/WHrmqjLkMSM
+
 ## Color
 
 The class provides 2 static metods :
