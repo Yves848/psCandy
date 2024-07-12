@@ -1,4 +1,4 @@
-using module psCandy
+using module ..\..\Classes\psCandy.psm1
 
 param (
   [string]$Path = "..\"
@@ -11,14 +11,14 @@ function getDirContent {
     [string]$path
   )
   $items = [System.Collections.Generic.List[ListItem]]::new()
-  $items.Add([ListItem]::new("..", $path))
+  $items.Add([ListItem]::new("..", $path,[Colors]::White()))
   Get-ChildItem -Path $path -File  | ForEach-Object {
     $Name = $_.Name
-    $items.Add([ListItem]::new($Name, $_,"📄",[System.Drawing.Color]::Green))
+    $items.Add([ListItem]::new($Name, $_,"📄",[Colors]::Green()))
   }
   Get-ChildItem -Path $path -Directory  | ForEach-Object {
     $Name = $_.Name
-    $items.Add([ListItem]::new($Name,$_, "📂", [System.Drawing.Color]::OrangeRed))
+    $items.Add([ListItem]::new($Name,$_, "📂", [Colors]::OrangeRed()))
   }
   return $items
 }
@@ -26,7 +26,7 @@ function getDirContent {
 $items = getDirContent -path $Path
 $result = $null
 if ($theme) {
-  $Theme.list.SelectedColor = [System.Drawing.Color]::yellow
+  $Theme.list.SelectedColor = [Colors]::yellow()
 }
 while ($true) {
   $List = [List]::new($items)

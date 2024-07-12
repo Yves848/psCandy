@@ -994,8 +994,8 @@ class Colors {
 }
 
 class Color {
-  [candyColor]$Foreground = [Colors]::Empty()
-  [candyColor]$Background = [Colors]::Empty()
+  [candyColor]$Foreground = $null
+  [candyColor]$Background = $null
   [Styles]$style
   
   static [string] color16 (
@@ -1061,7 +1061,7 @@ class Color {
 
   color (
     [candyColor]$Foreground,
-    [candyColor]$Background = [Colors]::Empty()
+    [candyColor]$Background = $null
   ) {
     $this.Foreground = $Foreground
     $this.Background = $Background
@@ -1084,7 +1084,7 @@ class Color {
     $Stri = ""
     $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
     
-    if ($this.Background -ne [Colors]::Empty()) {
+    if ($null -ne $this.Background) {
       $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
     }
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
@@ -1283,7 +1283,7 @@ class ListItem {
   [bool]$selected = $false
   [bool]$checked = $false
   [bool]$chained = $true
-  [candyColor]$Color = $null
+  [candyColor]$Color = [Colors]::White()  
 
   ListItem(
     [string]$text,
@@ -1428,6 +1428,10 @@ class List {
     [Bool]$limit
   ) {
     $this.limit = $limit
+  }
+
+  [void] SetItems([System.Collections.Generic.List[ListItem]]$items) {
+    $this.items = $items
   }
 
   [String] MakeBufer(
@@ -1711,7 +1715,7 @@ class Confirm {
   [Option[]]$Choices
   [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
   [bool]$fullscreen = $false
-  [Color]$SeletedColor = [color]::new([Colors]::White())
+  [Color]$SeletedColor = [color]::new([Colors]::White(), [Colors]::BlueViolet())
   [Color]$OptionColor = [color]::new([Colors]::Cyan())
   [Color]$MessageColor = [color]::new([Colors]::White())
   [int]$index = 0
@@ -1835,7 +1839,7 @@ class Style {
   # TODO: Ajouter des "sections" au composant
   [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
   [string]$text = ""
-  [Color]$color = [Color]::new([Colors]::White(), [Colors]::Empty())
+  [Color]$color = [Color]::new([Colors]::White(), $null)
   [Styles]$style = [Styles]::Normal
   [bool]$border = $false
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
@@ -1855,9 +1859,9 @@ class Style {
   }
 
   [void] SetColor(
-    [System.Drawing.Color]$Foreground
+    [candyColor]$Foreground
   ) {
-    $this.color = [Color]::new($Foreground, [Colors]::Empty())
+    $this.color = [Color]::new($Foreground, $null)
   }
 
   [void] SetStyle(
