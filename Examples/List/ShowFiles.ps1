@@ -1,4 +1,4 @@
-using module psCandy
+using module ..\..\Classes\psCandy.psm1
 
 param (
   [string]$Path = "..\"

@@ -1,5 +1,5 @@
 ﻿using module ..\..\Classes\psCandy.psm1
-. .\themes.ps1
+. "$PSScriptRoot\themes.ps1"
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 [console]::Clear()
