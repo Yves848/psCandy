@@ -1438,14 +1438,18 @@ class List {
     [console]::setcursorposition(0, $this.height + $footerOffset)
     [Console]::Write((" " * $this.width))
     [console]::setcursorposition(0, $this.height + $footerOffset)
-    $footer = "◖ $($this.page)/$($this.pages)"
+    $footer = "◖"
+    if ($this.pages -gt 1) {
+      $footer += " " +"$($this.page)/$($this.pages)"
+    }
+    
     if ($this.filter -and ($this.filter -ne "")) {
       $filtertext = $this.FilterColor.render("$($this.filter)")
     }
     else {
       $filtertext = $this.noFilterColor.render("None")
     }
-    $footer += "⋮ [Filter: $($filtertext)] ◗"
+    $footer += " ⋮ [Filter: $($filtertext)] ◗"
     [console]::WriteLine($footer)
   }
 
@@ -1453,14 +1457,14 @@ class List {
     [int]$height
   ) {
     $this.height = $height
-    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
   }
 
   [void] SetWidth(
     [int]$Width
   ) {
     $this.width = $width
-    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
   }
 
   [void]  SetLimit(
@@ -1561,7 +1565,6 @@ class List {
     $redraw = $true
     $search = $false
     $continue = $false
-    # $this.linelen = ($this.items | select-object -ExpandProperty text | Measure-Object -Property Length, {($_ -replace "\e\[[\d;]*m", '')} -Maximum).Maximum
     if ($this.fullscreen) {
       $this.linelen = $this.width 
      if (-not $this.limit) {
