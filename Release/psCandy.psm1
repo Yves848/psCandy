@@ -1082,7 +1082,9 @@ class Color {
     $Back = ""
     $Under = ""
     $Stri = ""
-    $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+    if ($null -ne $this.Foreground) {
+      $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+    }
     
     if ($null -ne $this.Background) {
       $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
@@ -1283,7 +1285,9 @@ class ListItem {
   [bool]$selected = $false
   [bool]$checked = $false
   [bool]$chained = $true
+  [bool]$header = $false
   [candyColor]$Color = [Colors]::White()  
+  [Color]$IconColor = [Color]::New([Colors]::White())
 
   ListItem(
     [string]$text,
@@ -1326,18 +1330,44 @@ class ListItem {
   }
 }
 
+function padRightUTF8
+{
+  param(
+    [string]$text,
+    [int]$length
+  )
+  $bytecount = 0
+  $text.ToCharArray() | ForEach-Object {
+    $b = [Text.Encoding]::UTF8.Getbytecount($_)
+    if ($b -ge 2) {
+      $b = $b - 1
+    }
+    $bytecount += ($b) 
+  }
+
+  $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length," "))
+  $diff = $totalbytes - $bytecount
+  if ($diff -lt 0) {
+    $text.Substring(0, $length)  
+  } else {
+    [string]::Concat($text, "".PadLeft($diff," "))
+  }
+  
+}
+
 class List {
   [System.Collections.Generic.List[ListItem]]$items
   [int]$pages = 1
   [int]$page = 1
   [int]$height = 10
   [int]$index = 0
-  [int]$width = $Host.UI.RawUI.BufferSize.Width - 1
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 3
   [string]$filter = ""
   [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   [int]$linelen = 0
   [char]$selector = ">"
   [Color]$SearchColor = [Color]::new([Colors]::BlueViolet())
+  [Color]$HeaderColor = [Color]::new([Colors]::BlueViolet())
   [Color]$SelectedColor = [Color]::new([Colors]::Green())
   [Color]$FilterColor = [Color]::new([Colors]::Orange())
   [Color]$NoFilterColor = [Color]::new([Colors]::Green())
@@ -1346,6 +1376,8 @@ class List {
   [bool]$limit = $false
   [bool]$border = $false
   [bool]$fullscreen = $true
+  [string]$header = ""
+  [int]$nbToDraw = 0
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
   [hashtable]$theme = @{}
   [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
@@ -1399,21 +1431,25 @@ class List {
   }
 
   [Void] DrawFooter() {
-    $footerOffset = (2 + $this.y)
+    $footerOffset = (4 + $this.y)
     if ($this.border) {
       $footerOffset = (4 + $this.Y)
     }
     [console]::setcursorposition(0, $this.height + $footerOffset)
     [Console]::Write((" " * $this.width))
     [console]::setcursorposition(0, $this.height + $footerOffset)
-    $footer = "◖ $($this.page)/$($this.pages)"
+    $footer = "◖"
+    if ($this.pages -gt 1) {
+      $footer += " " +"$($this.page)/$($this.pages)"
+    }
+    
     if ($this.filter -and ($this.filter -ne "")) {
       $filtertext = $this.FilterColor.render("$($this.filter)")
     }
     else {
       $filtertext = $this.noFilterColor.render("None")
     }
-    $footer += "⋮ [Filter: $($filtertext)] ◗"
+    $footer += " ⋮ [Filter: $($filtertext)] ◗"
     [console]::WriteLine($footer)
   }
 
@@ -1421,7 +1457,14 @@ class List {
     [int]$height
   ) {
     $this.height = $height
-    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
+  }
+
+  [void] SetWidth(
+    [int]$Width
+  ) {
+    $this.width = $width
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
   }
 
   [void]  SetLimit(
@@ -1434,6 +1477,11 @@ class List {
     $this.items = $items
   }
 
+
+  [void] SetHeader([string]$header) {
+    $this.header = $header
+  }
+
   [String] MakeBufer(
     [System.Collections.Generic.List[ListItem]]$items
   ) {
@@ -1443,27 +1491,31 @@ class List {
       $baseoffset = 0
     }
     else {
-      $baseoffset = -1
+      $baseoffset = 0
     }
     if ($items) {
       $buffer = $items | ForEach-Object {
+        $checkmark = ""
         if ($_.Icon) {
           $offset = $baseoffset - 2
         }
         else {
-          $offset = $baseoffset
+          $offset = $baseoffset - 1
         }
-        $text = $_.text.PadRight(($this.linelen + $offset), " ")
-        $icon = $_.Icon
-        if ($icon) {
-          $text = "$icon $text"
-          
+        # $text = $_.text.PadRight(($this.linelen + $offset), " ")
+        $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
+        $icon = $_.Icon 
+        if ($icon.Trim() -ne "") {
+          $icon = $_.IconColor.render($icon)
+          $icon = $icon  -replace "\e\[0m", ''
+          # $text = "$icon $text"          
         }
-        if ($_.Color -ne [Colors]::Empty()) {
+        if ($null -ne $_.Color) {
           $c = [Color]::new($_.Color)
           $text = $c.render($text)
         }
         if ($this.limit) {
+          $text = "$icon $text"
           if ($this.index -eq $i) {
             $text = $this.SelectedColor.render($text)
           }
@@ -1473,11 +1525,12 @@ class List {
         }
         else {
           if ($_.checked) {
-            $text = "$($this.checked) $text"
+            $checkmark = $this.checked
           }
           else {
-            $text = "$($this.unchecked) $text"
+            $checkmark = $this.unchecked
           }
+          $text = "$checkmark $icon $text"
           if ($this.index -eq $i) {
             $text = $this.SelectedColor.render("$($this.selector) $($text)")
           }
@@ -1485,13 +1538,7 @@ class List {
             $text = "  $($text)"
           }
         }
-        if ($this.border) {
-          $this.borderType.Left + $text + $this.borderType.Right
-        }
-        else {
-          $text
-        }
-        # $this.borderType.Left + $text + $this.borderType.Right
+        $text
         $i++
       } | Out-String
     }
@@ -1518,9 +1565,11 @@ class List {
     $redraw = $true
     $search = $false
     $continue = $false
-    # $this.linelen = ($this.items | select-object -ExpandProperty text | Measure-Object -Property Length, {($_ -replace "\e\[[\d;]*m", '')} -Maximum).Maximum
     if ($this.fullscreen) {
-      $this.linelen = $this.width - 4
+      $this.linelen = $this.width 
+     if (-not $this.limit) {
+        $this.linelen = $this.width - 2
+      }
     }
     else {
       $this.linelen = ($this.items | Measure-Object -Maximum {
@@ -1548,6 +1597,10 @@ class List {
         else {
           [console]::Write("".PadLeft(80, " ")) 
         }
+        $this.nbToDraw = $this.height
+        if ($this.header -ne "") {
+          $this.nbToDraw = $this.height - 2
+        }
         if ($this.filter -and ($this.filter -ne "")) {
           $VisibleItems = $this.items | Where-Object {
             $_.text -match $this.filter
@@ -1558,6 +1611,7 @@ class List {
           $VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
           $this.pages = [math]::Ceiling($this.items.Count / $this.height)
         }
+        $buffer = $this.MakeBufer($VisibleItems)
         [Console]::setcursorposition(0, $this.Y)
         [Console]::Write($this.blanks)
         [Console]::setcursorposition(0, ($this.Y + 1))
@@ -1565,7 +1619,12 @@ class List {
           $this.index = 0
 
         }
-        $buffer = $this.MakeBufer($VisibleItems)
+        if ($this.header -ne "") {
+          $out = [string]::concat("".padleft(6," "), $this.header)
+          $out = $out.PadRight($this.linelen + 3, " ")
+          $out = $this.HeaderColor.render($out)
+          [Console]::WriteLine("$out")
+        }
         [System.Console]::Write($buffer)
         
         $this.DrawFooter()
@@ -1900,7 +1959,8 @@ class Style {
       $lbl = $_
       switch ($this.align) {
         Center {
-          $lbllen = ($lbl -replace "\e\[[\d;]*m", '').Length
+          $lblClean = $lbl -replace "\e\[[\d;]*m", ''
+          $lbllen = ($lblClean).Length
           $padding = ($this.width - $lbllen) / 2
           $leftpadding = [int][Math]::Floor($padding)
           $rightpadding = [int][Math]::Ceiling($padding)
@@ -1932,4 +1992,79 @@ class Style {
     return $result
   }
 
+}
+
+class Pager {
+  $buffer
+  [int]$height = $Host.UI.RawUI.BufferSize.Height - 2
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 2
+  [int]$offset = 0
+  [int]$index = 0
+  [Color]$selectedColor = [Color]::new($null, $null)
+  [hashtable]$borderType = [Border]::GetBorder("Rounded")
+  
+  Pager(
+    [string]$file
+  ) {
+    # TODO: check if bat is installed
+    [console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    $this.buffer = invoke-expression -Command "bat $file --style='numbers' -f --terminal-width $($this.width)"
+    $this.selectedColor.style = [Styles]::Underline
+  }
+
+  [void] Display() {
+    [console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    [console]::Clear()
+    $stop = $false
+    [console]::CursorVisible = $false
+    while (-not $stop) {
+      $i = 0
+      $cache = $this.buffer | Select-Object -Skip $this.offset -First $this.height | ForEach-Object {
+        if ($i -eq $this.index) {
+          $line = $this.selectedColor.render(($_ -replace "\e\[[\d;]*m", '').padright($this.width, " "))
+        }
+        else {
+          $offset = ($_ -replace "\e\[[\d;]*m", '').Length
+          $line = $_.padright(($this.width + ($_.Length - $offset)), " ")
+        }
+        
+        $i++
+        $this.borderType.Left + $line + $this.borderType.Right
+      } | Out-String
+      $cache = ($this.borderType.TopLeft + "".padleft($this.width,$this.borderType.top)+$this.borderType.TopRight) + "`n" + $cache + ($this.borderType.BottomLeft + "".padleft($this.width,$this.borderType.bottom)+$this.borderType.BottomRight)
+      [console]::setcursorposition(0, 0)
+      [console]::write($cache)
+      if ($global:Host.UI.RawUI.KeyAvailable) {
+        [System.Management.Automation.Host.KeyInfo]$key = $($global:host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown'))
+        switch ($key.VirtualKeyCode) {
+          38 {
+            # Up
+            $this.index --
+            if ($this.index -lt 0) {
+              $this.index = 0
+              if ($this.offset -gt 0) {
+                $this.offset--
+              }
+            }
+            
+          }
+          40 {
+            # Down
+            $this.index++
+            if ($this.index -gt ($this.height - 1)) {
+              $this.index = $this.height - 1
+              if ($this.offset -lt ($this.buffer.Length - $this.height)) {
+                $this.offset++
+              }
+              
+            }
+          }
+          27 {
+            $stop = $true
+          }
+        }
+      }
+    }
+    [console]::CursorVisible = $true
+  }
 }
