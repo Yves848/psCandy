@@ -1287,6 +1287,7 @@ class ListItem {
   [bool]$chained = $true
   [bool]$header = $false
   [candyColor]$Color = [Colors]::White()  
+  [Color]$IconColor = [Color]::New([Colors]::White())
 
   ListItem(
     [string]$text,
@@ -1490,6 +1491,7 @@ class List {
     }
     if ($items) {
       $buffer = $items | ForEach-Object {
+        $checkmark = ""
         if ($_.Icon) {
           $offset = $baseoffset - 2
         }
@@ -1498,16 +1500,18 @@ class List {
         }
         # $text = $_.text.PadRight(($this.linelen + $offset), " ")
         $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
-        $icon = $_.Icon
-        if ($icon) {
-          $text = "$icon $text"
-          
+        $icon = $_.Icon 
+        if ($icon.Trim() -ne "") {
+          $icon = $_.IconColor.render($icon)
+          $icon = $icon  -replace "\e\[0m", ''
+          # $text = "$icon $text"          
         }
         if ($null -ne $_.Color) {
           $c = [Color]::new($_.Color)
           $text = $c.render($text)
         }
         if ($this.limit) {
+          $text = "$icon $text"
           if ($this.index -eq $i) {
             $text = $this.SelectedColor.render($text)
           }
@@ -1517,11 +1521,12 @@ class List {
         }
         else {
           if ($_.checked) {
-            $text = "$($this.checked) $text"
+            $checkmark = $this.checked
           }
           else {
-            $text = "$($this.unchecked) $text"
+            $checkmark = $this.unchecked
           }
+          $text = "$checkmark $icon $text"
           if ($this.index -eq $i) {
             $text = $this.SelectedColor.render("$($this.selector) $($text)")
           }
@@ -1529,13 +1534,7 @@ class List {
             $text = "  $($text)"
           }
         }
-        if ($this.border) {
-          $this.borderType.Left + $text + $this.borderType.Right
-        }
-        else {
-          $text
-        }
-        # $this.borderType.Left + $text + $this.borderType.Right
+        $text
         $i++
       } | Out-String
     }
