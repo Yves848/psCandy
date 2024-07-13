@@ -1285,6 +1285,7 @@ class ListItem {
   [bool]$selected = $false
   [bool]$checked = $false
   [bool]$chained = $true
+  [bool]$header = $false
   [candyColor]$Color = [Colors]::White()  
 
   ListItem(
@@ -1359,12 +1360,13 @@ class List {
   [int]$page = 1
   [int]$height = 10
   [int]$index = 0
-  [int]$width = $Host.UI.RawUI.BufferSize.Width - 4
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 3
   [string]$filter = ""
   [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   [int]$linelen = 0
   [char]$selector = ">"
   [Color]$SearchColor = [Color]::new([Colors]::BlueViolet())
+  [Color]$HeaderColor = [Color]::new([Colors]::BlueViolet())
   [Color]$SelectedColor = [Color]::new([Colors]::Green())
   [Color]$FilterColor = [Color]::new([Colors]::Orange())
   [Color]$NoFilterColor = [Color]::new([Colors]::Green())
@@ -1373,6 +1375,8 @@ class List {
   [bool]$limit = $false
   [bool]$border = $false
   [bool]$fullscreen = $true
+  [string]$header = ""
+  [int]$nbToDraw = 0
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
   [hashtable]$theme = @{}
   [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
@@ -1426,7 +1430,7 @@ class List {
   }
 
   [Void] DrawFooter() {
-    $footerOffset = (2 + $this.y)
+    $footerOffset = (4 + $this.y)
     if ($this.border) {
       $footerOffset = (4 + $this.Y)
     }
@@ -1468,6 +1472,11 @@ class List {
     $this.items = $items
   }
 
+
+  [void] SetHeader([string]$header) {
+    $this.header = $header
+  }
+
   [String] MakeBufer(
     [System.Collections.Generic.List[ListItem]]$items
   ) {
@@ -1477,7 +1486,7 @@ class List {
       $baseoffset = 0
     }
     else {
-      $baseoffset = -1
+      $baseoffset = 0
     }
     if ($items) {
       $buffer = $items | ForEach-Object {
@@ -1485,7 +1494,7 @@ class List {
           $offset = $baseoffset - 2
         }
         else {
-          $offset = $baseoffset
+          $offset = $baseoffset - 1
         }
         # $text = $_.text.PadRight(($this.linelen + $offset), " ")
         $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
@@ -1494,7 +1503,7 @@ class List {
           $text = "$icon $text"
           
         }
-        if ($_.Color -ne [Colors]::Empty()) {
+        if ($null -ne $_.Color) {
           $c = [Color]::new($_.Color)
           $text = $c.render($text)
         }
@@ -1555,7 +1564,10 @@ class List {
     $continue = $false
     # $this.linelen = ($this.items | select-object -ExpandProperty text | Measure-Object -Property Length, {($_ -replace "\e\[[\d;]*m", '')} -Maximum).Maximum
     if ($this.fullscreen) {
-      $this.linelen = $this.width - 4
+      $this.linelen = $this.width 
+     if (-not $this.limit) {
+        $this.linelen = $this.width - 2
+      }
     }
     else {
       $this.linelen = ($this.items | Measure-Object -Maximum {
@@ -1583,6 +1595,10 @@ class List {
         else {
           [console]::Write("".PadLeft(80, " ")) 
         }
+        $this.nbToDraw = $this.height
+        if ($this.header -ne "") {
+          $this.nbToDraw = $this.height - 2
+        }
         if ($this.filter -and ($this.filter -ne "")) {
           $VisibleItems = $this.items | Where-Object {
             $_.text -match $this.filter
@@ -1601,7 +1617,12 @@ class List {
           $this.index = 0
 
         }
-        
+        if ($this.header -ne "") {
+          $out = [string]::concat("".padleft(6," "), $this.header)
+          $out = $out.PadRight($this.linelen + 3, " ")
+          $out = $this.HeaderColor.render($out)
+          [Console]::WriteLine("$out")
+        }
         [System.Console]::Write($buffer)
         
         $this.DrawFooter()
@@ -1936,7 +1957,8 @@ class Style {
       $lbl = $_
       switch ($this.align) {
         Center {
-          $lbllen = ($lbl -replace "\e\[[\d;]*m", '').Length
+          $lblClean = $lbl -replace "\e\[[\d;]*m", ''
+          $lbllen = ($lblClean).Length
           $padding = ($this.width - $lbllen) / 2
           $leftpadding = [int][Math]::Floor($padding)
           $rightpadding = [int][Math]::Ceiling($padding)
