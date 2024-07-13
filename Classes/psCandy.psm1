@@ -1990,10 +1990,8 @@ class Style {
       $result = $label | ForEach-Object {
         $this.borderType.Left + $_ + $this.borderType.Right
       } | Out-String
-      # $buffer = result -join "" # $result = $this.borderType.Left + $label + $this.borderType.Right
       $result = $top + "`n" + $result + $this.borderType.BottomLeft + "".PadLeft(($this.width), $this.borderType.Bottom) + $this.borderType.BottomRight
     }
-
     return $result
   }
 
