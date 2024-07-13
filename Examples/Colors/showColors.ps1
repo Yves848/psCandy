@@ -1,4 +1,4 @@
-﻿using module ..\..\Classes\psCandy.psm1
+﻿using module psCandy 
 . "$PSScriptRoot\themes.ps1"
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
