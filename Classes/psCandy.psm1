@@ -1328,13 +1328,38 @@ class ListItem {
   }
 }
 
+function padRightUTF8
+{
+  param(
+    [string]$text,
+    [int]$length
+  )
+  $bytecount = 0
+  $text.ToCharArray() | ForEach-Object {
+    $b = [Text.Encoding]::UTF8.Getbytecount($_)
+    if ($b -ge 2) {
+      $b = $b - 1
+    }
+    $bytecount += ($b) 
+  }
+
+  $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length," "))
+  $diff = $totalbytes - $bytecount
+  if ($diff -lt 0) {
+    $text.Substring(0, $length)  
+  } else {
+    [string]::Concat($text, "".PadLeft($diff," "))
+  }
+  
+}
+
 class List {
   [System.Collections.Generic.List[ListItem]]$items
   [int]$pages = 1
   [int]$page = 1
   [int]$height = 10
   [int]$index = 0
-  [int]$width = $Host.UI.RawUI.BufferSize.Width - 1
+  [int]$width = $Host.UI.RawUI.BufferSize.Width - 4
   [string]$filter = ""
   [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   [int]$linelen = 0
@@ -1426,6 +1451,13 @@ class List {
     $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
   }
 
+  [void] SetWidth(
+    [int]$Width
+  ) {
+    $this.width = $width
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
+  }
+
   [void]  SetLimit(
     [Bool]$limit
   ) {
@@ -1455,7 +1487,8 @@ class List {
         else {
           $offset = $baseoffset
         }
-        $text = $_.text.PadRight(($this.linelen + $offset), " ")
+        # $text = $_.text.PadRight(($this.linelen + $offset), " ")
+        $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
         $icon = $_.Icon
         if ($icon) {
           $text = "$icon $text"
@@ -1560,6 +1593,7 @@ class List {
           $VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
           $this.pages = [math]::Ceiling($this.items.Count / $this.height)
         }
+        $buffer = $this.MakeBufer($VisibleItems)
         [Console]::setcursorposition(0, $this.Y)
         [Console]::Write($this.blanks)
         [Console]::setcursorposition(0, ($this.Y + 1))
@@ -1567,7 +1601,7 @@ class List {
           $this.index = 0
 
         }
-        $buffer = $this.MakeBufer($VisibleItems)
+        
         [System.Console]::Write($buffer)
         
         $this.DrawFooter()
@@ -1950,7 +1984,7 @@ class Pager {
   ) {
     # TODO: check if bat is installed
     [console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    $this.buffer = bat $file --style='numbers' -f
+    $this.buffer = invoke-expression -Command "bat $file --style='numbers' -f --terminal-width $($this.width)"
     $this.selectedColor.style = [Styles]::Underline
   }
 

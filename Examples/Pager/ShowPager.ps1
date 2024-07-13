@@ -1,4 +1,8 @@
 using module ..\..\Classes\psCandy.psm1
 
-$Pager = [Pager]::New("C:\Users\yvesg\git\psCandy\Classes\psCandy.psm1")
+param (
+    [string]$Path = "d:\git\psCandy\readme.md"
+)
+
+$Pager = [Pager]::New($path)
 $Pager.Display()
