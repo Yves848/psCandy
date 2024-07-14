@@ -1,6 +1,6 @@
 # psCandy
 
-![Header](./Images/Logo.png)
+![Header](./Images/Logo_animation.gif)
 
 A Powershell Module to produce eye-candy outputs in the terminal.
 
@@ -21,6 +21,7 @@ So far, 5 classes are enable :
 - List
 - Confirm
 - Style
+- Pager (in progress)
 
 Here is little demo https://youtu.be/WHrmqjLkMSM
 
@@ -423,23 +424,24 @@ using module psCandy
 
 $Theme = @{
   "list"= @{
-    "SearchColor" = [System.Drawing.Color]::BlueViolet
-    "SelectedColor" = [System.Drawing.Color]::Yellow
+    "SearchColor" = "BlueViolet"
+    "SelectedColor" = "Yellow"
     "SelectedStyle" = [Styles]::Underline
-    "FilterColor" = [System.Drawing.Color]::Orange
+    "FilterColor" = "Orange"
+    "NoFilterColor" = "Orange"
     "FilterStyle" = [Styles]::Underline
     "Checked"="◉"
     "Unchecked"="○"
   }
   "spinner" = @{
-    "spincolor"= [System.Drawing.Color]::MediumOrchid
+    "spincolor"= "MediumOrchid"
     "spinType"= "Dots"
   }
   "choice" = @{
-    "SelectedForeground" = [System.Drawing.Color]::BlueViolet
-    "SelectedBackground" = [System.Drawing.Color]::White
-    "OptionColor" = [System.Drawing.Color]::SkyBlue
-    "MessageColor" = [System.Drawing.Color]::IndianRed
+    "SelectedForeground" = "BlueViolet"
+    "SelectedBackground" = "White"
+    "OptionColor" = "SkyBlue"
+    "MessageColor" = "IndianRed"
   }
 }
 ```

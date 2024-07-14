@@ -1330,8 +1330,7 @@ class ListItem {
   }
 }
 
-function padRightUTF8
-{
+function padRightUTF8 {
   param(
     [string]$text,
     [int]$length
@@ -1345,12 +1344,13 @@ function padRightUTF8
     $bytecount += ($b) 
   }
 
-  $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length," "))
+  $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length, " "))
   $diff = $totalbytes - $bytecount
   if ($diff -lt 0) {
     $text.Substring(0, $length)  
-  } else {
-    [string]::Concat($text, "".PadLeft($diff," "))
+  }
+  else {
+    [string]::Concat($text, "".PadLeft($diff, " "))
   }
   
 }
@@ -1383,21 +1383,26 @@ class List {
   [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
   
   # TODO: Rendre paramétrable le style de sélection
+  [candyColor] toColor([string]$color) {
+    $methodInfo = [colors].GetMethod($color, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public)
+    [candyColor]$candycolor = $methodinfo.Invoke($null, $null)
+    return $candycolor
+  }
 
   [void] LoadTheme([hashtable]$theme) {
     $this.theme = $theme
     if ($this.theme.list) {
       if ($this.theme.list.SelectedColor) {
-        $this.selectedColor = $this.theme.list.SelectedColor
+        $this.selectedColor = [Color]::new($this.toColor($this.theme.list.SelectedColor))
       }
       if ($this.theme.list.SearchColor) {
-        $this.SearchColor = $this.theme.list.SearchColor
+        $this.SearchColor = [Color]::new($this.toColor($this.theme.list.SearchColor))
       }
       if ($this.theme.list.FilterColor) {
-        $this.FilterColor = $this.theme.list.FilterColor
+        $this.FilterColor = [Color]::new($this.toColor($this.theme.list.FilterColor))
       }
       if ($this.theme.list.NoFilterColor) {
-        $this.NoFilterColor = $this.theme.list.NoFilterColor
+        $this.NoFilterColor = [Color]::new($this.toColor($this.theme.list.NoFilterColor))
       }
       if ($this.theme.list.Selectedstyle) {
         $this.SelectedColor.style = $this.theme.list.Selectedstyle
@@ -1440,7 +1445,7 @@ class List {
     [console]::setcursorposition(0, $this.height + $footerOffset)
     $footer = "◖"
     if ($this.pages -gt 1) {
-      $footer += " " +"$($this.page)/$($this.pages)"
+      $footer += " " + "$($this.page)/$($this.pages)"
     }
     
     if ($this.filter -and ($this.filter -ne "")) {
@@ -1505,9 +1510,9 @@ class List {
         # $text = $_.text.PadRight(($this.linelen + $offset), " ")
         $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
         $icon = $_.Icon 
-        if ($icon.Trim() -ne "") {
+        if (($null -ne $icon) -and ($icon.Trim() -ne "")) {
           $icon = $_.IconColor.render($icon)
-          $icon = $icon  -replace "\e\[0m", ''
+          $icon = $icon -replace "\e\[0m", ''
           # $text = "$icon $text"          
         }
         if ($null -ne $_.Color) {
@@ -1567,7 +1572,7 @@ class List {
     $continue = $false
     if ($this.fullscreen) {
       $this.linelen = $this.width 
-     if (-not $this.limit) {
+      if (-not $this.limit) {
         $this.linelen = $this.width - 2
       }
     }
@@ -1620,7 +1625,7 @@ class List {
 
         }
         if ($this.header -ne "") {
-          $out = [string]::concat("".padleft(6," "), $this.header)
+          $out = [string]::concat("".padleft(6, " "), $this.header)
           $out = $out.PadRight($this.linelen + 3, " ")
           $out = $this.HeaderColor.render($out)
           [Console]::WriteLine("$out")
@@ -1985,10 +1990,8 @@ class Style {
       $result = $label | ForEach-Object {
         $this.borderType.Left + $_ + $this.borderType.Right
       } | Out-String
-      # $buffer = result -join "" # $result = $this.borderType.Left + $label + $this.borderType.Right
       $result = $top + "`n" + $result + $this.borderType.BottomLeft + "".PadLeft(($this.width), $this.borderType.Bottom) + $this.borderType.BottomRight
     }
-
     return $result
   }
 
@@ -2008,7 +2011,7 @@ class Pager {
   ) {
     # TODO: check if bat is installed
     [console]::OutputEncoding = [System.Text.Encoding]::UTF8
-    $this.buffer = invoke-expression -Command "bat $file --style='numbers' -f --terminal-width $($this.width)"
+    $this.buffer = Invoke-Expression -Command "bat $file --style='numbers' -f --terminal-width $($this.width)"
     $this.selectedColor.style = [Styles]::Underline
   }
 
@@ -2031,7 +2034,7 @@ class Pager {
         $i++
         $this.borderType.Left + $line + $this.borderType.Right
       } | Out-String
-      $cache = ($this.borderType.TopLeft + "".padleft($this.width,$this.borderType.top)+$this.borderType.TopRight) + "`n" + $cache + ($this.borderType.BottomLeft + "".padleft($this.width,$this.borderType.bottom)+$this.borderType.BottomRight)
+      $cache = ($this.borderType.TopLeft + "".padleft($this.width, $this.borderType.top) + $this.borderType.TopRight) + "`n" + $cache + ($this.borderType.BottomLeft + "".padleft($this.width, $this.borderType.bottom) + $this.borderType.BottomRight)
       [console]::setcursorposition(0, 0)
       [console]::write($cache)
       if ($global:Host.UI.RawUI.KeyAvailable) {

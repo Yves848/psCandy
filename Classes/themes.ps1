@@ -1,24 +1,24 @@
-using module psCandy  
+using module psCandy
 
 $Theme = @{
   "list"= @{
-    "SearchColor" = [candyColor]::BlueViolet()
-    "SelectedColor" = [candyColor]::Yellow()
+    "SearchColor" = "BlueViolet"
+    "SelectedColor" = "Yellow"
     "SelectedStyle" = [Styles]::Underline
-    "FilterColor" = [candyColor]::Orange()
-    "NoFilterColor" = [candyColor]::Orange()
+    "FilterColor" = "Orange"
+    "NoFilterColor" = "Green"
     "FilterStyle" = [Styles]::Underline
     "Checked"="◉"
     "Unchecked"="○"
   }
   "spinner" = @{
-    "spincolor"= [candyColor]::MediumOrchid()
+    "spincolor"= "MediumOrchid"
     "spinType"= "Dots"
   }
   "choice" = @{
-    "SelectedForeground" = [candyColor]::BlueViolet()
-    "SelectedBackground" = [candyColor]::White()
-    "OptionColor" = [candyColor]::SkyBlue()
-    "MessageColor" = [candyColor]::IndianRed()
+    "SelectedForeground" = "BlueViolet"
+    "SelectedBackground" = "White"
+    "OptionColor" = "SkyBlue"
+    "MessageColor" = "IndianRed"
   }
 }

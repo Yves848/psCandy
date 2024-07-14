@@ -2,23 +2,23 @@
 
 $Theme = @{
   "list"= @{
-    "SearchColor" = [Colors]::BlueViolet()
-    "SelectedColor" = [Colors]::Yellow()
+    "SearchColor" = "BlueViolet"
+    "SelectedColor" = "Yellow"
     "SelectedStyle" = [Styles]::Underline
-    "FilterColor" = [Colors]::Orange()
-    "NoFilterColor" = [Colors]::Orange()
+    "FilterColor" = "Orange"
+    "NoFilterColor" = "Green"
     "FilterStyle" = [Styles]::Underline
     "Checked"="◉"
     "Unchecked"="○"
   }
   "spinner" = @{
-    "spincolor"= [Colors]::MediumOrchid()
+    "spincolor"= "MediumOrchid"
     "spinType"= "Dots"
   }
   "choice" = @{
-    "SelectedForeground" = [Colors]::BlueViolet()
-    "SelectedBackground" = [Colors]::White()
-    "OptionColor" = [Colors]::SkyBlue()
-    "MessageColor" = [Colors]::IndianRed()
+    "SelectedForeground" = "BlueViolet"
+    "SelectedBackground" = "White"
+    "OptionColor" = "SkyBlue"
+    "MessageColor" = "IndianRed"
   }
 }

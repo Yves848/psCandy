@@ -3,7 +3,7 @@
     RootModule         = 'psCandy.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.1.2'
+    ModuleVersion      = '0.1.4'
 
     # ID used to uniquely identify this module
     GUID               = 'e2d0c0d5-2e33-4ec7-8db5-bc786c1eb7d3'
