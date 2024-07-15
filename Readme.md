@@ -14,7 +14,7 @@ To install, use
   Install-module -Name psCandy -Scope CurrentUser
 ```
 
-So far, 5 classes are enable :
+5 classes are enable :
 
 - Color
 - Spinner
@@ -22,6 +22,10 @@ So far, 5 classes are enable :
 - Confirm
 - Style
 - Pager (in progress)
+
+Helper Functions :
+
+- Write-Candy
 
 Here is little demo https://youtu.be/WHrmqjLkMSM
 
@@ -579,3 +583,21 @@ $Style.Render()
 Result :
 
 ![](./Images/Style1.png)
+
+## Write-Candy
+This is a function that output string, using tags to format the output.
+
+Example :
+
+```Powershell
+Write-Candy -Text "<Yellow><Underline>Warning</Underline></Yellow>: This <Bold>is</Bold> a <Italic><Blue>blue</Blue></Italic> <Underline>message</Underline>."
+```
+
+The function accept the parameter from the pipe.
+
+Result :
+
+![](./Images/write-candy1.png)
+
+*Remark :*
+For know, the **styles** tags cannot be combined, this will be possible in a future version.
