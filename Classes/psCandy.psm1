@@ -1,9 +1,13 @@
-﻿[Flags()] enum Styles {
+﻿Write-Host "Loading Candy" -ForegroundColor Yellow
+
+[Flags()] enum Styles {
   Normal = 1
   Underline = 2
   Bold = 4
   Reversed = 8
   Strike = 16
+  Italic = 32
+  Reverse = 64
 }
 
 enum Align {
@@ -992,6 +996,23 @@ class Colors {
   }
 
 }
+class _color {
+  static [candyColor] tocolor([string]$color) {
+      $methodInfo = [colors].GetMethod($color, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public)
+      if ($null -eq $methodInfo) {
+          return [colors]::White()
+      }
+      return $methodinfo.Invoke($null, $null)
+  }
+
+  static [string] colorList() {
+      $result = @()
+      [Colors] | Get-Member -Static | Where-Object { $_.Definition -match 'candyColor' } | ForEach-Object { 
+          $result += $_.Name
+      }
+      return $result -join "|"
+  }
+}
 
 class Color {
   [candyColor]$Foreground = $null
@@ -1080,8 +1101,7 @@ class Color {
   
     $Fore = ""
     $Back = ""
-    $Under = ""
-    $Stri = ""
+    $sty = ""
     if ($null -ne $this.Foreground) {
       $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
     }
@@ -1090,15 +1110,23 @@ class Color {
       $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
     }
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
-      $under = "$esc[4m"
+      $sty = [string]::concat($sty,"$esc[4m")
     }
-    
     
     if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
-      $stri = "$esc[9m"
+      $sty = [string]::concat($sty,"$esc[9m")
     }
+
+    if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
+      $sty = [string]::concat($sty,"$esc[3m")
+    }
+
+    if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
+      $sty = [string]::concat($sty,"$esc[1m")
+    }
+
     $close = "$esc[0m"
-    $result = "$under$stri$fore$back$Text$close"
+    $result = "$sty$fore$back$Text$close"
     return $result
   }
 
@@ -2070,4 +2098,52 @@ class Pager {
     }
     [console]::CursorVisible = $true
   }
+}
+
+function Write-Candy {
+  param (
+      [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+      [string]$Text
+  )
+ $colors = [_color]::colorList()
+  $colorPattern = '<(?<color>' + $colors  + ')>(?<text>.*?)<\/\k<color>>'
+  $StylePattern = '<(?<style>Underline|Strike|Bold|Italic)>(?<text>.*?)<\/\k<style>>'
+  $currentIndex = 0
+  $matches = [regex]::Matches($Text, $colorPattern)
+  $buffer = ""
+  foreach ($match in $matches) {
+      if ($match.Index -gt $currentIndex) {
+          $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
+      }
+      $color = $match.Groups['color'].Value
+      $col = [Color]::new([_color]::tocolor($color))
+      $innerText = $col.render(($match.Groups['text'].Value))
+      $buffer = [string]::concat($buffer, $innerText)
+      $currentIndex = $match.Index + $match.Length
+  }
+  
+  if ($currentIndex -lt $Text.Length) {
+      $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
+  }
+
+  $currentIndex = 0
+  $matches = [regex]::Matches($buffer, $StylePattern)
+  [Color] $style = [Color]::new($null)
+  $buffer2 = ""
+  foreach ($match in $matches) {
+      if ($match.Index -gt $currentIndex) {
+          $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex, $match.Index - $currentIndex))
+      }
+      $color = $match.Groups['style'].Value
+      $style.style = $color
+      $innerText = $style.render(($match.Groups['text'].Value))
+      $buffer2 = [string]::concat($buffer2, $innerText)
+      $currentIndex = $match.Index + $match.Length
+  }
+  
+  if ($currentIndex -lt $Text.Length) {
+      $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex))
+  }
+
+  Write-Host $buffer2
 }
