@@ -1,4 +1,5 @@
-﻿[Flags()] enum Styles {
+﻿Write-Host "psCandy" -ForegroundColor Green
+[Flags()] enum Styles {
   Normal = 1
   Underline = 2
   Bold = 4
@@ -151,7 +152,7 @@ class candyString {
     [string]$InputString,
     [int]$MaxWidth
   ) {
-    $ellipsis = "…"
+    $ellipsis = "."
     $ellipsisWidth = [candyString]::GetDisplayWidth($ellipsis)
     $currentWidth = [candyString]::GetDisplayWidth($InputString)
   
@@ -162,7 +163,7 @@ class candyString {
     $truncatedString = ""
     foreach ($char in $InputString.ToCharArray()) {
       $charWidth = if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) { 2 } else { 1 }
-      if ([candyString]::GetDisplayWidth($truncatedString + $charWidth + $ellipsisWidth) -ge ($MaxWidth - 1)) {
+      if ([candyString]::GetDisplayWidth($truncatedString + $charWidth + $ellipsisWidth) -ge ($MaxWidth - $charWidth)) {
         break
       }
       $truncatedString += $char
@@ -179,10 +180,10 @@ class candyString {
   ) {
     # $InputString = Truncate-String -InputString $InputString -MaxWidth $TotalWidth
     $InputString = [candystring]::TruncateString($InputString, $TotalWidth)
-    $currentWidth = [candyString]::GetDisplayWidth($InputString)
-    $currentLength = [candyString]::GetDisplayLength($InputString)
-    $diff = $currentWidth - $currentLength
-    $TotalWidth = $TotalWidth + $diff
+    # $currentWidth = [candyString]::GetDisplayWidth($InputString)
+    # $currentLength = [candyString]::GetDisplayLength($InputString)
+    # $diff = $currentWidth - $currentLength
+    # $TotalWidth = $TotalWidth - $diff
     $padLength = $TotalWidth 
 
     if ($padLength -le 0) {
@@ -1734,6 +1735,7 @@ class List {
         }
         # $text = $_.text.PadRight(($this.linelen + $offset), " ")
         $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
+        # $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)  
         $icon = $_.Icon 
         if (($null -ne $icon) -and ($icon.Trim() -ne "")) {
           $icon = $_.IconColor.render($icon)
