@@ -1,1 +1,1 @@
-using module .\psCandy.psm1
+using module ..\Classes\psCandy.psm1
