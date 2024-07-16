@@ -14,7 +14,7 @@ To install, use
   Install-module -Name psCandy -Scope CurrentUser
 ```
 
-5 classes are enable :
+**5 classes are enable :**
 
 - Color
 - Spinner
@@ -23,7 +23,7 @@ To install, use
 - Style
 - Pager (in progress)
 
-Helper Functions :
+**Functions :**
 
 - Write-Candy
 
@@ -590,7 +590,12 @@ This is a function that output string, using tags to format the output.
 Example :
 
 ```Powershell
-Write-Candy -Text "<Yellow><Underline>Warning</Underline></Yellow>: This <Bold>is</Bold> a <Italic><Blue>blue</Blue></Italic> <Underline>message</Underline>."
+Write-Candy "Test"
+Write-Candy "<Red>Hello</Red> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
+Write-Candy "<Green><Bold>Have</Bold></Green>  a 🌝 <Italic><Yellow>Day !</Yellow></Italic>" -width 80 -Align Right -Border "Rounded"
+Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Center -Border "Rounded"
+Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Rounded"
+Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Border "Double"
 ```
 
 The function accept the parameter from the pipe.
