@@ -1,6 +1,4 @@
-﻿Write-Host "Loading Candy" -ForegroundColor Yellow
-
-[Flags()] enum Styles {
+﻿[Flags()] enum Styles {
   Normal = 1
   Underline = 2
   Bold = 4
@@ -129,10 +127,97 @@ $BorderTypes = @{
   }
 }
 
+class candyString {
+  static [int] GetDisplayWidth([string] $Str) {
+    $width = 0
+    # TODO: remove ANSI Escape sequences
+    $str = $str -replace "\e\[[\d;]*m", ''
+    foreach ($char in $Str.ToCharArray()) {
+      if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) {
+        $width += 2
+      }
+      else {
+        $width += 1
+      }
+    }
+    return $width
+  }
+
+  static [int] GetDisplayLength([string] $Str) {
+    $width = 0
+    # TODO: remove ANSI Escape sequences
+    $str = $str -replace "\e\[[\d;]*m", ''
+    return $str.Length
+  }
+
+  static [String] PadString (
+    [string]$InputString,
+    [int]$TotalWidth,
+    [string]$PadCharacter = " ",
+    [Align]$PadDirection = [Align]::Left # Options: Left, Right, Both
+  ) {
+    # $InputString = Truncate-String -InputString $InputString -MaxWidth $TotalWidth
+    $currentWidth = [candyString]::GetDisplayWidth($InputString)
+    $currentLength = [candyString]::GetDisplayLength($InputString)
+    $diff = $currentWidth - $currentLength
+    $TotalWidth = $TotalWidth + $diff
+    $padLength = $TotalWidth 
+
+    if ($padLength -le 0) {
+      return $InputString
+    }
+
+    
+    switch ($PadDirection) {
+      Right {
+        while ([candyString]::GetDisplayWidth($PadCharacter + $InputString) -lt $TotalWidth) {
+          $InputString = $PadCharacter + $InputString
+        }
+      }
+      Left {
+        while ([candyString]::GetDisplayWidth($InputString + $PadCharacter) -lt $TotalWidth) {
+          $InputString = $InputString + $PadCharacter
+        }
+      }
+      Center {
+        $leftPad = $rightPad = $PadCharacter
+        while (([candyString]::GetDisplayWidth($leftPad + $InputString + $rightPad)) -lt $TotalWidth) {
+          $leftPad += $PadCharacter
+          if (([candyString]::GetDisplayWidth($leftPad + $InputString + $rightPad)) -lt $TotalWidth) {
+            $rightPad += $PadCharacter
+          }
+        }
+        $InputString = $leftPad + $InputString + $rightPad
+      }
+      default {
+        throw "Invalid PadDirection specified. Use 'Left', 'Right', or 'Both'."
+      }
+    }
+
+    return $InputString
+  }
+}
+
 class candyColor {
   [int]$r
   [int]$g
   [int]$b
+
+  static [candyColor] tocolor([string]$color) {
+    $methodInfo = [colors].GetMethod($color, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public)
+    if ($null -eq $methodInfo) {
+      return [colors]::White()
+    }
+    return $methodinfo.Invoke($null, $null)
+  }
+
+  static [string] colorList() {
+    $result = @()
+    [Colors] | Get-Member -Static | Where-Object { $_.Definition -match 'candyColor' } | ForEach-Object { 
+      $result += $_.Name
+    }
+    return $result -join "|"
+  }
 }
 
 class Colors {
@@ -997,21 +1082,7 @@ class Colors {
 
 }
 class _color {
-  static [candyColor] tocolor([string]$color) {
-      $methodInfo = [colors].GetMethod($color, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public)
-      if ($null -eq $methodInfo) {
-          return [colors]::White()
-      }
-      return $methodinfo.Invoke($null, $null)
-  }
-
-  static [string] colorList() {
-      $result = @()
-      [Colors] | Get-Member -Static | Where-Object { $_.Definition -match 'candyColor' } | ForEach-Object { 
-          $result += $_.Name
-      }
-      return $result -join "|"
-  }
+  
 }
 
 class Color {
@@ -1092,7 +1163,79 @@ class Color {
     [candyColor]$Foreground
   ) {
     $this.Foreground = $Foreground
-  }    
+  }   
+  
+  [string]ApplyColor(
+    [string]$text
+  ) {
+    $result = ""
+    $esc = $([char]0x1b)
+  
+    $Fore = ""
+    $Back = ""
+    $sty = ""
+    if ($null -ne $this.Foreground) {
+      $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+    }
+    
+    if ($null -ne $this.Background) {
+      $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
+    }
+    if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
+      $sty = [string]::concat($sty, "$esc[4m")
+    }
+    
+    if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
+      $sty = [string]::concat($sty, "$esc[9m")
+    }
+
+    if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
+      $sty = [string]::concat($sty, "$esc[3m")
+    }
+
+    if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
+      $sty = [string]::concat($sty, "$esc[1m")
+    }
+
+    $close = "$esc[39m"
+    $result = "$sty$fore$back$Text$close"
+    return $result
+  }
+
+  [string]ApplyStyle(
+    [string]$text
+  ) {
+    $result = ""
+    $esc = $([char]0x1b)
+    
+    $sty = ""
+    if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
+      $sty = [string]::concat($sty, "$esc[4m")
+    }
+    
+    if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
+      $sty = [string]::concat($sty, "$esc[9m")
+    }
+
+    if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
+      $sty = [string]::concat($sty, "$esc[3m")
+    }
+
+    if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
+      $sty = [string]::concat($sty, "$esc[1m")
+    }
+    $result = "$sty$Text"
+    return $result
+  }
+
+  static [string]endStyle(
+    [string]$text) {
+    $result = ""
+    $esc = $([char]0x1b)
+    $close = "$esc[0m"
+    $result = "$Text$close"
+    return $result
+  }
   
   [string]render (
     [string]$text
@@ -1110,19 +1253,19 @@ class Color {
       $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
     }
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
-      $sty = [string]::concat($sty,"$esc[4m")
+      $sty = [string]::concat($sty, "$esc[4m")
     }
     
     if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
-      $sty = [string]::concat($sty,"$esc[9m")
+      $sty = [string]::concat($sty, "$esc[9m")
     }
 
     if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
-      $sty = [string]::concat($sty,"$esc[3m")
+      $sty = [string]::concat($sty, "$esc[3m")
     }
 
     if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
-      $sty = [string]::concat($sty,"$esc[1m")
+      $sty = [string]::concat($sty, "$esc[1m")
     }
 
     $close = "$esc[0m"
@@ -2102,28 +2245,32 @@ class Pager {
 
 function Write-Candy {
   param (
-      [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
-      [string]$Text
+    [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+    [string]$Text,
+    [int]$Width = -1,
+    [Align]$Align = [Align]::Left,
+    [String]$Border = "None"
   )
- $colors = [_color]::colorList()
-  $colorPattern = '<(?<color>' + $colors  + ')>(?<text>.*?)<\/\k<color>>'
+
+  $colors = [candyColor]::colorList()
+  $colorPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
   $StylePattern = '<(?<style>Underline|Strike|Bold|Italic)>(?<text>.*?)<\/\k<style>>'
   $currentIndex = 0
   $matches = [regex]::Matches($Text, $colorPattern)
   $buffer = ""
   foreach ($match in $matches) {
-      if ($match.Index -gt $currentIndex) {
-          $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
-      }
-      $color = $match.Groups['color'].Value
-      $col = [Color]::new([_color]::tocolor($color))
-      $innerText = $col.render(($match.Groups['text'].Value))
-      $buffer = [string]::concat($buffer, $innerText)
-      $currentIndex = $match.Index + $match.Length
+    if ($match.Index -gt $currentIndex) {
+      $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
+    }
+    $color = $match.Groups['color'].Value
+    $col = [Color]::new([candycolor]::tocolor($color))
+    $innerText = $col.ApplyColor(($match.Groups['text'].Value))
+    $buffer = [string]::concat($buffer, $innerText)
+    $currentIndex = $match.Index + $match.Length
   }
   
   if ($currentIndex -lt $Text.Length) {
-      $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
+    $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
   }
 
   $currentIndex = 0
@@ -2131,19 +2278,40 @@ function Write-Candy {
   [Color] $style = [Color]::new($null)
   $buffer2 = ""
   foreach ($match in $matches) {
-      if ($match.Index -gt $currentIndex) {
-          $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex, $match.Index - $currentIndex))
-      }
-      $color = $match.Groups['style'].Value
-      $style.style = $color
-      $innerText = $style.render(($match.Groups['text'].Value))
-      $buffer2 = [string]::concat($buffer2, $innerText)
-      $currentIndex = $match.Index + $match.Length
+    if ($match.Index -gt $currentIndex) {
+      $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex, $match.Index - $currentIndex))
+    }
+    $color = $match.Groups['style'].Value
+    $style.style = $color
+    $innerText = $style.ApplyStyle(($match.Groups['text'].Value))
+    $buffer2 = [string]::concat($buffer2, $innerText)
+    $currentIndex = $match.Index + $match.Length
   }
   
   if ($currentIndex -lt $Text.Length) {
-      $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex))
+    $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex))
+  }
+ 
+  
+  $buffer2 = [Color]::endStyle($buffer2)
+  
+
+  if ($Width -gt 0) {
+    $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
   }
 
-  Write-Host $buffer2
+  if ($Border.ToLower() -ne "none") {
+    $borderType = [Border]::GetBorder($Border)
+    $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
+    $bufferlen = [candyString]::GetDisplayLength($buffer2)
+    $diff = $bufferwidth - $bufferlen
+    $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
+    $borderType.Left + $buffer2 + $borderType.Right + "`n" +
+    $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
+  } else {
+    $buffer = $buffer2
+  }
+  
+
+  Write-Host $buffer
 }

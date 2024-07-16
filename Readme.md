@@ -25,7 +25,7 @@ To install, use
 
 **Functions :**
 
-- Write-Candy
+- Write-Candy (inspired from https://github.com/SwissPowershell/SPS-Host)
 
 Here is little demo https://youtu.be/WHrmqjLkMSM
 
