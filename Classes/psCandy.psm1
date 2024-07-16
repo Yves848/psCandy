@@ -1165,7 +1165,7 @@ class Color {
     $this.Foreground = $Foreground
   }   
   
-  [string]startStyle(
+  [string]ApplyColor(
     [string]$text
   ) {
     $result = ""
@@ -1199,6 +1199,32 @@ class Color {
 
     $close = "$esc[39m"
     $result = "$sty$fore$back$Text$close"
+    return $result
+  }
+
+  [string]ApplyStyle(
+    [string]$text
+  ) {
+    $result = ""
+    $esc = $([char]0x1b)
+    
+    $sty = ""
+    if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
+      $sty = [string]::concat($sty, "$esc[4m")
+    }
+    
+    if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
+      $sty = [string]::concat($sty, "$esc[9m")
+    }
+
+    if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
+      $sty = [string]::concat($sty, "$esc[3m")
+    }
+
+    if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
+      $sty = [string]::concat($sty, "$esc[1m")
+    }
+    $result = "$sty$Text"
     return $result
   }
 
@@ -2238,7 +2264,7 @@ function Write-Candy {
     }
     $color = $match.Groups['color'].Value
     $col = [Color]::new([candycolor]::tocolor($color))
-    $innerText = $col.render(($match.Groups['text'].Value))
+    $innerText = $col.ApplyColor(($match.Groups['text'].Value))
     $buffer = [string]::concat($buffer, $innerText)
     $currentIndex = $match.Index + $match.Length
   }
@@ -2257,7 +2283,7 @@ function Write-Candy {
     }
     $color = $match.Groups['style'].Value
     $style.style = $color
-    $innerText = $style.render(($match.Groups['text'].Value))
+    $innerText = $style.ApplyStyle(($match.Groups['text'].Value))
     $buffer2 = [string]::concat($buffer2, $innerText)
     $currentIndex = $match.Index + $match.Length
   }
@@ -2267,7 +2293,7 @@ function Write-Candy {
   }
  
   
-  # $buffer2 = [Color]::endStyle($buffer2)
+  $buffer2 = [Color]::endStyle($buffer2)
   
 
   if ($Width -gt 0) {
@@ -2282,6 +2308,8 @@ function Write-Candy {
     $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
     $borderType.Left + $buffer2 + $borderType.Right + "`n" +
     $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
+  } else {
+    $buffer = $buffer2
   }
   
 
