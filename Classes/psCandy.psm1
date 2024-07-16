@@ -1316,6 +1316,15 @@ class Border {
   ) {
     return $script:BorderTypes[$type]
   }
+
+  static [string[]] GetBorderTypes()
+  {
+    $result = @()
+    $script:BorderTypes.Keys | ForEach-Object {
+      $result += $_
+    }
+    return $result
+  }
 }
 
 class Spinner {
