@@ -130,7 +130,6 @@ $BorderTypes = @{
 class candyString {
   static [int] GetDisplayWidth([string] $Str) {
     $width = 0
-    # TODO: remove ANSI Escape sequences
     $str = $str -replace "\e\[[\d;]*m", ''
     foreach ($char in $Str.ToCharArray()) {
       if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) {
@@ -144,10 +143,32 @@ class candyString {
   }
 
   static [int] GetDisplayLength([string] $Str) {
-    $width = 0
-    # TODO: remove ANSI Escape sequences
     $str = $str -replace "\e\[[\d;]*m", ''
     return $str.Length
+  }
+
+  static [String] TruncateString(
+    [string]$InputString,
+    [int]$MaxWidth
+  ) {
+    $ellipsis = "…"
+    $ellipsisWidth = [candyString]::GetDisplayWidth($ellipsis)
+    $currentWidth = [candyString]::GetDisplayWidth($InputString)
+  
+    if ($currentWidth -le $MaxWidth) {
+      return $InputString
+    }
+  
+    $truncatedString = ""
+    foreach ($char in $InputString.ToCharArray()) {
+      $charWidth = if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) { 2 } else { 1 }
+      if ([candyString]::GetDisplayWidth($truncatedString + $charWidth + $ellipsisWidth) -ge ($MaxWidth - 1)) {
+        break
+      }
+      $truncatedString += $char
+    }
+  
+    return $truncatedString + $ellipsis
   }
 
   static [String] PadString (
@@ -157,6 +178,7 @@ class candyString {
     [Align]$PadDirection = [Align]::Left # Options: Left, Right, Both
   ) {
     # $InputString = Truncate-String -InputString $InputString -MaxWidth $TotalWidth
+    $InputString = [candystring]::TruncateString($InputString, $TotalWidth)
     $currentWidth = [candyString]::GetDisplayWidth($InputString)
     $currentLength = [candyString]::GetDisplayLength($InputString)
     $diff = $currentWidth - $currentLength
@@ -1092,7 +1114,7 @@ class Color {
   
   static [String] Pick () {
     [Console]::Clear()
-    Write-Candy "🎨 <Green>Pick</Green> <Blue>A</Blue> <Red>Color</Red>" -width ($global:Host.UI.RawUI.BufferSize.Width - 2) -border "Rounded" -Align Center
+    Write-Candy "🎨 <Green>Pick</Green> <Blue>A</Blue> <Red>Color</Red>" -Width ($global:Host.UI.RawUI.BufferSize.Width - 2) -Border "Rounded" -Align Center
     [System.Console]::SetCursorPosition(0, 3)
     $items = [System.Collections.Generic.List[ListItem]]::new()
     [Colors] | Get-Member -Static | Where-Object { $_.Definition -match 'candyColor' } | ForEach-Object { 

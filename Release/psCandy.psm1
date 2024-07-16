@@ -1090,6 +1090,30 @@ class Color {
   [candyColor]$Background = $null
   [Styles]$style
   
+  static [String] Pick () {
+    [Console]::Clear()
+    Write-Candy "🎨 <Green>Pick</Green> <Blue>A</Blue> <Red>Color</Red>" -width ($global:Host.UI.RawUI.BufferSize.Width - 2) -border "Rounded" -Align Center
+    [System.Console]::SetCursorPosition(0, 3)
+    $items = [System.Collections.Generic.List[ListItem]]::new()
+    [Colors] | Get-Member -Static | Where-Object { $_.Definition -match 'candyColor' } | ForEach-Object { 
+      $methodInfo = [colors].GetMethod($_.Name, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public) 
+      [candyColor]$candycolor = $methodinfo.Invoke($null, $null)
+      $colorName = $_.Name
+      [Color]$color = [Color]::new($candycolor)
+      $items.Add([ListItem]::new($colorName, $color, $candyColor))
+    }
+    $List = [List]::new($items)
+    # $List.LoadTheme($Theme)
+    $List.SetLimit($true)
+    $list.SetHeight(($global:Host.UI.RawUI.BufferSize.Height - 10))
+    $c = $List.Display()
+    if ($c) {
+      return $c.text
+    }
+    return [String]::Empty
+  }
+
+
   static [string] color16 (
     [string]$Text,
     [int]$ForegroundColor = -1,
@@ -1315,6 +1339,14 @@ class Border {
     [string]$type = "Normal"
   ) {
     return $script:BorderTypes[$type]
+  }
+
+  static [string[]] GetBorderTypes() {
+    $result = @()
+    $script:BorderTypes.Keys | ForEach-Object {
+      $result += $_
+    }
+    return $result
   }
 }
 
@@ -2308,7 +2340,8 @@ function Write-Candy {
     $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
     $borderType.Left + $buffer2 + $borderType.Right + "`n" +
     $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
-  } else {
+  }
+  else {
     $buffer = $buffer2
   }
   
