@@ -1,6 +1,6 @@
 # psCandy
 
-![Header](./Images/Logo_animation.gif)
+![Header](./Images/Logo.png)
 
 A Powershell Module to produce eye-candy outputs in the terminal.
 
