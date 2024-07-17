@@ -1,5 +1,4 @@
-﻿Write-Host "psCandy" -ForegroundColor Green
-[Flags()] enum Styles {
+﻿[Flags()] enum Styles {
   Normal = 1
   Underline = 2
   Bold = 4
@@ -1561,19 +1560,32 @@ function padRightUTF8 {
     [string]$text,
     [int]$length
   )
-  $bytecount = 0
-  $text.ToCharArray() | ForEach-Object {
-    $b = [Text.Encoding]::UTF8.Getbytecount($_)
-    if ($b -ge 2) {
-      $b = $b - 1
-    }
-    $bytecount += ($b) 
-  }
+  # $bytecount = 0
+  # $text.ToCharArray() | ForEach-Object {
+  #   $b = [Text.Encoding]::UTF8.Getbytecount($_)
+  #   if ($b -ge 2) {
+  #     $b = $b - 1
+  #   }
+  #   $bytecount += ($b) 
+  # }
+  $bytecount = [candyString]::GetDisplayWidth($text)
 
   $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length, " "))
   $diff = $totalbytes - $bytecount
   if ($diff -lt 0) {
-    $text.Substring(0, $length)  
+    try {
+      $text.Substring(0, $length)
+    }
+    catch {
+      Write-Host "Error in padRightUTF8"
+      Write-host "text : $text"
+      Write-host "length : $length"
+      write-host "diff : $diff"
+      Write-Host "textlexngth : $($text.Length)"
+      # write-host $text
+      exit(1)
+    }
+   
   }
   else {
     [string]::Concat($text, "".PadLeft($diff, " "))
@@ -1724,58 +1736,75 @@ class List {
     else {
       $baseoffset = 0
     }
-    if ($items) {
-      $buffer = $items | ForEach-Object {
-        $checkmark = ""
-        if ($_.Icon) {
-          $offset = $baseoffset - 2
-        }
-        else {
-          $offset = $baseoffset - 1
-        }
-        # $text = $_.text.PadRight(($this.linelen + $offset), " ")
-        $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
-        # $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)  
-        $icon = $_.Icon 
-        if (($null -ne $icon) -and ($icon.Trim() -ne "")) {
-          $icon = $_.IconColor.render($icon)
-          $icon = $icon -replace "\e\[0m", ''
-          # $text = "$icon $text"          
-        }
-        if ($null -ne $_.Color) {
-          $c = [Color]::new($_.Color)
-          $text = $c.render($text)
-        }
-        if ($this.limit) {
-          $text = "$icon $text"
-          if ($this.index -eq $i) {
-            $text = $this.SelectedColor.render($text)
+    try {
+      if ($items) {
+        $buffer = $items | ForEach-Object {
+          $checkmark = ""
+          if ($_.Icon) {
+            $offset = $baseoffset - 2
           }
           else {
-            $text = $text
+            $offset = $baseoffset - 1
           }
-        }
-        else {
-          if ($_.checked) {
-            $checkmark = $this.checked
+          # $text = $_.text.PadRight(($this.linelen + $offset), " ")
+          try {
+            # $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)
+            $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
+          }
+          catch {
+            Write-Host "An error occurred on padrightUTF8:"
+            Write-Host $_
+            Exit(1)
+          }
+          
+          # $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)  
+          $icon = $_.Icon 
+          if (($null -ne $icon) -and ($icon.Trim() -ne "")) {
+            $icon = $_.IconColor.render($icon)
+            $icon = $icon -replace "\e\[0m", ''
+            # $text = "$icon $text"          
+          }
+          if ($null -ne $_.Color) {
+            $c = [Color]::new($_.Color)
+            $text = $c.render($text)
+          }
+          if ($this.limit) {
+            $text = "$icon $text"
+            if ($this.index -eq $i) {
+              $text = $this.SelectedColor.render($text)
+            }
+            else {
+              $text = $text
+            }
           }
           else {
-            $checkmark = $this.unchecked
+            if ($_.checked) {
+              $checkmark = $this.checked
+            }
+            else {
+              $checkmark = $this.unchecked
+            }
+            $text = "$checkmark $icon $text"
+            if ($this.index -eq $i) {
+              $text = $this.SelectedColor.render("$($this.selector) $($text)")
+            }
+            else {
+              $text = "  $($text)"
+            }
           }
-          $text = "$checkmark $icon $text"
-          if ($this.index -eq $i) {
-            $text = $this.SelectedColor.render("$($this.selector) $($text)")
-          }
-          else {
-            $text = "  $($text)"
-          }
-        }
-        $text
-        $i++
-      } | Out-String
+          $text
+          $i++
+        } | Out-String
+      }
+      else {
+        $buffer = "Too much filter ? 😊"
+      }
     }
-    else {
-      $buffer = "Too much filter ? 😊"
+    catch {
+      Write-Host "An error occurred:"
+      Write-Host $PSScriptRoot
+      Write-Host $_
+      Exit(1)
     }
     if ($this.border) {
       while ($i -lt $this.height) {
@@ -1809,10 +1838,6 @@ class List {
         }).Maximum
     }
     
-    # $this.linelen = ($this.items | Measure-Object -Maximum {
-    #   ($_.text -replace "\e\[[\d;]*m", '').Length
-    # }).Maximum
-    # [System.Console]::Clear()
     while (-not $stop) {
       if ($redraw) {
         if ($search) {
@@ -1849,13 +1874,10 @@ class List {
         [Console]::setcursorposition(0, ($this.Y + 1))
         if ($this.index -gt $VisibleItems.Count - 1 ) {
           $this.index = 0
-
         }
         if ($this.header -ne "") {
           $out = [string]::concat("".padleft(6, " "), $this.header)
-          # $out =  $this.header
-          # $out = $out.PadRight($this.linelen + 3, " ")
-          $out =$out.Substring(0, $this.linelen + 3)
+          $out = $out.Substring(0, $this.linelen + 3)
           $out = $this.HeaderColor.render($out)
           [Console]::WriteLine("$out")
         }
