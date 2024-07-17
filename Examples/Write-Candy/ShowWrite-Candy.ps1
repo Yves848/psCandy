@@ -1,4 +1,4 @@
-using module psCandy
+using module C:\Users\yvesg\git\psCandy\Classes\psCandy.psm1
 
 Write-Candy "Test"
 Write-Candy "<Red>Hello</Red> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"

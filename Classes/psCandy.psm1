@@ -179,11 +179,11 @@ class candyString {
     [Align]$PadDirection = [Align]::Left # Options: Left, Right, Both
   ) {
     # $InputString = Truncate-String -InputString $InputString -MaxWidth $TotalWidth
-    $InputString = [candystring]::TruncateString($InputString, $TotalWidth)
     # $currentWidth = [candyString]::GetDisplayWidth($InputString)
     # $currentLength = [candyString]::GetDisplayLength($InputString)
     # $diff = $currentWidth - $currentLength
     # $TotalWidth = $TotalWidth - $diff
+    $InputString = [candystring]::TruncateString($InputString, $TotalWidth)
     $padLength = $TotalWidth 
 
     if ($padLength -le 0) {
@@ -1853,7 +1853,9 @@ class List {
         }
         if ($this.header -ne "") {
           $out = [string]::concat("".padleft(6, " "), $this.header)
-          $out = $out.PadRight($this.linelen + 3, " ")
+          # $out =  $this.header
+          # $out = $out.PadRight($this.linelen + 3, " ")
+          $out =$out.Substring(0, $this.linelen + 3)
           $out = $this.HeaderColor.render($out)
           [Console]::WriteLine("$out")
         }
