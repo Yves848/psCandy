@@ -130,7 +130,6 @@ $BorderTypes = @{
 class candyString {
   static [int] GetDisplayWidth([string] $Str) {
     $width = 0
-    # $Str = $Str -replace "\e\[[\d;]*m", ''  # Remove ANSI escape sequences
     $Str = [regex]::Replace($Str, "\e\[[\d;]*m", '')
     $length = $Str.Length
 
@@ -163,7 +162,7 @@ class candyString {
 
 
   static [int] GetDisplayLength([string] $Str) {
-    $str = $str -replace "\e\[[\d;]*m", ''
+    $Str = [regex]::Replace($Str, "\e\[[\d;]*m", '')
     return $str.Length
   }
 
@@ -202,11 +201,6 @@ class candyString {
     [string]$PadCharacter = " ",
     [Align]$PadDirection = [Align]::Left # Options: Left, Right, Both
   ) {
-    # $InputString = Truncate-String -InputString $InputString -MaxWidth $TotalWidth
-    # $currentWidth = [candyString]::GetDisplayWidth($InputString)
-    # $currentLength = [candyString]::GetDisplayLength($InputString)
-    # $diff = $currentWidth - $currentLength
-    # $TotalWidth = $TotalWidth - $diff
     $InputString = [candystring]::TruncateString($InputString, $TotalWidth)
     $padLength = $TotalWidth 
 
@@ -222,9 +216,6 @@ class candyString {
         if ($diff -gt 0) {
           $InputString = ($PadCharacter * $diff) + $InputString
         }
-        # while ([candyString]::GetDisplayWidth($PadCharacter + $InputString) -lt $TotalWidth) {
-        #   $InputString = $PadCharacter + $InputString
-        # }
       }
       Left {
         $displayWidth = [candyString]::GetDisplayWidth($InputString)
@@ -232,9 +223,6 @@ class candyString {
         if ($diff -gt 0) {
           $InputString = $InputString + ($PadCharacter * $diff) 
         }
-        # while ([candyString]::GetDisplayWidth($InputString + $PadCharacter) -lt $TotalWidth) {
-        #   $InputString = $InputString + $PadCharacter
-        # }
       }
       Center {
         $leftPad = $rightPad = $PadCharacter
