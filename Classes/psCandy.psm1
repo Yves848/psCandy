@@ -134,31 +134,32 @@ class candyString {
     $length = $Str.Length
 
     for ($i = 0; $i -lt $length; $i++) {
-        $char = $Str[$i]
-        $charCode = [int][char]$char
+      $char = $Str[$i]
+      $charCode = [int][char]$char
 
-        if ($charCode -ge 0x1100 -and (
-            $charCode -le 0x115F -or  # Hangul Jamo init. consonants
-            $charCode -eq 0x2329 -or  # LEFT-POINTING ANGLE BRACKET
-            $charCode -eq 0x232A -or  # RIGHT-POINTING ANGLE BRACKET
-            ($charCode -ge 0x2E80 -and $charCode -le 0xA4CF -and $charCode -ne 0x303F) -or  # CJK ... Yi
-            ($charCode -ge 0xAC00 -and $charCode -le 0xD7A3) -or  # Hangul Syllables
-            ($charCode -ge 0xF900 -and $charCode -le 0xFAFF) -or  # CJK Compatibility Ideographs
-            ($charCode -ge 0xFE10 -and $charCode -le 0xFE19) -or  # Vertical forms
-            ($charCode -ge 0xFE30 -and $charCode -le 0xFE6F) -or  # CJK Compatibility Forms
-            ($charCode -ge 0xFF00 -and $charCode -le 0xFF60) -or  # Fullwidth Forms
-            ($charCode -ge 0xFFE0 -and $charCode -le 0xFFE6) -or  # Halfwidth and Fullwidth Forms
-            ($charCode -ge 0x1F300 -and $charCode -le 0x1F64F) -or  # Emoticons
+      if ($charCode -ge 0x1100 -and (
+          $charCode -le 0x115F -or # Hangul Jamo init. consonants
+          $charCode -eq 0x2329 -or # LEFT-POINTING ANGLE BRACKET
+          $charCode -eq 0x232A -or # RIGHT-POINTING ANGLE BRACKET
+            ($charCode -ge 0x2E80 -and $charCode -le 0xA4CF -and $charCode -ne 0x303F) -or # CJK ... Yi
+            ($charCode -ge 0xAC00 -and $charCode -le 0xD7A3) -or # Hangul Syllables
+            ($charCode -ge 0xF900 -and $charCode -le 0xFAFF) -or # CJK Compatibility Ideographs
+            ($charCode -ge 0xFE10 -and $charCode -le 0xFE19) -or # Vertical forms
+            ($charCode -ge 0xFE30 -and $charCode -le 0xFE6F) -or # CJK Compatibility Forms
+            ($charCode -ge 0xFF00 -and $charCode -le 0xFF60) -or # Fullwidth Forms
+            ($charCode -ge 0xFFE0 -and $charCode -le 0xFFE6) -or # Halfwidth and Fullwidth Forms
+            ($charCode -ge 0x1F300 -and $charCode -le 0x1F64F) -or # Emoticons
             ($charCode -ge 0x1F900 -and $charCode -le 0x1F9FF)     # Supplemental Symbols and Pictographs
         )) {
-            $width += 2
-        } else {
-            $width += 1
-        }
+        $width += 2
+      }
+      else {
+        $width += 1
+      }
     }
 
     return $width
-}
+  }
 
 
   static [int] GetDisplayLength([string] $Str) {
@@ -169,31 +170,31 @@ class candyString {
   static [string] TruncateString(
     [string]$InputString,
     [int]$MaxWidth
-) {
+  ) {
     $ellipsis = "."
     $ellipsisWidth = 1  # Precomputed width of the ellipsis
 
     $currentWidth = [candyString]::GetDisplayWidth($InputString)
     if ($currentWidth -le $MaxWidth) {
-        return $InputString
+      return $InputString
     }
 
     $truncatedString = New-Object System.Text.StringBuilder
     $currentWidth = 0
 
     foreach ($char in $InputString.ToCharArray()) {
-        $charWidth = if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) { 2 } else { 1 }
+      $charWidth = if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) { 2 } else { 1 }
         
-        if ($currentWidth + $charWidth + $ellipsisWidth -gt $MaxWidth) {
-            break
-        }
+      if ($currentWidth + $charWidth + $ellipsisWidth -gt $MaxWidth) {
+        break
+      }
 
-        $truncatedString.Append($char) | Out-Null
-        $currentWidth += $charWidth
+      $truncatedString.Append($char) | Out-Null
+      $currentWidth += $charWidth
     }
 
     return $truncatedString.ToString() + $ellipsis
-}
+  }
 
   static [String] PadString (
     [string]$InputString,
@@ -1611,9 +1612,9 @@ function padRightUTF8 {
     }
     catch {
       Write-Host "Error in padRightUTF8"
-      Write-host "text : $text"
-      Write-host "length : $length"
-      write-host "diff : $diff"
+      Write-Host "text : $text"
+      Write-Host "length : $length"
+      Write-Host "diff : $diff"
       Write-Host "textlexngth : $($text.Length)"
       # write-host $text
       exit(1)
@@ -1781,7 +1782,7 @@ class List {
           }
           # $text = $_.text.PadRight(($this.linelen + $offset), " ")
           try {
-            $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)
+            $text = [candyString]::PadString($_.text, ($this.linelen + $offset), " ", [Align]::Left)
             # $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
           }
           catch {
@@ -2364,7 +2365,8 @@ function Write-Candy {
     [Align]$Align = [Align]::Left,
     [String]$Border = "None"
   )
-
+  #TODO: Styles imbriqués
+  #TODO: Gérer le muilti-ligne: 
   $colors = [candyColor]::colorList()
   $colorPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
   $StylePattern = '<(?<style>Underline|Strike|Bold|Italic)>(?<text>.*?)<\/\k<style>>'
@@ -2385,47 +2387,77 @@ function Write-Candy {
   if ($currentIndex -lt $Text.Length) {
     $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
   }
-
-  $currentIndex = 0
-  $matches = [regex]::Matches($buffer, $StylePattern)
-  [Color] $style = [Color]::new($null)
-  $buffer2 = ""
-  foreach ($match in $matches) {
-    if ($match.Index -gt $currentIndex) {
-      $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex, $match.Index - $currentIndex))
-    }
-    $color = $match.Groups['style'].Value
-    $style.style = $color
-    $innerText = $style.ApplyStyle(($match.Groups['text'].Value))
-    $buffer2 = [string]::concat($buffer2, $innerText)
-    $currentIndex = $match.Index + $match.Length
+  $esc = $([char]0x1b)
+  $styles = @{
+  "Underline" = @{
+    "start" = "$esc[4m"
+    "end" = "$esc[24m"
   }
+  "Bold" = @{
+    "start" = "$esc[1m"
+    "end" = "$esc[22m"
+  }
+  "Italic" = @{
+    "start" = "$esc[3m"
+    "end" = "$esc[23m"
+  }
+  "Strike" = @{
+    "start" = "$esc[9m"
+    "end" = "$esc[29m"
+  }
+  "Reverse" = @{
+    "start" = "$esc[7m"
+    "end" = "$esc[27m"
+  }
+}
+$styles.keys | ForEach-Object {
+  $start = $styles[$_].start
+  $end = $styles[$_].end
+  $buffer = $buffer -replace "<$($_)>", $start
+  $buffer = $buffer -replace "</$($_)>", $end
+}
+  # $currentIndex = 0
+  # $buffer2 = ""
+  # $matches = [regex]::Matches($buffer, $StylePattern)
+  # [Color] $style = [Color]::new($null)
+  # $buffer2 = ""
+  # foreach ($match in $matches) {
+  #   if ($match.Index -gt $currentIndex) {
+  #     $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex, $match.Index - $currentIndex))
+  #   }
+  #   $color = $match.Groups['style'].Value
+  #   $style.style = $color
+  #   $innerText = $style.ApplyStyle(($match.Groups['text'].Value))
+  #   $buffer2 = [string]::concat($buffer2, $innerText)
+  #   $currentIndex = $match.Index + $match.Length
+  # }
   
-  if ($currentIndex -lt $Text.Length) {
-    $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex))
-  }
+  # if ($currentIndex -lt $Text.Length) {
+  #   $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex))
+  # }
+
  
   
-  $buffer2 = [Color]::endStyle($buffer2)
+$buffer2 = [Color]::endStyle($buffer)
   
 
-  if ($Width -gt 0) {
-    $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
-  }
+if ($Width -gt 0) {
+  $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
+}
 
-  if ($Border.ToLower() -ne "none") {
-    $borderType = [Border]::GetBorder($Border)
-    $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
-    $bufferlen = [candyString]::GetDisplayLength($buffer2)
-    $diff = $bufferwidth - $bufferlen
-    $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
-    $borderType.Left + $buffer2 + $borderType.Right + "`n" +
-    $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
-  }
-  else {
-    $buffer = $buffer2
-  }
+if ($Border.ToLower() -ne "none") {
+  $borderType = [Border]::GetBorder($Border)
+  $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
+  $bufferlen = [candyString]::GetDisplayLength($buffer2)
+  $diff = $bufferwidth - $bufferlen
+  $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
+  $borderType.Left + $buffer2 + $borderType.Right + "`n" +
+  $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
+}
+else {
+  $buffer = $buffer2
+}
   
 
-  Write-Host $buffer
+Write-Host $buffer
 }
