@@ -44,6 +44,11 @@ The tags can be :
 - \<style\> : the set the style (Underline, Bold, Italic, Reversed, .....)
 
 The colors are the names that the static methods of [Colors] class return.
+
+A static method of the [Color] class ```[Color]::Pick()``` displays a color picker to discover and choose the available colors
+
+![](./Images/Color_pick.png)
+
 The styles can be used in their "long" or short forms 
 
 - \<U\> = \<Underline\>
