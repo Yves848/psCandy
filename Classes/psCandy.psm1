@@ -1244,12 +1244,15 @@ class Color {
     $Fore = ""
     $Back = ""
     $sty = ""
+    $close=""
     if ($null -ne $this.Foreground) {
       $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+      $close = "$esc[39m"
     }
     
     if ($null -ne $this.Background) {
       $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
+      $close = "$esc[49m"
     }
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
       $sty = [string]::concat($sty, "$esc[4m")
@@ -1267,7 +1270,7 @@ class Color {
       $sty = [string]::concat($sty, "$esc[1m")
     }
 
-    $close = "$esc[39m"
+    
     $result = "$sty$fore$back$Text$close"
     return $result
   }
@@ -2369,9 +2372,10 @@ function Write-Candy {
   #TODO: Styles imbriqués
   #TODO: Gérer le muilti-ligne: 
   $colors = [candyColor]::colorList()
-  $colorPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
+  $ForegroundPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
+  $BackgroundPattern = '\[(?<color>'+$colors+')\](?<text>.*?)\[\/\k<color>\]'
   $currentIndex = 0
-  $matches = [regex]::Matches($Text, $colorPattern)
+  $matches = [regex]::Matches($Text, $ForegroundPattern)
   $buffer = ""
   foreach ($match in $matches) {
     if ($match.Index -gt $currentIndex) {
@@ -2388,6 +2392,25 @@ function Write-Candy {
     $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
   }
 
+  $currentIndex = 0
+  $matches = [regex]::Matches($Buffer, $BackgroundPattern)
+  $buffer2 = ""
+  foreach ($match in $matches) {
+    if ($match.Index -gt $currentIndex) {
+      $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex, $match.Index - $currentIndex))
+    }
+    $color = $match.Groups['color'].Value
+    $col = [Color]::new($null,[candycolor]::tocolor($color))
+    $innerText = $col.ApplyColor(($match.Groups['text'].Value))
+    $buffer2 = [string]::concat($buffer2, $innerText)
+    $currentIndex = $match.Index + $match.Length
+  }
+  
+  if ($currentIndex -lt $Text.Length) {
+    $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex))
+  }
+
+  $buffer = $buffer2
   #TODO: refactor the styles at only one place
   $esc = $([char]0x1b)
   $styles = @{
@@ -2481,6 +2504,9 @@ function Confirm-Candy {
     $confirm = [Confirm]::new($title, $options, $Fullscreen)
   }
   else {
+    if ($Width -eq -1) {
+      $Width = [math]::floor($Host.UI.RawUI.BufferSize.Width /2)
+    }
     $confirm = [Confirm]::new($title, $options, $Width)
   }
   # $confirm = [Confirm]::new($title, $options, $Fullscreen)
