@@ -2387,6 +2387,8 @@ function Write-Candy {
   if ($currentIndex -lt $Text.Length) {
     $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
   }
+
+  #TODO: refactor the styles at only one place
   $esc = $([char]0x1b)
   $styles = @{
   "Underline" = @{
@@ -2416,27 +2418,7 @@ $styles.keys | ForEach-Object {
   $buffer = $buffer -replace "<$($_)>", $start
   $buffer = $buffer -replace "</$($_)>", $end
 }
-  # $currentIndex = 0
-  # $buffer2 = ""
-  # $matches = [regex]::Matches($buffer, $StylePattern)
-  # [Color] $style = [Color]::new($null)
-  # $buffer2 = ""
-  # foreach ($match in $matches) {
-  #   if ($match.Index -gt $currentIndex) {
-  #     $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex, $match.Index - $currentIndex))
-  #   }
-  #   $color = $match.Groups['style'].Value
-  #   $style.style = $color
-  #   $innerText = $style.ApplyStyle(($match.Groups['text'].Value))
-  #   $buffer2 = [string]::concat($buffer2, $innerText)
-  #   $currentIndex = $match.Index + $match.Length
-  # }
-  
-  # if ($currentIndex -lt $Text.Length) {
-  #   $buffer2 = [string]::concat($buffer2, $buffer.Substring($currentIndex))
-  # }
 
- 
   
 $buffer2 = [Color]::endStyle($buffer)
   
