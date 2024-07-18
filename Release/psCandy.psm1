@@ -1714,9 +1714,9 @@ class List {
   }
 
   [Void] DrawFooter() {
-    $footerOffset = (4 + $this.y)
+    $footerOffset = (2 + $this.y)
     if ($this.border) {
-      $footerOffset = (4 + $this.Y)
+      $footerOffset = (2 + $this.Y)
     }
     [console]::setcursorposition(0, $this.height + $footerOffset)
     [Console]::Write((" " * $this.width))
