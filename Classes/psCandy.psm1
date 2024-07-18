@@ -1278,22 +1278,31 @@ class Color {
     $esc = $([char]0x1b)
     
     $sty = ""
+    $endsty = ""
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
       $sty = [string]::concat($sty, "$esc[4m")
+      $endsty = [string]::concat($sty, "$esc[24m")
     }
+    
     
     if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
       $sty = [string]::concat($sty, "$esc[9m")
+      $endsty = [string]::concat($sty, "$esc[24m")
     }
+    
 
     if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
       $sty = [string]::concat($sty, "$esc[3m")
+      $endsty = [string]::concat($sty, "$esc[24m")
     }
+    
 
     if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
       $sty = [string]::concat($sty, "$esc[1m")
+      $endsty = [string]::concat($sty, "$esc[24m")
     }
-    $result = "$sty$Text"
+    
+    $result = "$sty$Text$endsty"
     return $result
   }
 
@@ -1314,6 +1323,7 @@ class Color {
     $Fore = ""
     $Back = ""
     $sty = ""
+    
     if ($null -ne $this.Foreground) {
       $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
     }
