@@ -591,11 +591,12 @@ Example :
 
 ```Powershell
 Write-Candy "Test"
-Write-Candy "<Red>Hello</Red> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
+Write-Candy "<Red>Hello</Red> 🌍 <Bold>World!</Bold>" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
 Write-Candy "<Green><Bold>Have</Bold></Green>  a 🌝 <Italic><Yellow>Day !</Yellow></Italic>" -width 80 -Align Right -Border "Rounded"
 Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Center -Border "Rounded"
-Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Rounded"
-Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Border "Double"
+Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Thick"
+Write-Candy "<DarkGreen><Underline>Another</Underline></DarkGreen> <Italic><Underline>Test</Underline></Italic> Underline" -Border "Double"
+Write-Candy "<I>Using</I> <B><U>Short</U></B> <Red>styles <R>tags</R></Red>" -Border "Double"
 ```
 
 The function accept the parameter from the pipe.
@@ -604,5 +605,4 @@ Result :
 
 ![](./Images/write-candy1.png)
 
-*Remark :*
-For know, the **styles** tags cannot be combined, this will be possible in a future version.
+The tags can be impricated to refend multiple styles on a same piece of string.
