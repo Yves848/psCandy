@@ -2456,7 +2456,7 @@ function Write-Candy {
     $currentIndex = $match.Index + $match.Length
   }
   
-  if ($currentIndex -lt $Text.Length) {
+  if ($currentIndex -lt $Buffer.Length) {
     $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex))
   }
 
