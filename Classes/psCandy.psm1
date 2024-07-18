@@ -2101,9 +2101,10 @@ class Confirm {
     $this.LoadTheme()
     $result = $null
     $title = $this.Message
-    $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
-    $filler = "".padleft($padding, " ")
-    [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
+    # $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
+    # $filler = "".padleft($padding, " ")
+    # [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
+    Write-Candy -text $title -align Center -width $this.width -Border "rounded"
     $nbChoices = $this.Choices.Count
     $choiceWidth = [Math]::Floor($this.width / $nbChoices) - 4
     [Console]::WriteLine()
@@ -2463,4 +2464,26 @@ function Write-Candy {
   
 
   Write-Host $buffer
+}
+
+function Confirm-Candy {
+  param (
+    [string]$Title,
+    [String]$Choices,
+    [int]$Width = -1,
+    [switch]$Fullscreen = $false
+  )
+  [Option[]]$options = @()
+  $Choices -split "`n" | ForEach-Object {
+    $options += [Option]::new($_,$_)
+  }
+  if ($Fullscreen) {
+    $confirm = [Confirm]::new($title, $options, $Fullscreen)
+  }
+  else {
+    $confirm = [Confirm]::new($title, $options, $Width)
+  }
+  # $confirm = [Confirm]::new($title, $options, $Fullscreen)
+  $result = $confirm.Display()
+  return $result
 }
