@@ -5,4 +5,5 @@ Write-Candy "<Red>Hello</Red> 🌍 <Bold>World!</Bold>" -width ($Host.UI.RawUI.B
 Write-Candy "<Green><Bold>Have</Bold></Green>  a 🌝 <Italic><Yellow>Day !</Yellow></Italic>" -width 80 -Align Right -Border "Rounded"
 Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Center -Border "Rounded"
 Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Thick"
-Write-Candy "<DarkGreen><Underline>Another</Underline></DarkGreen> <Italic><Underline>Test</Underline></Italic>" -Border "Double"
+Write-Candy "<DarkGreen><Underline>Another</Underline></DarkGreen> <Italic><Underline>Test</Underline></Italic> Underline" -Border "Double"
+Write-Candy "<I>Using</I> <B><U>Short</U></B> <Red>styles <R>tags</R></Red>" -Border "Double"

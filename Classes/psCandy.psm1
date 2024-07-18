@@ -2369,7 +2369,6 @@ function Write-Candy {
   #TODO: Gérer le muilti-ligne: 
   $colors = [candyColor]::colorList()
   $colorPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
-  $StylePattern = '<(?<style>Underline|Strike|Bold|Italic)>(?<text>.*?)<\/\k<style>>'
   $currentIndex = 0
   $matches = [regex]::Matches($Text, $colorPattern)
   $buffer = ""
@@ -2391,55 +2390,77 @@ function Write-Candy {
   #TODO: refactor the styles at only one place
   $esc = $([char]0x1b)
   $styles = @{
-  "Underline" = @{
-    "start" = "$esc[4m"
-    "end" = "$esc[24m"
+    "Underline" = @{
+      "start" = "$esc[4m"
+      "end"   = "$esc[24m"
+    }
+    "Bold"      = @{
+      "start" = "$esc[1m"
+      "end"   = "$esc[22m"
+    }
+    "Italic"    = @{
+      "start" = "$esc[3m"
+      "end"   = "$esc[23m"
+    }
+    "Strike"    = @{
+      "start" = "$esc[9m"
+      "end"   = "$esc[29m"
+    }
+    "Reverse"   = @{
+      "start" = "$esc[7m"
+      "end"   = "$esc[27m"
+    }
+    "U" = @{
+      "start" = "$esc[4m"
+      "end"   = "$esc[24m"
+    }
+    "B"      = @{
+      "start" = "$esc[1m"
+      "end"   = "$esc[22m"
+    }
+    "I"    = @{
+      "start" = "$esc[3m"
+      "end"   = "$esc[23m"
+    }
+    "S"    = @{
+      "start" = "$esc[9m"
+      "end"   = "$esc[29m"
+    }
+    "R"   = @{
+      "start" = "$esc[7m"
+      "end"   = "$esc[27m"
+    }
   }
-  "Bold" = @{
-    "start" = "$esc[1m"
-    "end" = "$esc[22m"
+  $styles.keys | ForEach-Object {
+    $start = $styles[$_].start
+    $end = $styles[$_].end
+    if ($buffer.Contains("<$($_)>")) {
+      $buffer = $buffer -replace "<$($_)>", $start
+      $buffer = $buffer -replace "</$($_)>", $end
+    }
   }
-  "Italic" = @{
-    "start" = "$esc[3m"
-    "end" = "$esc[23m"
-  }
-  "Strike" = @{
-    "start" = "$esc[9m"
-    "end" = "$esc[29m"
-  }
-  "Reverse" = @{
-    "start" = "$esc[7m"
-    "end" = "$esc[27m"
-  }
-}
-$styles.keys | ForEach-Object {
-  $start = $styles[$_].start
-  $end = $styles[$_].end
-  $buffer = $buffer -replace "<$($_)>", $start
-  $buffer = $buffer -replace "</$($_)>", $end
-}
 
   
-$buffer2 = [Color]::endStyle($buffer)
+  $buffer2 = [Color]::endStyle($buffer)
   
 
-if ($Width -gt 0) {
-  $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
-}
+  if ($Width -gt 0) {
+    $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
+  }
 
-if ($Border.ToLower() -ne "none") {
-  $borderType = [Border]::GetBorder($Border)
-  $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
-  $bufferlen = [candyString]::GetDisplayLength($buffer2)
-  $diff = $bufferwidth - $bufferlen
-  $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
-  $borderType.Left + $buffer2 + $borderType.Right + "`n" +
-  $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
-}
-else {
-  $buffer = $buffer2
-}
+  if ($Border.ToLower() -ne "none") {
+    $borderType = [Border]::GetBorder($Border)
+    $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
+    $bufferlen = [candyString]::GetDisplayLength($buffer2)
+    $diff = $bufferwidth - $bufferlen
+    $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
+    $borderType.Left + $buffer2 + $borderType.Right + "`n" +
+    $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
+  }
+  else {
+    $buffer = $buffer2
+  }
   
 
-Write-Host $buffer
+  Write-Host $buffer
 }
