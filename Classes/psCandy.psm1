@@ -130,7 +130,8 @@ $BorderTypes = @{
 class candyString {
   static [int] GetDisplayWidth([string] $Str) {
     $width = 0
-    $Str = $Str -replace "\e\[[\d;]*m", ''  # Remove ANSI escape sequences
+    # $Str = $Str -replace "\e\[[\d;]*m", ''  # Remove ANSI escape sequences
+    $Str = [regex]::Replace($Str, "\e\[[\d;]*m", '')
     $length = $Str.Length
 
     for ($i = 0; $i -lt $length; $i++) {
@@ -160,35 +161,40 @@ class candyString {
     return $width
 }
 
+
   static [int] GetDisplayLength([string] $Str) {
     $str = $str -replace "\e\[[\d;]*m", ''
     return $str.Length
   }
 
-  static [String] TruncateString(
+  static [string] TruncateString(
     [string]$InputString,
     [int]$MaxWidth
-  ) {
+) {
     $ellipsis = "."
-    # $ellipsisWidth = [candyString]::GetDisplayWidth($ellipsis)
-    $ellipsisWidth = 1
+    $ellipsisWidth = 1  # Precomputed width of the ellipsis
+
     $currentWidth = [candyString]::GetDisplayWidth($InputString)
-  
     if ($currentWidth -le $MaxWidth) {
-      return $InputString
+        return $InputString
     }
-  
-    $truncatedString = ""
+
+    $truncatedString = New-Object System.Text.StringBuilder
+    $currentWidth = 0
+
     foreach ($char in $InputString.ToCharArray()) {
-      $charWidth = if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) { 2 } else { 1 }
-      if ([candyString]::GetDisplayWidth($truncatedString + $charWidth + $ellipsisWidth) -ge ($MaxWidth - $charWidth)) {
-        break
-      }
-      $truncatedString += $char
+        $charWidth = if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) { 2 } else { 1 }
+        
+        if ($currentWidth + $charWidth + $ellipsisWidth -gt $MaxWidth) {
+            break
+        }
+
+        $truncatedString.Append($char) | Out-Null
+        $currentWidth += $charWidth
     }
-  
-    return $truncatedString + $ellipsis
-  }
+
+    return $truncatedString.ToString() + $ellipsis
+}
 
   static [String] PadString (
     [string]$InputString,
