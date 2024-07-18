@@ -2546,3 +2546,39 @@ function Confirm-Candy {
   $result = $confirm.Display()
   return $result
 }
+
+function Select-Candy {
+  param(
+    [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+    [pscustomobject[]]$Input,
+    [string]$Title = "",
+    [switch]$limit = $false
+  )
+  begin {
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+    [console]::Clear()
+    [System.Collections.Generic.List[ListItem]]$items = [System.Collections.Generic.List[ListItem]]::new()
+  }
+  
+  process {
+    foreach ($i in $Input) {
+      # $i.item
+      $items.Add([ListItem]::new($i.CandyLabel,$i.Item))
+    } 
+  }
+  
+
+  end {
+    $list = [List]::new($items)  
+    # $list.SetHeight(10)
+    # $list.SetLimit($True)
+    $list.fullscreen = $true
+    if ($title -ne "") {
+      $list.SetTitle($title)
+    }
+    $c = $list.Display()
+    return $c
+  }
+  
+  
+}
