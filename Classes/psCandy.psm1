@@ -130,17 +130,35 @@ $BorderTypes = @{
 class candyString {
   static [int] GetDisplayWidth([string] $Str) {
     $width = 0
-    $str = $str -replace "\e\[[\d;]*m", ''
-    foreach ($char in $Str.ToCharArray()) {
-      if ([System.Text.Encoding]::UTF8.GetByteCount($char) -gt 1) {
-        $width += 2
-      }
-      else {
-        $width += 1
-      }
+    $Str = $Str -replace "\e\[[\d;]*m", ''  # Remove ANSI escape sequences
+    $length = $Str.Length
+
+    for ($i = 0; $i -lt $length; $i++) {
+        $char = $Str[$i]
+        $charCode = [int][char]$char
+
+        if ($charCode -ge 0x1100 -and (
+            $charCode -le 0x115F -or  # Hangul Jamo init. consonants
+            $charCode -eq 0x2329 -or  # LEFT-POINTING ANGLE BRACKET
+            $charCode -eq 0x232A -or  # RIGHT-POINTING ANGLE BRACKET
+            ($charCode -ge 0x2E80 -and $charCode -le 0xA4CF -and $charCode -ne 0x303F) -or  # CJK ... Yi
+            ($charCode -ge 0xAC00 -and $charCode -le 0xD7A3) -or  # Hangul Syllables
+            ($charCode -ge 0xF900 -and $charCode -le 0xFAFF) -or  # CJK Compatibility Ideographs
+            ($charCode -ge 0xFE10 -and $charCode -le 0xFE19) -or  # Vertical forms
+            ($charCode -ge 0xFE30 -and $charCode -le 0xFE6F) -or  # CJK Compatibility Forms
+            ($charCode -ge 0xFF00 -and $charCode -le 0xFF60) -or  # Fullwidth Forms
+            ($charCode -ge 0xFFE0 -and $charCode -le 0xFFE6) -or  # Halfwidth and Fullwidth Forms
+            ($charCode -ge 0x1F300 -and $charCode -le 0x1F64F) -or  # Emoticons
+            ($charCode -ge 0x1F900 -and $charCode -le 0x1F9FF)     # Supplemental Symbols and Pictographs
+        )) {
+            $width += 2
+        } else {
+            $width += 1
+        }
     }
+
     return $width
-  }
+}
 
   static [int] GetDisplayLength([string] $Str) {
     $str = $str -replace "\e\[[\d;]*m", ''
@@ -152,7 +170,8 @@ class candyString {
     [int]$MaxWidth
   ) {
     $ellipsis = "."
-    $ellipsisWidth = [candyString]::GetDisplayWidth($ellipsis)
+    # $ellipsisWidth = [candyString]::GetDisplayWidth($ellipsis)
+    $ellipsisWidth = 1
     $currentWidth = [candyString]::GetDisplayWidth($InputString)
   
     if ($currentWidth -le $MaxWidth) {
@@ -192,14 +211,24 @@ class candyString {
     
     switch ($PadDirection) {
       Right {
-        while ([candyString]::GetDisplayWidth($PadCharacter + $InputString) -lt $TotalWidth) {
-          $InputString = $PadCharacter + $InputString
+        $displayWidth = [candyString]::GetDisplayWidth($InputString)
+        $diff = $TotalWidth - $displayWidth
+        if ($diff -gt 0) {
+          $InputString = ($PadCharacter * $diff) + $InputString
         }
+        # while ([candyString]::GetDisplayWidth($PadCharacter + $InputString) -lt $TotalWidth) {
+        #   $InputString = $PadCharacter + $InputString
+        # }
       }
       Left {
-        while ([candyString]::GetDisplayWidth($InputString + $PadCharacter) -lt $TotalWidth) {
-          $InputString = $InputString + $PadCharacter
+        $displayWidth = [candyString]::GetDisplayWidth($InputString)
+        $diff = $TotalWidth - $displayWidth
+        if ($diff -gt 0) {
+          $InputString = $InputString + ($PadCharacter * $diff) 
         }
+        # while ([candyString]::GetDisplayWidth($InputString + $PadCharacter) -lt $TotalWidth) {
+        #   $InputString = $InputString + $PadCharacter
+        # }
       }
       Center {
         $leftPad = $rightPad = $PadCharacter
@@ -1748,8 +1777,8 @@ class List {
           }
           # $text = $_.text.PadRight(($this.linelen + $offset), " ")
           try {
-            # $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)
-            $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
+            $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)
+            # $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
           }
           catch {
             Write-Host "An error occurred on padrightUTF8:"
