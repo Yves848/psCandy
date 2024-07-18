@@ -157,7 +157,6 @@ class candyString {
         $width += 1
       }
     }
-
     return $width
   }
 
@@ -1244,7 +1243,7 @@ class Color {
     $Fore = ""
     $Back = ""
     $sty = ""
-    $close=""
+    $close = ""
     if ($null -ne $this.Foreground) {
       $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
       $close = "$esc[39m"
@@ -1653,6 +1652,7 @@ class List {
   [bool]$fullscreen = $true
   [string]$header = ""
   [int]$nbToDraw = 0
+  [string]$title = ""
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
   [hashtable]$theme = @{}
   [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
@@ -1704,10 +1704,13 @@ class List {
   }
 
   [Void] DrawTitle(
-    [string]$title
+    [string]$title,
+    [boolean]$border = $true
   ) {
-    [console]::setcursorposition(0, 0)
-    [console]::WriteLine($title)
+    [console]::setcursorposition(0, $this.Y)
+    Write-Candy -Text $title -Border "Rounded" -Width ($this.width) -Align Center
+    $this.Y = $global:Host.UI.RawUI.CursorPosition.Y
+    $this.height = $this.height - 3
   }
 
   [Void] DrawFooter() {
@@ -1718,21 +1721,27 @@ class List {
     [console]::setcursorposition(0, $this.height + $footerOffset)
     [Console]::Write((" " * $this.width))
     [console]::setcursorposition(0, $this.height + $footerOffset)
-    $footer = "◖"
+    # $footer = "◖"
     if ($this.pages -gt 1) {
-      $footer += " " + "$($this.page)/$($this.pages)"
+      $footer += "<B>Page</B> $($this.page)/$($this.pages)"
     }
     
     if ($this.filter -and ($this.filter -ne "")) {
-      $filtertext = $this.FilterColor.render("$($this.filter)")
+      $filtertext = "<Orange>$($this.filter)</Orange>"
     }
     else {
-      $filtertext = $this.noFilterColor.render("None")
+      $filtertext = ("<Green>None</Green>")
     }
-    $footer += " ⋮ [Filter: $($filtertext)] ◗"
-    [console]::WriteLine($footer)
+    $footer += " ⋮ [<I>Filter:</I> $($filtertext)]"
+    # [console]::WriteLine($footer)
+    Write-Candy -Text $footer -Border "Rounded" -Width ($this.width) 
   }
 
+  [void] setTitle(
+    [string]$title
+  ) {
+    $this.title = $title
+  }
   [void] SetHeight(
     [int]$height
   ) {
@@ -1829,6 +1838,29 @@ class List {
               $text = "  $($text)"
             }
           }
+          if ($this.filter -and ($this.filter -ne "")) {
+            $currentIndex = 0
+            $matches = [regex]::Matches($Text, $this.filter)
+            $buffer = ""
+            foreach ($match in $matches) {
+              if ($match.Index -gt $currentIndex) {
+                $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
+              }
+              $col = [Color]::new([Colors]::RoyalBlue(), [Colors]::White())
+              # $col.ApplyStyle([Styles]::Italic)
+              $innerText = $col.ApplyColor(($match.Groups[0].Value))
+              $buffer = [string]::concat($buffer, $innerText)
+              $currentIndex = $match.Index + $match.Length
+            }
+  
+            if ($currentIndex -lt $Text.Length) {
+              $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
+            }
+            $text = $buffer
+          }
+          else {
+            $text = $text
+          }
           $text
           $i++
         } | Out-String
@@ -1874,7 +1906,9 @@ class List {
         ($_.text).Length
         }).Maximum
     }
-    
+    if ($this.title -ne "") {
+      $this.DrawTitle($this.title, $true)
+    }
     while (-not $stop) {
       if ($redraw) {
         if ($search) {
@@ -2107,7 +2141,7 @@ class Confirm {
     # $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
     # $filler = "".padleft($padding, " ")
     # [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
-    Write-Candy -text $title -align Center -width $this.width -Border "rounded"
+    Write-Candy -Text $title -Align Center -Width $this.width -Border "rounded"
     $nbChoices = $this.Choices.Count
     $choiceWidth = [Math]::Floor($this.width / $nbChoices) - 4
     [Console]::WriteLine()
@@ -2373,7 +2407,7 @@ function Write-Candy {
   #TODO: Gérer le muilti-ligne: 
   $colors = [candyColor]::colorList()
   $ForegroundPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
-  $BackgroundPattern = '\[(?<color>'+$colors+')\](?<text>.*?)\[\/\k<color>\]'
+  $BackgroundPattern = '\[(?<color>' + $colors + ')\](?<text>.*?)\[\/\k<color>\]'
   $currentIndex = 0
   $matches = [regex]::Matches($Text, $ForegroundPattern)
   $buffer = ""
@@ -2400,7 +2434,7 @@ function Write-Candy {
       $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex, $match.Index - $currentIndex))
     }
     $color = $match.Groups['color'].Value
-    $col = [Color]::new($null,[candycolor]::tocolor($color))
+    $col = [Color]::new($null, [candycolor]::tocolor($color))
     $innerText = $col.ApplyColor(($match.Groups['text'].Value))
     $buffer2 = [string]::concat($buffer2, $innerText)
     $currentIndex = $match.Index + $match.Length
@@ -2434,23 +2468,23 @@ function Write-Candy {
       "start" = "$esc[7m"
       "end"   = "$esc[27m"
     }
-    "U" = @{
+    "U"         = @{
       "start" = "$esc[4m"
       "end"   = "$esc[24m"
     }
-    "B"      = @{
+    "B"         = @{
       "start" = "$esc[1m"
       "end"   = "$esc[22m"
     }
-    "I"    = @{
+    "I"         = @{
       "start" = "$esc[3m"
       "end"   = "$esc[23m"
     }
-    "S"    = @{
+    "S"         = @{
       "start" = "$esc[9m"
       "end"   = "$esc[29m"
     }
-    "R"   = @{
+    "R"         = @{
       "start" = "$esc[7m"
       "end"   = "$esc[27m"
     }
@@ -2498,18 +2532,17 @@ function Confirm-Candy {
   )
   [Option[]]$options = @()
   $Choices -split "`n" | ForEach-Object {
-    $options += [Option]::new($_,$_)
+    $options += [Option]::new($_, $_)
   }
   if ($Fullscreen) {
     $confirm = [Confirm]::new($title, $options, $Fullscreen)
   }
   else {
     if ($Width -eq -1) {
-      $Width = [math]::floor($Host.UI.RawUI.BufferSize.Width /2)
+      $Width = [math]::floor($Host.UI.RawUI.BufferSize.Width / 2)
     }
     $confirm = [Confirm]::new($title, $options, $Width)
   }
-  # $confirm = [Confirm]::new($title, $options, $Fullscreen)
   $result = $confirm.Display()
   return $result
 }

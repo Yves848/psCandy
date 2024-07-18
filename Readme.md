@@ -26,10 +26,75 @@ To install, use
 **Functions :**
 
 - Write-Candy (inspired from https://github.com/SwissPowershell/SPS-Host)
+- Confirm-Candy
 
 Here is little demo https://youtu.be/WHrmqjLkMSM
+***
 
-## Color
+## Functions
+
+### Write-Candy
+
+This is a function that output string, using tags to format the output.
+
+The tags can be :
+
+- \<Color\> : to set the foreground color
+- \[color\] : to set the background color
+- \<style\> : the set the style (Underline, Bold, Italic, Reversed, .....)
+
+The colors are the names that the static methods of [Colors] class return.
+The styles can be used in their "long" or short forms 
+
+- \<U\> = \<Underline\>
+- \<B\> = \<Bold\>
+- \<S\> = \<Strike\>
+- \<I\> = \<Italic\>
+
+Example :
+
+```Powershell
+Write-Candy "Test"
+Write-Candy "<Red>Hello</Red> 🌍 <Bold>World!</Bold>" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
+Write-Candy "<Green><Bold>Have</Bold></Green>  a 🌝 <Italic><Yellow>Day !</Yellow></Italic>" -width 80 -Align Right -Border "Rounded"
+Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Center -Border "Rounded"
+Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Thick"
+Write-Candy "<DarkGreen><Underline>Another</Underline></DarkGreen> <Italic><Underline>Test</Underline></Italic> Underline" -Border "Double"
+Write-Candy "<I>Using</I> <B><U>Short</U></B> <Red>styles <R>tags</R></Red>" -Border "Double"
+```
+
+The function accept the parameter from the pipe.
+
+Result :
+
+![](./Images/write-candy1.png)
+
+The tags can be impricated to use multiple styles on a same piece of string.
+
+## Confirm-Candy
+
+This function displays a little message and let the user choose between the available options
+
+```powershell
+  Confirm-Candy -Title "<Green>[White]Do you <U>confirm</U>[/White]</Green> ?" -choices "Yes`nNo"
+```
+
+Result :
+
+![](./Images/confirm-candy1.png)
+
+The behavior for the title is the same as for Write-Candy.  The same tags can be used.
+
+The function has a ```-width``` parameter.  If it's not specified, half the screen width is used.
+To force the fullwidth, there is a ```-Fullscreen``` parameter taht overrides the ```-width``` if both are presents.
+
+The ```-Choices``` parameters is a string where the different options are separated by a "`n".
+
+If the user pick a choice, the function return the value.  If ``Esc`` is pressed, nothing is returned.
+
+## Classes
+
+### Color
 
 The class provides 2 static metods :
 
@@ -583,26 +648,3 @@ $Style.Render()
 Result :
 
 ![](./Images/Style1.png)
-
-## Write-Candy
-This is a function that output string, using tags to format the output.
-
-Example :
-
-```Powershell
-Write-Candy "Test"
-Write-Candy "<Red>Hello</Red> 🌍 <Bold>World!</Bold>" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
-Write-Candy "<Green><Bold>Have</Bold></Green>  a 🌝 <Italic><Yellow>Day !</Yellow></Italic>" -width 80 -Align Right -Border "Rounded"
-Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Center -Border "Rounded"
-Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Thick"
-Write-Candy "<DarkGreen><Underline>Another</Underline></DarkGreen> <Italic><Underline>Test</Underline></Italic> Underline" -Border "Double"
-Write-Candy "<I>Using</I> <B><U>Short</U></B> <Red>styles <R>tags</R></Red>" -Border "Double"
-```
-
-The function accept the parameter from the pipe.
-
-Result :
-
-![](./Images/write-candy1.png)
-
-The tags can be impricated to refend multiple styles on a same piece of string.
