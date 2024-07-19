@@ -14,6 +14,18 @@ enum Align {
   Right
 }
 
+class Theme {
+  static [void] Init() {
+    $env:LIST_SEARCHCOLOR = "BlueViolet"
+    $env:LIST_HEADERCOLOR = "BlueViolet"
+  }
+
+  static [void] Load(
+    [string]$ThemeName
+  ) {
+  }
+}
+
 $BorderTypes = @{
   "Normal"    = @{
     "Top"          = "─"
@@ -1591,43 +1603,35 @@ class ListItem {
   }
 }
 
-function padRightUTF8 {
-  param(
-    [string]$text,
-    [int]$length
-  )
-  # $bytecount = 0
-  # $text.ToCharArray() | ForEach-Object {
-  #   $b = [Text.Encoding]::UTF8.Getbytecount($_)
-  #   if ($b -ge 2) {
-  #     $b = $b - 1
-  #   }
-  #   $bytecount += ($b) 
-  # }
-  $bytecount = [candyString]::GetDisplayWidth($text)
+# function padRightUTF8 {
+#   param(
+#     [string]$text,
+#     [int]$length
+#   )
+#   $bytecount = [candyString]::GetDisplayWidth($text)
 
-  $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length, " "))
-  $diff = $totalbytes - $bytecount
-  if ($diff -lt 0) {
-    try {
-      $text.Substring(0, $length)
-    }
-    catch {
-      Write-Host "Error in padRightUTF8"
-      Write-Host "text : $text"
-      Write-Host "length : $length"
-      Write-Host "diff : $diff"
-      Write-Host "textlexngth : $($text.Length)"
-      # write-host $text
-      exit(1)
-    }
+#   $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length, " "))
+#   $diff = $totalbytes - $bytecount
+#   if ($diff -lt 0) {
+#     try {
+#       $text.Substring(0, $length)
+#     }
+#     catch {
+#       Write-Host "Error in padRightUTF8"
+#       Write-Host "text : $text"
+#       Write-Host "length : $length"
+#       Write-Host "diff : $diff"
+#       Write-Host "textlexngth : $($text.Length)"
+#       # write-host $text
+#       exit(1)
+#     }
    
-  }
-  else {
-    [string]::Concat($text, "".PadLeft($diff, " "))
-  }
+#   }
+#   else {
+#     [string]::Concat($text, "".PadLeft($diff, " "))
+#   }
   
-}
+# }
 
 class List {
   [System.Collections.Generic.List[ListItem]]$items
