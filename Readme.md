@@ -27,8 +27,9 @@ To install, use
 
 - Write-Candy (inspired from https://github.com/SwissPowershell/SPS-Host)
 - Confirm-Candy
+- Select-CandyColor
 
-Here is little demo https://youtu.be/WHrmqjLkMSM
+Here is little demo https://youtu.be/K88I4mK_OYQ
 ***
 
 ## Functions
@@ -36,6 +37,16 @@ Here is little demo https://youtu.be/WHrmqjLkMSM
 ### Write-Candy
 
 This is a function that output string, using tags to format the output.
+
+```powershell
+  Write-Candy [-Text] "String" [[-Border "Type"] [-Width] [-Fullscreen] [-Align]]
+```
+
+*Parameters:*  
+
+\-Text : The text to display
+\-Border : If specified, draw a border around the string displayed.
+Bord
 
 The tags can be :
 
@@ -45,9 +56,7 @@ The tags can be :
 
 The colors are the names that the static methods of [Colors] class return.
 
-A static method of the [Color] class ```[Color]::Pick()``` displays a color picker to discover and choose the available colors
-
-![](./Images/Color_pick.png)
+The colors names can be retrieved with the ``` Select-candyColor ``` function.
 
 The styles can be used in their "long" or short forms 
 
@@ -76,6 +85,21 @@ Result :
 
 The tags can be impricated to use multiple styles on a same piece of string.
 
+## Select-candyColor
+
+This function allow to visually choose a color name.
+
+```powershell
+  Select-candyColor [-clipboard]
+```
+
+If the optional parameter *-clipboard* is mentioned, the name of the color will be stored in the clipboard, ready to be pasted in.
+
+![](./Images/Color_pick.png)
+
+
+
+
 ## Confirm-Candy
 
 This function displays a little message and let the user choose between the available options
@@ -98,6 +122,92 @@ The ```-Choices``` parameters is a string where the different options are separa
 If the user pick a choice, the function return the value.  If ``Esc`` is pressed, nothing is returned.
 
 ## Classes
+
+### candyString
+
+This class has 4 static methods :
+
+```powershell
+  class candyString
+  {
+    static [int] GetDisplayWidth([string] $Str)
+    static [int] GetDisplayLength([string] $Str)
+    static [string] TruncateString([string]$InputString,[int]$MaxWidth)
+    static [String] PadString ([string]$InputString,[int]$TotalWidth,[string]$PadCharacter,[Align]$PadDirection)
+  }
+```
+
+```powershell
+  [candyString]::GetDisplayWidth([String]$string)
+```
+
+This method returns the **real** length of $string in bytes.
+It takes into account multi-byte characters.
+
+Example :
+
+```powershell
+  [candyString]::GetDisplayWidth("Hello 世界")
+```
+
+Returns 10
+
+***
+
+```powershell
+  [candyString]::GetDisplayLength([String]$string)
+```
+
+This method returns the **visual** length of $string in bytes.
+It **does not** takes into account multi-byte characters.
+
+Example :
+
+```powershell
+  [candyString]::GetDisplayLength("Hello 世界")
+```
+
+Returns 8
+***
+```powershell
+  [candyString]::TruncateString([string]$InputString,[int]$MaxWidth)
+```
+
+This method truncate a string at a certain width (if needed).
+If the **real** length of the string is greater than the MaxWidth parameter, the string is truncated and an "ellipsis" is added at the end.
+
+Example : 
+
+```powershell
+  [candyString]::TruncateString("Hello 世界,This is a very long string to truncate",15)
+```
+
+Returns 
+
+```
+  Hello 世界,Thi.
+```
+
+***
+
+```powershell
+  [candyString]::PadString ([string]$InputString,[int]$TotalWidth,[string]$PadCharacter,[Align]$PadDirection)
+```
+
+This method returns a string padded to the ```$TotalWidth``` with the ```$PadCharacter```, in the ```$PadDirection``` direction.
+
+As for ```TruncateString``` the ```$TotalWidth``` is calculated on then **real** length of the string.
+
+The available directions are defined by an enum 
+
+```powershell
+  enum Align {
+    Left
+    Center
+    Right
+  }
+```
+***
 
 ### Color
 
