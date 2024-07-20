@@ -2421,126 +2421,10 @@ function Write-Candy {
     [string]$Text,
     [int]$Width = -1,
     [Align]$Align = [Align]::Left,
-    [String]$Border = "None"
+    [String]$Border = "None",
+    [switch]$fullscreen = $false
   )
-  #TODO: Styles imbriqués
-  #TODO: Gérer le muilti-ligne: 
-  $colors = [candyColor]::colorList()
-  $ForegroundPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
-  $BackgroundPattern = '\[(?<color>' + $colors + ')\](?<text>.*?)\[\/\k<color>\]'
-  $currentIndex = 0
-  $matches = [regex]::Matches($Text, $ForegroundPattern)
-  $buffer = ""
-  foreach ($match in $matches) {
-    if ($match.Index -gt $currentIndex) {
-      $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
-    }
-    $color = $match.Groups['color'].Value
-    $col = [Color]::new([candycolor]::tocolor($color))
-    $innerText = $col.ApplyColor(($match.Groups['text'].Value))
-    $buffer = [string]::concat($buffer, $innerText)
-    $currentIndex = $match.Index + $match.Length
-  }
-  
-  if ($currentIndex -lt $Text.Length) {
-    $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
-  }
-
-  $currentIndex = 0
-  $matches = [regex]::Matches($Buffer, $BackgroundPattern)
-  $buffer2 = ""
-  foreach ($match in $matches) {
-    if ($match.Index -gt $currentIndex) {
-      $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex, $match.Index - $currentIndex))
-    }
-    $color = $match.Groups['color'].Value
-    $col = [Color]::new($null, [candycolor]::tocolor($color))
-    $innerText = $col.ApplyColor(($match.Groups['text'].Value))
-    $buffer2 = [string]::concat($buffer2, $innerText)
-    $currentIndex = $match.Index + $match.Length
-  }
-  
-  if ($currentIndex -lt $Buffer.Length) {
-    $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex))
-  }
-
-  $buffer = $buffer2
-  #TODO: refactor the styles at only one place
-  $esc = $([char]0x1b)
-  $styles = @{
-    "Underline" = @{
-      "start" = "$esc[4m"
-      "end"   = "$esc[24m"
-    }
-    "Bold"      = @{
-      "start" = "$esc[1m"
-      "end"   = "$esc[22m"
-    }
-    "Italic"    = @{
-      "start" = "$esc[3m"
-      "end"   = "$esc[23m"
-    }
-    "Strike"    = @{
-      "start" = "$esc[9m"
-      "end"   = "$esc[29m"
-    }
-    "Reverse"   = @{
-      "start" = "$esc[7m"
-      "end"   = "$esc[27m"
-    }
-    "U"         = @{
-      "start" = "$esc[4m"
-      "end"   = "$esc[24m"
-    }
-    "B"         = @{
-      "start" = "$esc[1m"
-      "end"   = "$esc[22m"
-    }
-    "I"         = @{
-      "start" = "$esc[3m"
-      "end"   = "$esc[23m"
-    }
-    "S"         = @{
-      "start" = "$esc[9m"
-      "end"   = "$esc[29m"
-    }
-    "R"         = @{
-      "start" = "$esc[7m"
-      "end"   = "$esc[27m"
-    }
-  }
-  $styles.keys | ForEach-Object {
-    $start = $styles[$_].start
-    $end = $styles[$_].end
-    if ($buffer.Contains("<$($_)>")) {
-      $buffer = $buffer -replace "<$($_)>", $start
-      $buffer = $buffer -replace "</$($_)>", $end
-    }
-  }
-
-  
-  $buffer2 = [Color]::endStyle($buffer)
-  
-
-  if ($Width -gt 0) {
-    $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
-  }
-
-  if ($Border.ToLower() -ne "none") {
-    $borderType = [Border]::GetBorder($Border)
-    $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
-    $bufferlen = [candyString]::GetDisplayLength($buffer2)
-    $diff = $bufferwidth - $bufferlen
-    $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
-    $borderType.Left + $buffer2 + $borderType.Right + "`n" +
-    $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
-  }
-  else {
-    $buffer = $buffer2
-  }
-  
-
-  Write-Host $buffer
+  Write-Host (Build-Candy -Text $Text -Width $Width -Align $Align -Border $Border -fullscreen:$fullscreen)
 }
 function Build-Candy {
   param (
@@ -2548,7 +2432,8 @@ function Build-Candy {
     [string]$Text,
     [int]$Width = -1,
     [Align]$Align = [Align]::Left,
-    [String]$Border = "None"
+    [String]$Border = "None",
+    [switch]$fullscreen = $false
   )
   #TODO: Styles imbriqués
   #TODO: Gérer le muilti-ligne: 
@@ -2558,6 +2443,14 @@ function Build-Candy {
   $currentIndex = 0
   $matches = [regex]::Matches($Text, $ForegroundPattern)
   $buffer = ""
+  if ($Width -eq -1) {
+    if ($FullScreen.IsPresent) {
+      $Width = $Host.UI.RawUI.BufferSize.Width - 2
+    }
+    else {
+      $Width = [candyString]::GetDisplayLength($Text)
+    }
+  } 
   foreach ($match in $matches) {
     if ($match.Index -gt $currentIndex) {
       $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
