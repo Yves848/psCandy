@@ -16,13 +16,20 @@ enum Align {
 
 class Theme {
   static [void] Init() {
-    $env:LIST_SEARCHCOLOR = "BlueViolet"
-    $env:LIST_HEADERCOLOR = "BlueViolet"
+    [Theme]::Load("$PSScriptRoot\theme.json")
   }
 
   static [void] Load(
     [string]$ThemeName
   ) {
+    $theme = get-content -path $ThemeName | ConvertFrom-Json -AsHashtable
+    $theme.GetEnumerator() | ForEach-Object {
+      $key = $_.Name
+      $value = $_.Value
+      # $env:"$key" = $value
+      # (Get-ChildItem -path env:$key).Value = $value
+      Set-Item -Path "Env:$key" -Value $value
+    }
   }
 }
 
@@ -250,7 +257,6 @@ class candyString {
         throw "Invalid PadDirection specified. Use 'Left', 'Right', or 'Both'."
       }
     }
-
     return $InputString
   }
 }
@@ -1658,7 +1664,6 @@ class List {
   [int]$nbToDraw = 0
   [string]$title = ""
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
-  [hashtable]$theme = @{}
   [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
   
   # TODO: Rendre paramétrable le style de sélection
@@ -1668,31 +1673,16 @@ class List {
     return $candycolor
   }
 
-  [void] LoadTheme([hashtable]$theme) {
-    $this.theme = $theme
-    if ($this.theme.list) {
-      if ($this.theme.list.SelectedColor) {
-        $this.selectedColor = [Color]::new($this.toColor($this.theme.list.SelectedColor))
-      }
-      if ($this.theme.list.SearchColor) {
-        $this.SearchColor = [Color]::new($this.toColor($this.theme.list.SearchColor))
-      }
-      if ($this.theme.list.FilterColor) {
-        $this.FilterColor = [Color]::new($this.toColor($this.theme.list.FilterColor))
-      }
-      if ($this.theme.list.NoFilterColor) {
-        $this.NoFilterColor = [Color]::new($this.toColor($this.theme.list.NoFilterColor))
-      }
-      if ($this.theme.list.Selectedstyle) {
-        $this.SelectedColor.style = $this.theme.list.Selectedstyle
-      }
-      if ($this.theme.list.Checked) {
-        $this.checked = $this.theme.list.Checked 
-      }
-      if ($this.theme.list.UnChecked) {
-        $this.unchecked = $this.theme.list.UnChecked
-      }
-    }
+  [void] Theme() {
+    [theme]::init()
+    $this.SearchColor = [Color]::new([candyColor]::tocolor($env:LIST_SEARCHCOLOR))
+    $this.SelectedColor = [Color]::new([candyColor]::tocolor($env:LIST_SELECTEDCOLOR))
+    $this.HeaderColor = [Color]::new([candyColor]::tocolor($env:LIST_HEADERCOLOR))
+    $this.FilterColor = [Color]::new([candyColor]::tocolor($env:LIST_FILTERCOLOR))
+    $this.NoFilterColor = [Color]::new([candyColor]::tocolor($env:LIST_NOFILTERCOLOR))
+    $this.SelectedColor.style = [Enum]::Parse([Styles],$env:LIST_SELECTED_STYLE)
+    $this.checked = $env:LIST_CHECKED
+    $this.unchecked = $env:LIST_UNCHECKED
   }
 
   List (
@@ -1703,8 +1693,7 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    $this.selectedColor.style = [Styles]::Underline
-    # $this.LoadTheme()
+    $this.Theme()
   }
 
   [Void] DrawTitle(
@@ -2158,9 +2147,6 @@ class Confirm {
     $this.LoadTheme()
     $result = $null
     $title = $this.Message
-    # $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
-    # $filler = "".padleft($padding, " ")
-    # [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
     Write-Candy -Text $title -Align Center -Width $this.width -Border "rounded"
     $nbChoices = $this.Choices.Count
     $choiceWidth = [Math]::Floor($this.width / $nbChoices) - 4
@@ -2180,7 +2166,6 @@ class Confirm {
     $spaceleft = $this.width - $buttonswidth
     $filler = [math]::Floor($spaceleft / ($this.Choices.Count + 1))
     $space = "".padleft($filler, " ")
-    # Write-Host $space -NoNewline
     $stop = $false
     $y = [Console]::CursorTop
     [console]::CursorVisible = $false
