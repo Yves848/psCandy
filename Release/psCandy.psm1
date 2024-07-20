@@ -2417,7 +2417,7 @@ class Pager {
 
 function Write-Candy {
   param (
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+    [Parameter(ValueFromPipeline = $true)]
     [string]$Text,
     [int]$Width = -1,
     [Align]$Align = [Align]::Left,
@@ -2428,7 +2428,7 @@ function Write-Candy {
 }
 function Build-Candy {
   param (
-    [Parameter(Mandatory = $true, ValueFromPipeline = $true)]
+    [Parameter(ValueFromPipeline = $true)]
     [string]$Text,
     [int]$Width = -1,
     [Align]$Align = [Align]::Left,
@@ -2437,20 +2437,16 @@ function Build-Candy {
   )
   #TODO: Styles imbriqués
   #TODO: Gérer le muilti-ligne: 
+  if (($null -eq $Text) -or ($Text -eq "")) {
+    return ""
+  }
   $colors = [candyColor]::colorList()
   $ForegroundPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
   $BackgroundPattern = '\[(?<color>' + $colors + ')\](?<text>.*?)\[\/\k<color>\]'
   $currentIndex = 0
   $matches = [regex]::Matches($Text, $ForegroundPattern)
   $buffer = ""
-  if ($Width -eq -1) {
-    if ($FullScreen.IsPresent) {
-      $Width = $Host.UI.RawUI.BufferSize.Width - 2
-    }
-    else {
-      $Width = [candyString]::GetDisplayLength($Text)
-    }
-  } 
+  
   foreach ($match in $matches) {
     if ($match.Index -gt $currentIndex) {
       $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
@@ -2540,12 +2536,20 @@ function Build-Candy {
 
   
   $buffer2 = [Color]::endStyle($buffer)
-  
+
+  if ($Width -eq -1) {
+    if ($FullScreen.IsPresent) {
+      $Width = $Host.UI.RawUI.BufferSize.Width - 2
+    }
+    else {
+      $Width = [candyString]::GetDisplayWidth($buffer2)
+    }
+  } 
 
   if ($Width -gt 0) {
     $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
   }
-
+  
   if ($Border.ToLower() -ne "none") {
     $borderType = [Border]::GetBorder($Border)
     $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
@@ -2618,7 +2622,17 @@ function Select-Candy {
     }
     $c = $list.Display()
     return $c
+  } 
+}
+
+Function Select-CandyColor{
+  param (
+    [switch]$clipboard
+  )
+  $color = [Color]::Pick()
+  if ($clipboard.IsPresent) {
+    $color | Set-Clipboard
+  } else {
+    $color
   }
-  
-  
 }

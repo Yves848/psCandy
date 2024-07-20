@@ -3,7 +3,7 @@
     RootModule         = 'psCandy.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.2.7'
+    ModuleVersion      = '0.3.0'
 
     # ID used to uniquely identify this module
     GUID               = 'e2d0c0d5-2e33-4ec7-8db5-bc786c1eb7d3'
@@ -42,7 +42,7 @@
     NestedModules      = @()
 
     # Functions to export from this module
-    FunctionsToExport  = @('Write-Candy','Confirm-Candy')
+    FunctionsToExport  = @('Write-Candy','Confirm-Candy','Select-CandyColor')
 
     # Cmdlets to export from this module
     CmdletsToExport    = @()

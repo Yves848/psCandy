@@ -1,7 +1,7 @@
-using module ..\..\Classes\psCandy.psm1
+using module psCandy
 
 param (
-    [string]$Path = "\git\psCandy\readme.md"
+    [string]$Path = "~\git\psCandy\readme.md"
 )
 
 $Pager = [Pager]::New($path)
