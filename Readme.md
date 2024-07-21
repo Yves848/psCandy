@@ -56,7 +56,7 @@ The tags can be :
 
 The colors are the names that the static methods of [Colors] class return.
 
-The colors names can be retrieved with the ``` Select-candyColor ``` function.
+The colors names can be retrieved with the ``` Select-candyColor ``` or ``` Select-candyColor8 ``` function.
 
 The styles can be used in their "long" or short forms 
 
@@ -69,12 +69,16 @@ Example :
 
 ```Powershell
 Write-Candy "Test"
-Write-Candy "<Red>Hello</Red> 🌍 <Bold>World!</Bold>" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
+Write-Candy "<Red>Hello</Red> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
 Write-Candy "<Green><Bold>Have</Bold></Green>  a 🌝 <Italic><Yellow>Day !</Yellow></Italic>" -width 80 -Align Right -Border "Rounded"
 Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Center -Border "Rounded"
-Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Thick"
-Write-Candy "<DarkGreen><Underline>Another</Underline></DarkGreen> <Italic><Underline>Test</Underline></Italic> Underline" -Border "Double"
-Write-Candy "<I>Using</I> <B><U>Short</U></B> <Red>styles <R>tags</R></Red>" -Border "Double"
+Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Rounded"
+Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Border "Double"
+
+Write-Candy "Using <B><U>8bits</U><B> color tags" -fullscreen  -Align Center
+
+Write-Candy "<1>Hello</1> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
+Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Border "Double"
 ```
 
 The function accept the parameter from the pipe.
@@ -97,6 +101,15 @@ If the optional parameter *-clipboard* is mentioned, the name of the color will 
 
 ![](./Images/Color_pick.png)
 
+## Select-candyColor8
+
+This function displays an 8bit color picking grid.
+It makes easy to choose an 8bit color tag to use in ``` write-candy ``` strings
+
+While selecting a color code, one can press "b" to switch the background of the grid to the selected color.
+Another press on "b" returns to normal background.
+
+![](./Images/pick8-1_1.gif)
 
 
 

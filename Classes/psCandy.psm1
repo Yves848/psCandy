@@ -2815,11 +2815,11 @@ Function Select-CandyColor {
   }
 }
 
-Function Select-CandyColor16 {
+Function Select-CandyColor8 {
   param (
     [switch]$clipboard
   )
-  $color = [Color]::Pick16()
+  $color = [Color]::Pick8()
   if ($clipboard.IsPresent) {
     $color | Set-Clipboard
   }
