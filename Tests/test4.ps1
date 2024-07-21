@@ -1,44 +1,24 @@
 using module C:\Users\yvesg\git\psCandy\Classes\psCandy.psm1
 
-$c = Build-Candy -text "<Green>Couple</Green> Papa  [White]<Red>Coucou</Red>[/White] Courage Prout"
-$c 
-$s = "Co"
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+[console]::Clear()
+$items = [System.Collections.Generic.List[ListItem]]::new()
+$items.Add([ListItem]::new("Banana", 1,"🍌"))
+$items.Add([ListItem]::new("Apple", 2, "🍎"))
+$items.Add([ListItem]::new("Mandarine", 3, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
+$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString"="Test"; "aBool"=$true}, "🟠"))
+$items.Add([ListItem]::new("Potato", 5,"🥔"))
+$items.Add([ListItem]::new("Potato 2", 6,"🥔"))
+$items.Add([ListItem]::new("Potato 3", 7,"🥔"))
+$items.Add([ListItem]::new("Potato 4",8,"🥔"))
+$items.Add([ListItem]::new("Potato 5", 9,"🥔"))
+$items.Add([ListItem]::new("Banana 2", 10,"🍌"))
+$items.Add([ListItem]::new("Apple 2", 11,"🍎"))
+$items.Add([ListItem]::new("Mandarine 2", 12,"🍊"))
+$items.Add([ListItem]::new("Grape Fruit 2", 13,"🟠"))
+$items.Add([ListItem]::new("Potato 6", 14,"🥔"))
 
-$esc = [regex]::Replace($c, '\e', '#') -split "#"
-$esc = $esc -split "#"
-
-$esc
-Write-Host ("-" * 20  )
-
-$result = $esc | ForEach-Object {
-  if ([regex]::IsMatch($_, $s)) {
-    $currentIndex = 0
-    $color = [Regex]::Match($_, "\[38[\d;]*m")
-    $matches = [regex]::Matches($_, $s)
-    $buffer = ""
-    foreach ($match in $matches) {
-      if ($match.Index -gt $currentIndex) {
-        $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
-      }
-      $col = [Color]::new([Colors]::RoyalBlue(), [Colors]::White())
-      $innerText = $col.ApplyColor(($match.Groups[0].Value))
-      if ($color.Success) {
-        $innerText = [string]::concat($innerText,"$([char]0x1b)$($color.Value)")
-      } else {
-        $innerText = [string]::concat($innerText,"$([char]0x1b)[39m")
-      }
-      $buffer = [string]::concat($buffer, $innerText)
-      $currentIndex = $match.Index + $match.Length
-    }
-  
-    if ($currentIndex -lt $_.Length) {
-      $buffer = [string]::concat($buffer, $_.Substring($currentIndex))
-    }
-    $buffer
-  }
-  else {
-    $_
-  }
-}
-
-$result -join $([char]0x1b)
+$list = [List]::new($items)  
+$list.SetTitle("<Blue>Vegetables</Blue>")
+$list.Display()
