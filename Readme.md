@@ -28,6 +28,7 @@ To install, use
 - Write-Candy (inspired from https://github.com/SwissPowershell/SPS-Host)
 - Confirm-Candy
 - Select-CandyColor
+- Select-CandyColor8
 
 Here is little demo https://youtu.be/K88I4mK_OYQ
 ***
