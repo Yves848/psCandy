@@ -1806,7 +1806,7 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    # $this.Theme()
+    $this.Theme()
   }
 
   [Void] DrawTitle(
@@ -2619,45 +2619,6 @@ function Build-Candy {
   $buffer = parseBackgroundColor -text $Buffer -pattern $BackgroundPattern -Alias
   $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern -alias
 
-
-  # $currentIndex = 0
-  # $matches = [regex]::Matches($Text, $ForegroundPattern)
-  # $buffer = ""
-  
-  # foreach ($match in $matches) {
-  #   if ($match.Index -gt $currentIndex) {
-  #     $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
-  #   }
-  #   $color = $match.Groups['color'].Value
-  #   $col = [Color]::new([candycolor]::tocolor($color))
-  #   $innerText = $col.ApplyColor(($match.Groups['text'].Value))
-  #   $buffer = [string]::concat($buffer, $innerText)
-  #   $currentIndex = $match.Index + $match.Length
-  # }
-  
-  # if ($currentIndex -lt $Text.Length) {
-  #   $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
-  # }
-
-  # $currentIndex = 0
-  # $matches = [regex]::Matches($Buffer, $BackgroundPattern)
-  # $buffer2 = ""
-  # foreach ($match in $matches) {
-  #   if ($match.Index -gt $currentIndex) {
-  #     $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex, $match.Index - $currentIndex))
-  #   }
-  #   $color = $match.Groups['color'].Value
-  #   $col = [Color]::new($null, [candycolor]::tocolor($color))
-  #   $innerText = $col.ApplyColor(($match.Groups['text'].Value))
-  #   $buffer2 = [string]::concat($buffer2, $innerText)
-  #   $currentIndex = $match.Index + $match.Length
-  # }
-  
-  # if ($currentIndex -lt $Buffer.Length) {
-  #   $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex))
-  # }
-
-  # $buffer = $buffer2
   #TODO: refactor the styles at only one place
   $esc = $([char]0x1b)
   $styles = @{

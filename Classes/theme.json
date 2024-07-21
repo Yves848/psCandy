@@ -6,5 +6,5 @@
   "LIST_NOFILTERCOLOR" : "Green",
   "LIST_UNCHECKED" : "○",
   "LIST_CHECKED" : "●",
-  "LIST_SELECTED_STYLE" : "Normal"
+  "LIST_SELECTED_STYLE" : "Underline"
 }
