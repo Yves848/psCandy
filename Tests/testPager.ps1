@@ -8,9 +8,14 @@ $Pager = [Pager]::New($path)
 $Pager.actions.add(33, { 
   $Pager.index = $Pager.index - 8
   if ($Pager.index -lt 0) {
-    $Pager.index = 0
+    $pager.offset = ($pager.offset - $pager.height)
+    if ($pager.offset -lt 0) {
+      $pager.offset = 0
+    }
+    $Pager.index = $Pager.height - $oldIndex
   }
 } )
+
 $Pager.actions.add(34, { 
   $oldIndex = $Pager.index
   $Pager.index = $Pager.index + 8
