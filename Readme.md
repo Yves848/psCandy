@@ -13,6 +13,9 @@ To install, use
 ```Powershell
   Install-module -Name psCandy -Scope CurrentUser
 ```
+Of course, it work on any platform that support Powershell
+
+![](./Images/Zorin.png)
 
 **5 classes are enable :**
 
