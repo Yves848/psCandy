@@ -26,7 +26,6 @@ class Theme {
     $theme.GetEnumerator() | ForEach-Object {
       $key = $_.Name
       $value = $_.Value
-      # $env:"$key" = $value
       # (Get-ChildItem -path env:$key).Value = $value
       Set-Item -Path "Env:$key" -Value $value
     }
@@ -1756,7 +1755,7 @@ class List {
   [System.Collections.Generic.List[ListItem]]$items
   [int]$pages = 1
   [int]$page = 1
-  [int]$height = 10
+  [int]$height = 0
   [int]$index = 0
   [int]$width = $Host.UI.RawUI.BufferSize.Width - 3
   [string]$filter = ""
@@ -1806,6 +1805,7 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
+    $this.height = $global:Host.UI.RawUI.BufferSize.Height - 8
     $this.Theme()
   }
 
@@ -2446,7 +2446,8 @@ class Pager {
   [int]$index = 0
   [Color]$selectedColor = [Color]::new($null, $null)
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
-  
+  [hashtable]$actions = @{}
+
   Pager(
     [string]$file
   ) {
@@ -2505,6 +2506,12 @@ class Pager {
           }
           27 {
             $stop = $true
+          }
+          default {
+            $action = $this.actions[$key.VirtualKeyCode]
+            if ($action) {
+              $action.Invoke()
+            }
           }
         }
       }
