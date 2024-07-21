@@ -16,13 +16,20 @@ enum Align {
 
 class Theme {
   static [void] Init() {
-    $env:LIST_SEARCHCOLOR = "BlueViolet"
-    $env:LIST_HEADERCOLOR = "BlueViolet"
+    [Theme]::Load("$PSScriptRoot\theme.json")
   }
 
   static [void] Load(
     [string]$ThemeName
   ) {
+    $theme = Get-Content -Path $ThemeName | ConvertFrom-Json -AsHashtable
+    $theme.GetEnumerator() | ForEach-Object {
+      $key = $_.Name
+      $value = $_.Value
+      # $env:"$key" = $value
+      # (Get-ChildItem -path env:$key).Value = $value
+      Set-Item -Path "Env:$key" -Value $value
+    }
   }
 }
 
@@ -250,7 +257,6 @@ class candyString {
         throw "Invalid PadDirection specified. Use 'Left', 'Right', or 'Both'."
       }
     }
-
     return $InputString
   }
 }
@@ -1146,7 +1152,95 @@ class Color {
   [candyColor]$Foreground = $null
   [candyColor]$Background = $null
   [Styles]$style
+  static [string] Pick8() {
+    [Console]::OutputEncoding = [System.Text.Encoding]::UTF8
+    [console]::CursorVisible = $false
+    [console]::Clear()
+    Write-Candy -Text "Pick a color <Green>(8bits)</Green>" -fullscreen -Border "Rounded" -Align Center
+    $y = $global:host.UI.RawUI.CursorPosition.Y
+    $Cell = ">000<" # Lenght 5
+
+    $w = $global:host.UI.RawUI.WindowSize.Width - 2
+    $CellsperRows = [math]::Floor($w / ($Cell.Length))
+    $index = 0
+    $back = -1
+    $result = -1
+    while ($true) {
+      [console]::SetCursorPosition(0, $y)
+      $Color = 0
+      $buffer = ""
+      while ($Color -lt 256) {
+        $clsString = $color.ToString().PadLeft(3, " ")
+        if ($index -eq $color) {
+          $clsString = "<R>" + $clsString + "</R>"
+        }
+    
+        $clsString = " " + $clsString + " "
+        $buffer += [Color]::Applycolor16($clsString, $color, $back)
+        if (($color + 1) % $CellsperRows -eq 0) {
+          $buffer += "`n"
+        }
+        $Color++
+      }
+      Write-Candy $buffer
+      if ($back -ne -1) {
+        Write-Candy -Text "Color is <$($index)>[$($back)]$index[/$($back)]</$($index)> " -fullscreen -Border "Rounded"
+      }
+      else {
+        Write-Candy -Text "Color is <$($index)>$index</$($index)> " -fullscreen -Border "Rounded"
+      }
   
+      if ($global:Host.UI.RawUI.KeyAvailable) {
+        [System.Management.Automation.Host.KeyInfo]$key = $($global:host.UI.RawUI.ReadKey('NoEcho,IncludeKeyDown'))
+        if ($key.VirtualKeyCode -eq 39) {
+          $index++
+          if ($index -gt 255) {
+            $index = 0
+          }
+        }
+        if ($key.VirtualKeyCode -eq 37) {
+          $index--
+          if ($index -lt 0) {
+            $index = 255
+          }
+        } 
+        if ($key.VirtualKeyCode -eq 40) {
+          $index += $CellsperRows
+          if ($index -gt 255) {
+            $index = 0
+          }
+        }
+        if ($key.VirtualKeyCode -eq 38) {
+          $index -= $CellsperRows
+          if ($index -lt 0) {
+            $index = 255
+          }
+        } 
+        if ($key.VirtualKeyCode -eq 66) {
+          if ($back -eq -1) {
+            $back = $index
+          }
+          else {
+            $back = -1
+          }
+      
+        }
+    
+        if ($key.VirtualKeyCode -eq 13) {
+          $result = $index
+          break
+        }
+        if ($key.VirtualKeyCode -eq 27) {
+          break
+        }
+        if ($key.VirtualKeyCode -eq 32) {
+          $index = 0
+        }
+      }
+    }
+    [console]::CursorVisible = $true
+    return $result
+  }
   static [String] Pick () {
     [Console]::Clear()
     Write-Candy "🎨 <Green>Pick</Green> <Blue>A</Blue> <Red>Color</Red>" -Width ($global:Host.UI.RawUI.BufferSize.Width - 2) -Border "Rounded" -Align Center
@@ -1198,6 +1292,31 @@ class Color {
     }
     $close = "$esc[0m"
     $result = "$under$stri$fore$back$Text$close"
+    return $result
+  }
+
+  
+
+  static [string] Applycolor16 (
+    [string]$Text,
+    [int]$ForegroundColor = -1,
+    [int]$BackgroundColor = -1
+  ) {
+    $esc = $([char]0x1b)
+  
+    $fore = ""
+    $back = ""
+    $close = ""
+    if ($ForegroundColor -ne -1) {
+      $fore = "$esc[38;5;$($ForegroundColor)m"
+      $close = "$esc[39m"
+    }
+    if ( $BackgroundColor -ne -1 ) {
+      $back = "$esc[48;5;$($BackgroundColor)m"
+      $close = "$esc[49m"
+    }
+    
+    $result = "$fore$back$Text$close"
     return $result
   }
 
@@ -1658,7 +1777,6 @@ class List {
   [int]$nbToDraw = 0
   [string]$title = ""
   [hashtable]$borderType = [Border]::GetBorder("Rounded")
-  [hashtable]$theme = @{}
   [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
   
   # TODO: Rendre paramétrable le style de sélection
@@ -1668,31 +1786,16 @@ class List {
     return $candycolor
   }
 
-  [void] LoadTheme([hashtable]$theme) {
-    $this.theme = $theme
-    if ($this.theme.list) {
-      if ($this.theme.list.SelectedColor) {
-        $this.selectedColor = [Color]::new($this.toColor($this.theme.list.SelectedColor))
-      }
-      if ($this.theme.list.SearchColor) {
-        $this.SearchColor = [Color]::new($this.toColor($this.theme.list.SearchColor))
-      }
-      if ($this.theme.list.FilterColor) {
-        $this.FilterColor = [Color]::new($this.toColor($this.theme.list.FilterColor))
-      }
-      if ($this.theme.list.NoFilterColor) {
-        $this.NoFilterColor = [Color]::new($this.toColor($this.theme.list.NoFilterColor))
-      }
-      if ($this.theme.list.Selectedstyle) {
-        $this.SelectedColor.style = $this.theme.list.Selectedstyle
-      }
-      if ($this.theme.list.Checked) {
-        $this.checked = $this.theme.list.Checked 
-      }
-      if ($this.theme.list.UnChecked) {
-        $this.unchecked = $this.theme.list.UnChecked
-      }
-    }
+  [void] Theme() {
+    [theme]::init()
+    $this.SearchColor = [Color]::new([candyColor]::tocolor($env:LIST_SEARCHCOLOR))
+    $this.SelectedColor = [Color]::new([candyColor]::tocolor($env:LIST_SELECTEDCOLOR))
+    $this.HeaderColor = [Color]::new([candyColor]::tocolor($env:LIST_HEADERCOLOR))
+    $this.FilterColor = [Color]::new([candyColor]::tocolor($env:LIST_FILTERCOLOR))
+    $this.NoFilterColor = [Color]::new([candyColor]::tocolor($env:LIST_NOFILTERCOLOR))
+    $this.SelectedColor.style = [Enum]::Parse([Styles], $env:LIST_SELECTED_STYLE)
+    $this.checked = $env:LIST_CHECKED
+    $this.unchecked = $env:LIST_UNCHECKED
   }
 
   List (
@@ -1703,8 +1806,7 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    $this.selectedColor.style = [Styles]::Underline
-    # $this.LoadTheme()
+    # $this.Theme()
   }
 
   [Void] DrawTitle(
@@ -2158,9 +2260,6 @@ class Confirm {
     $this.LoadTheme()
     $result = $null
     $title = $this.Message
-    # $padding = [Math]::Ceiling(($this.width - $title.Length) / 2) #
-    # $filler = "".padleft($padding, " ")
-    # [Console]::WriteLine($this.MessageColor.Render("$filler$title"))
     Write-Candy -Text $title -Align Center -Width $this.width -Border "rounded"
     $nbChoices = $this.Choices.Count
     $choiceWidth = [Math]::Floor($this.width / $nbChoices) - 4
@@ -2180,7 +2279,6 @@ class Confirm {
     $spaceleft = $this.width - $buttonswidth
     $filler = [math]::Floor($spaceleft / ($this.Choices.Count + 1))
     $space = "".padleft($filler, " ")
-    # Write-Host $space -NoNewline
     $stop = $false
     $y = [Console]::CursorTop
     [console]::CursorVisible = $false
@@ -2440,47 +2538,126 @@ function Build-Candy {
   if (($null -eq $Text) -or ($Text -eq "")) {
     return ""
   }
+
+  function  parseForegroundColor {
+    param (
+      [string]$text,
+      [string]$pattern,
+      [switch]$alias
+    )
+    $currentIndex = 0
+    $matches = [regex]::Matches($Text, $Pattern)
+    $buffer = ""
+    if ($matches.Count -eq 0) {
+      return $text
+    }
+    foreach ($match in $matches) {
+      if ($match.Index -gt $currentIndex) {
+        $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
+      }
+      $color = $match.Groups['color'].Value
+      if ($alias.IsPresent) {
+        $innerText = [color]::Applycolor16(($match.Groups['text'].Value), $color, -1)
+      }
+      else {
+        $col = [Color]::new([candycolor]::tocolor($color))
+        $innerText = $col.ApplyColor(($match.Groups['text'].Value))
+      }
+      $buffer = [string]::concat($buffer, $innerText)
+      $currentIndex = $match.Index + $match.Length
+    }
+  
+    if ($currentIndex -lt $Text.Length) {
+      $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
+    }
+    return $buffer  
+  }
+
+  function  parseBackgroundColor {
+    param (
+      [string]$text,
+      [string]$pattern,
+      [switch]$alias
+    )
+    $currentIndex = 0
+    $matches = [regex]::Matches($Text, $Pattern)
+    $buffer = ""
+    if ($matches.Count -eq 0) {
+      return $text
+    }
+    foreach ($match in $matches) {
+      if ($match.Index -gt $currentIndex) {
+        $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
+      }
+      $color = $match.Groups['color'].Value
+      if ($alias.IsPresent) {
+        $innerText = [color]::Applycolor16(($match.Groups['text'].Value), -1, $color)
+      }
+      else {
+        $col = [Color]::new($null, [candycolor]::tocolor($color))
+        $innerText = $col.ApplyColor(-1, ($match.Groups['text'].Value))
+      }      
+      $buffer = [string]::concat($buffer, $innerText)
+      $currentIndex = $match.Index + $match.Length
+    }
+  
+    if ($currentIndex -lt $Text.Length) {
+      $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
+    }
+    return $buffer  
+  }
+
+
   $colors = [candyColor]::colorList()
   $ForegroundPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
   $BackgroundPattern = '\[(?<color>' + $colors + ')\](?<text>.*?)\[\/\k<color>\]'
-  $currentIndex = 0
-  $matches = [regex]::Matches($Text, $ForegroundPattern)
-  $buffer = ""
-  
-  foreach ($match in $matches) {
-    if ($match.Index -gt $currentIndex) {
-      $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
-    }
-    $color = $match.Groups['color'].Value
-    $col = [Color]::new([candycolor]::tocolor($color))
-    $innerText = $col.ApplyColor(($match.Groups['text'].Value))
-    $buffer = [string]::concat($buffer, $innerText)
-    $currentIndex = $match.Index + $match.Length
-  }
-  
-  if ($currentIndex -lt $Text.Length) {
-    $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
-  }
+  $buffer = parseBackgroundColor -text $Text -pattern $BackgroundPattern
+  $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern
 
-  $currentIndex = 0
-  $matches = [regex]::Matches($Buffer, $BackgroundPattern)
-  $buffer2 = ""
-  foreach ($match in $matches) {
-    if ($match.Index -gt $currentIndex) {
-      $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex, $match.Index - $currentIndex))
-    }
-    $color = $match.Groups['color'].Value
-    $col = [Color]::new($null, [candycolor]::tocolor($color))
-    $innerText = $col.ApplyColor(($match.Groups['text'].Value))
-    $buffer2 = [string]::concat($buffer2, $innerText)
-    $currentIndex = $match.Index + $match.Length
-  }
-  
-  if ($currentIndex -lt $Buffer.Length) {
-    $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex))
-  }
+  $ForegroundPattern = '<(?<color>\d{1,3})>(?<text>.*?)<\/\k<color>>'
+  $BackgroundPattern = '\[(?<color>\d{1,3})\](?<text>.*?)\[\/\k<color>\]'
+  $buffer = parseBackgroundColor -text $Buffer -pattern $BackgroundPattern -Alias
+  $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern -alias
 
-  $buffer = $buffer2
+
+  # $currentIndex = 0
+  # $matches = [regex]::Matches($Text, $ForegroundPattern)
+  # $buffer = ""
+  
+  # foreach ($match in $matches) {
+  #   if ($match.Index -gt $currentIndex) {
+  #     $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
+  #   }
+  #   $color = $match.Groups['color'].Value
+  #   $col = [Color]::new([candycolor]::tocolor($color))
+  #   $innerText = $col.ApplyColor(($match.Groups['text'].Value))
+  #   $buffer = [string]::concat($buffer, $innerText)
+  #   $currentIndex = $match.Index + $match.Length
+  # }
+  
+  # if ($currentIndex -lt $Text.Length) {
+  #   $buffer = [string]::concat($buffer, $Text.Substring($currentIndex))
+  # }
+
+  # $currentIndex = 0
+  # $matches = [regex]::Matches($Buffer, $BackgroundPattern)
+  # $buffer2 = ""
+  # foreach ($match in $matches) {
+  #   if ($match.Index -gt $currentIndex) {
+  #     $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex, $match.Index - $currentIndex))
+  #   }
+  #   $color = $match.Groups['color'].Value
+  #   $col = [Color]::new($null, [candycolor]::tocolor($color))
+  #   $innerText = $col.ApplyColor(($match.Groups['text'].Value))
+  #   $buffer2 = [string]::concat($buffer2, $innerText)
+  #   $currentIndex = $match.Index + $match.Length
+  # }
+  
+  # if ($currentIndex -lt $Buffer.Length) {
+  #   $buffer2 = [string]::concat($buffer2, $Buffer.Substring($currentIndex))
+  # }
+
+  # $buffer = $buffer2
   #TODO: refactor the styles at only one place
   $esc = $([char]0x1b)
   $styles = @{
@@ -2625,14 +2802,28 @@ function Select-Candy {
   } 
 }
 
-Function Select-CandyColor{
+Function Select-CandyColor {
   param (
     [switch]$clipboard
   )
   $color = [Color]::Pick()
   if ($clipboard.IsPresent) {
     $color | Set-Clipboard
-  } else {
+  }
+  else {
+    $color
+  }
+}
+
+Function Select-CandyColor8 {
+  param (
+    [switch]$clipboard
+  )
+  $color = [Color]::Pick8()
+  if ($clipboard.IsPresent) {
+    $color | Set-Clipboard
+  }
+  else {
     $color
   }
 }

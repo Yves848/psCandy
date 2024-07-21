@@ -7,3 +7,8 @@ Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Cen
 Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Rounded"
 Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Border "Double"
 
+Write-Candy "Using <B><U>8bits</U><B> color tags" -fullscreen  -Align Center
+
+Write-Candy "<1>Hello</1> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
+Write-Candy "<34><Underline>Another</Underline>   Test</34>" -Border "Double"
+
