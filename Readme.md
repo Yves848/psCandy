@@ -79,7 +79,7 @@ Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Bord
 Write-Candy "Using <B><U>8bits</U><B> color tags" -fullscreen  -Align Center
 
 Write-Candy "<1>Hello</1> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
-Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Border "Double"
+Write-Candy "<34><Underline>Another</Underline>   Test</34>" -Border "Double"
 ```
 
 The function accept the parameter from the pipe.
