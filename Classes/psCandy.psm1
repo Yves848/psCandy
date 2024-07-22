@@ -1779,11 +1779,6 @@ class List {
   [int]$Y = $global:Host.UI.RawUI.CursorPosition.Y
   
   # TODO: Rendre paramétrable le style de sélection
-  [candyColor] toColor([string]$color) {
-    $methodInfo = [colors].GetMethod($color, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public)
-    [candyColor]$candycolor = $methodinfo.Invoke($null, $null)
-    return $candycolor
-  }
 
   [void] Theme() {
     [theme]::init()
@@ -1898,18 +1893,8 @@ class List {
           else {
             $offset = $baseoffset - 1
           }
-          # $text = $_.text.PadRight(($this.linelen + $offset), " ")
-          try {
-            $text = [candyString]::PadString($_.text, ($this.linelen + $offset), " ", [Align]::Left)
-            # $text = padRightUTF8 -text $_.text -length ($this.linelen + $offset)
-          }
-          catch {
-            Write-Host "An error occurred on padrightUTF8:"
-            Write-Host $_
-            Exit(1)
-          }
           
-          # $text = [candyString]::PadString($_.text, ($this.linelen + $offset)," ",[Align]::Left)  
+          $text = [candyString]::PadString($_.text, ($this.linelen + $offset), " ", [Align]::Left)
           $icon = $_.Icon 
           if (($null -ne $icon) -and ($icon.Trim() -ne "")) {
             $icon = $_.IconColor.render($icon)
