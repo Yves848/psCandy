@@ -1318,6 +1318,33 @@ class Color {
     return $result
   }
 
+  static [string]ApplyColorRGB(
+    [string]$text,
+    [string]$foregroundColor = "",
+    [string]$backgroundColor = ""
+  ) {
+    $result = ""
+    $esc = $([char]0x1b)
+  
+    $Fore = ""
+    $Back = ""
+    $close = ""
+    if ("" -ne $ForegroundColor) {
+      $col = [candycolor]::tocolor($foregroundcolor)
+      $fore = "$esc[38;2;$($col.R);$($col.G);$($col.B)m"
+      $close = "$esc[39m"
+    }
+    
+    if ("" -ne $BackgroundColor) {
+      $col = [candycolor]::tocolor($backgroundcolor) 
+      $back = "$esc[48;2;$($col.R);$($col.G);$($col.B)m"
+      $close = "$esc[49m"
+    }
+    
+    $result = "$fore$back$Text$close"
+    return $result
+  }
+
   static [string] colorRGB (
     [string]$Text,
     [candyColor]$Foreground,
@@ -2495,8 +2522,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), $color, -1)
       }
       else {
-        $col = [Color]::new([candycolor]::tocolor($color))
-        $innerText = $col.ApplyColor(($match.Groups['text'].Value))
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),$color,"")
       }
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2529,8 +2555,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), -1, $color)
       }
       else {
-        $col = [Color]::new($null, [candycolor]::tocolor($color))
-        $innerText = $col.ApplyColor( ($match.Groups['text'].Value))
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),"",$color)
       }      
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2542,10 +2567,8 @@ function Build-Candy {
     return $buffer  
   }
 
-
-  $colors = [candyColor]::colorList()
-  $ForegroundPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
-  $BackgroundPattern = '\[(?<color>' + $colors + ')\](?<text>.*?)\[\/\k<color>\]'
+  $ForegroundPattern = '<(?<color>' + $($script:colors) + ')>(?<text>.*?)<\/\k<color>>'
+  $BackgroundPattern = '\[(?<color>' + $($script:colors) + ')\](?<text>.*?)\[\/\k<color>\]'
   $buffer = parseBackgroundColor -text $Text -pattern $BackgroundPattern
   $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern
 
@@ -2725,6 +2748,8 @@ Function Select-CandyColor8 {
   }
 }
 
+$script:colors = [candyColor]::colorList()
+
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 [console]::Clear()
@@ -2748,8 +2773,9 @@ $items.Add([ListItem]::new("Grape Fruit 2", 13,"🟠"))
 $items.Add([ListItem]::new("Potato 6", 14,"🥔"))
 
 $list = [List]::new($items)  
-# $list.LoadTheme($Theme)
 # $list.SetHeight(20)
 # $list.SetLimit($True)
+$list.checked = "◉"
+$list.unchecked = "◌"
 $list.SetTitle("<Blue>Vegetables</Blue>")
 $list.Display()
