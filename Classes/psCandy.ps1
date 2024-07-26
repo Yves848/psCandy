@@ -1686,7 +1686,7 @@ class ListItem {
     $this.value = $value
     $this.Icon = $Icon
   }
-  
+
   ListItem(
     [string]$text,
     [PSCustomObject]$value
@@ -1706,7 +1706,7 @@ class List {
   [int]$index = 0
   [int]$width = $Host.UI.RawUI.BufferSize.Width - 3
   [string]$filter = ""
-  [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
+  [string]$blanks = " "
   [int]$linelen = 0
   [char]$selector = ">"
   [Color]$SearchColor = [Color]::new([Colors]::BlueViolet())
@@ -1747,7 +1747,8 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    $this.height = $global:Host.UI.RawUI.BufferSize.Height - 8
+    $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
     $this.Theme()
   }
 
@@ -2728,7 +2729,7 @@ Function Select-CandyColor8 {
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
 [console]::Clear()
 
-Write-Candy -text "<Yellow>Test List</Yellow>" -Border "Rounded"
+# Write-Candy -text "<Yellow>Test List</Yellow>" -Border "Rounded"
 $items = [System.Collections.Generic.List[ListItem]]::new()
 $items.Add([ListItem]::new("Banana", 1,"🍌"))
 $items.Add([ListItem]::new("Apple", 2, "🍎"))
@@ -2748,7 +2749,7 @@ $items.Add([ListItem]::new("Potato 6", 14,"🥔"))
 
 $list = [List]::new($items)  
 # $list.LoadTheme($Theme)
-$list.SetHeight(20)
+# $list.SetHeight(20)
 # $list.SetLimit($True)
 $list.SetTitle("<Blue>Vegetables</Blue>")
 $list.Display()
