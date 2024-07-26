@@ -1676,9 +1676,7 @@ class ListItem {
   [bool]$checked = $false
   [bool]$chained = $true
   [bool]$header = $false
-  [candyColor]$Color = [Colors]::White()  
-  [Color]$IconColor = [Color]::New([Colors]::White())
-
+  
   ListItem(
     [string]$text,
     [PSCustomObject]$value,
@@ -1688,28 +1686,7 @@ class ListItem {
     $this.value = $value
     $this.Icon = $Icon
   }
-
-  ListItem(
-    [string]$text,
-    [PSCustomObject]$value,
-    [string]$Icon,
-    [candyColor]$Color
-  ) {
-    $this.text = $text
-    $this.value = $value
-    $this.Icon = $Icon
-    $this.Color = $Color
-  }
-  ListItem(
-    [string]$text,
-    [PSCustomObject]$value,
-    [candyColor]$Color
-  ) {
-    $this.text = $text
-    $this.value = $value
-    $this.Color = $Color
-  }
-
+  
   ListItem(
     [string]$text,
     [PSCustomObject]$value
@@ -1720,35 +1697,6 @@ class ListItem {
   }
 }
 
-# function padRightUTF8 {
-#   param(
-#     [string]$text,
-#     [int]$length
-#   )
-#   $bytecount = [candyString]::GetDisplayWidth($text)
-
-#   $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length, " "))
-#   $diff = $totalbytes - $bytecount
-#   if ($diff -lt 0) {
-#     try {
-#       $text.Substring(0, $length)
-#     }
-#     catch {
-#       Write-Host "Error in padRightUTF8"
-#       Write-Host "text : $text"
-#       Write-Host "length : $length"
-#       Write-Host "diff : $diff"
-#       Write-Host "textlexngth : $($text.Length)"
-#       # write-host $text
-#       exit(1)
-#     }
-   
-#   }
-#   else {
-#     [string]::Concat($text, "".PadLeft($diff, " "))
-#   }
-  
-# }
 
 class List {
   [System.Collections.Generic.List[ListItem]]$items
@@ -1877,10 +1825,10 @@ class List {
     $i = 0
     $offset = 0
     if ($this.limit) {
-      $baseoffset = 0
+      $baseoffset = 3
     }
     else {
-      $baseoffset = 0
+      $baseoffset = 3
     }
     try {
       if ($items) {
@@ -1895,17 +1843,8 @@ class List {
           
           $text = $_.text
           $icon = $_.Icon 
-          # if (($null -ne $icon) -and ($icon.Trim() -ne "")) {
-          #   $icon = $_.IconColor.render($icon)
-          #   $icon = $icon -replace "\e\[0m", ''
-          #   # $text = "$icon $text"          
-          # }
-          # if ($null -ne $_.Color) {
-          #   $c = [Color]::new($_.Color)
-          #   $text = $c.render($text)
-          # }
           if ($this.filter -and ($this.filter -ne "")) {
-            $filter = $text -split '\e'
+            $filter = (Build-candy $text) -split '\e'
             $result = $filter | ForEach-Object {
               if ([regex]::IsMatch($_, $this.filter)) {
                 $currentIndex = 0
@@ -1916,15 +1855,13 @@ class List {
                   if ($match.Index -gt $currentIndex) {
                     $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
                   }
-                  # $col = [Color]::new([Colors]::RoyalBlue(), [Colors]::White())
-                  # $innerText = $col.ApplyColor(($match.Groups[0].Value))
-                  
-                  # if ($color.Success) {
-                    $innerText = Build-Candy -text "[White]$($match.Groups[0].Value)[/White]"
-                  # }
-                  # else {
-                  #   $innerText = $match.Groups[0].Value
-                  # }
+                  $innerText = Build-Candy -text "[White]<Blue>$($match.Groups[0].Value)</Blue>[/White]"
+                  if ($color.Success) {
+                    $innerText = [string]::concat($innerText, "$([char]0x1b)$($color.Value)")
+                  }
+                  else {
+                    $innerText = [string]::concat($innerText, "$([char]0x1b)[39m")
+                  }
                   $buffer = [string]::concat($buffer, $innerText)
                   $currentIndex = $match.Index + $match.Length
                 }
@@ -1944,7 +1881,7 @@ class List {
           else {
             $text = $text
           }
-          $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
+          
           if ($this.limit) {
             $text = "$icon $text"
             if ($this.index -eq $i) {
@@ -1962,6 +1899,8 @@ class List {
               $checkmark = $this.unchecked
             }
             $text = "$checkmark $icon $text"
+            $text = Build-Candy $text
+            $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
             if ($this.index -eq $i) {
               $text = "<U>$($this.selector) $($text)</U>"
             }
@@ -1969,7 +1908,9 @@ class List {
               $text = "  $($text)"
             }
           }
+          
           Build-Candy $text
+          
           $i++
         } | Out-String
       }
@@ -2039,7 +1980,7 @@ class List {
         }
         if ($this.filter -and ($this.filter -ne "")) {
           $VisibleItems = $this.items | Where-Object {
-            [regex]::IsMatch($_.text, $this.filter)
+            [regex]::IsMatch((Build-Candy $_.text), $this.filter)
           } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
           $this.pages = [math]::Ceiling($VisibleItems.Count / $this.height)
         }
@@ -2091,18 +2032,18 @@ class List {
               $car = $car.ToUpper()
             }
             $this.filter = $this.filter + $Car
-            $VisibleItems = $this.items | Where-Object {
-              $_.text -cmatch $this.filter
-            } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
+            # $VisibleItems = $this.items | Where-Object {
+            #   (build-candy $_.text) -match $this.filter
+            # } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
             $redraw = $true
           }
           8 {
             # Backspace
             if ($this.filter.Length -gt 0) {
               $this.filter = $this.filter.Substring(0, $this.filter.Length - 1)
-              $VisibleItems = $this.items | Where-Object {
-                $_.text -match $this.filter
-              } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
+              # $VisibleItems = $this.items | Where-Object {
+              #   (Build-Candy $_.text) -match $this.filter
+              # } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
               $redraw = $true
             }
           }
@@ -2588,7 +2529,7 @@ function Build-Candy {
       }
       else {
         $col = [Color]::new($null, [candycolor]::tocolor($color))
-        $innerText = $col.ApplyColor(-1, ($match.Groups['text'].Value))
+        $innerText = $col.ApplyColor( ($match.Groups['text'].Value))
       }      
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2782,3 +2723,32 @@ Function Select-CandyColor8 {
     $color
   }
 }
+
+
+[Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
+[console]::Clear()
+
+Write-Candy -text "<Yellow>Test List</Yellow>" -Border "Rounded"
+$items = [System.Collections.Generic.List[ListItem]]::new()
+$items.Add([ListItem]::new("Banana", 1,"🍌"))
+$items.Add([ListItem]::new("Apple", 2, "🍎"))
+$items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
+$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString"="Test"; "aBool"=$true}, "🟠"))
+$items.Add([ListItem]::new("Potato", 5,"🥔"))
+$items.Add([ListItem]::new("Potato 2", 6,"🥔"))
+$items.Add([ListItem]::new("Potato 3", 7,"🥔"))
+$items.Add([ListItem]::new("Potato 4",8,"🥔"))
+$items.Add([ListItem]::new("Potato 5", 9,"🥔"))
+$items.Add([ListItem]::new("Banana 2", 10,"🍌"))
+$items.Add([ListItem]::new("Apple 2", 11,"🍎"))
+$items.Add([ListItem]::new("Mandarine 2", 12,"🍊"))
+$items.Add([ListItem]::new("Grape Fruit 2", 13,"🟠"))
+$items.Add([ListItem]::new("Potato 6", 14,"🥔"))
+
+$list = [List]::new($items)  
+# $list.LoadTheme($Theme)
+$list.SetHeight(20)
+# $list.SetLimit($True)
+$list.SetTitle("<Blue>Vegetables</Blue>")
+$list.Display()
