@@ -1765,10 +1765,6 @@ class List {
     [System.Collections.Generic.List[ListItem]]$items
   ) {
     $this.items = $items
-    $this.items | ForEach-Object {
-      $_.selected = $false
-      $_.checked = $false
-    }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
     $this.Theme()
   }
@@ -1850,7 +1846,7 @@ class List {
       $baseoffset = 3
     }
     else {
-      $baseoffset = 3
+      $baseoffset = 4
     }
     try {
       if ($items) {
@@ -1911,13 +1907,7 @@ class List {
           } # End of else (No Filter)
           
           if ($this.limit) {
-            $text = "$icon $text"
-            if ($this.index -eq $i) {
-              $text = $this.SelectedColor.render($text)
-            }
-            else {
-              $text = $text
-            }
+            $checkmark=""
           }
           else {
             if ($_.checked) {
@@ -1926,15 +1916,15 @@ class List {
             else {
               $checkmark = $this.unchecked
             }
-            $text = "$checkmark $icon $text"
-            $text = Build-Candy $text
-            $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
-            if ($this.index -eq $i) {
-              $text = "<U>$($this.selector) $($text)</U>"
-            }
-            else {
-              $text = "  $($text)"
-            }
+          }
+          $text = "$checkmark $icon $text"
+          $text = Build-Candy $text
+          $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
+          if ($this.index -eq $i) {
+            $text = "<U>$($this.selector) $($text)</U>"
+          }
+          else {
+            $text = "  $($text)"
           }
           
           Build-Candy $text
@@ -1946,7 +1936,8 @@ class List {
         $buffer = "Too much filter ? 😊"
       }
       while ($i -lt ($this.nbToDraw)) {
-        $buffer += "".PadRight(($this.linelen + 4 + $offset), " ") + "`n"
+        # $buffer += "".PadRight(($this.linelen + $offset), ".") 
+        $buffer += [candyString]::PadString("  ", ($this.linelen + $offset), " ", [Align]::Left)+"`n"
         $i++
       }
     }
