@@ -1877,9 +1877,9 @@ class List {
               if ([regex]::IsMatch($_, $this.filter)) {
                 $currentIndex = 0
                 $color = [Regex]::Match($_, "\[38[\d;]*m")
-                $matches = [regex]::Matches($_, $this.filter)
+                $Filtermatches = [regex]::Matches($_, $this.filter)
                 $buffer = ""
-                foreach ($match in $matches) {
+                foreach ($match in $Filtermatches) {
                   if ($match.Index -gt $currentIndex) {
                     $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
                   }
