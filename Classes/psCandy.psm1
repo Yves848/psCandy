@@ -1765,10 +1765,6 @@ class List {
     [System.Collections.Generic.List[ListItem]]$items
   ) {
     $this.items = $items
-    $this.items | ForEach-Object {
-      $_.selected = $false
-      $_.checked = $false
-    }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
     $this.Theme()
   }
@@ -1847,7 +1843,7 @@ class List {
     $i = 0
     $offset = 0
     if ($this.limit) {
-      $baseoffset = 3
+      $baseoffset = 2
     }
     else {
       $baseoffset = 3
@@ -1877,9 +1873,9 @@ class List {
               if ([regex]::IsMatch($_, $this.filter)) {
                 $currentIndex = 0
                 $color = [Regex]::Match($_, "\[38[\d;]*m")
-                $matches = [regex]::Matches($_, $this.filter)
+                $Filtermatches = [regex]::Matches($_, $this.filter)
                 $buffer = ""
-                foreach ($match in $matches) {
+                foreach ($match in $Filtermatches) {
                   if ($match.Index -gt $currentIndex) {
                     $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
                   }
@@ -1911,13 +1907,7 @@ class List {
           } # End of else (No Filter)
           
           if ($this.limit) {
-            $text = "$icon $text"
-            if ($this.index -eq $i) {
-              $text = $this.SelectedColor.render($text)
-            }
-            else {
-              $text = $text
-            }
+            $checkmark = ""
           }
           else {
             if ($_.checked) {
@@ -1926,15 +1916,15 @@ class List {
             else {
               $checkmark = $this.unchecked
             }
-            $text = "$checkmark $icon $text"
-            $text = Build-Candy $text
-            $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
-            if ($this.index -eq $i) {
-              $text = "<U>$($this.selector) $($text)</U>"
-            }
-            else {
-              $text = "  $($text)"
-            }
+          }
+          $text = "$checkmark $icon $text"
+          $text = Build-Candy $text
+          $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
+          if ($this.index -eq $i) {
+            $text = "<U>$($this.selector) $($text)</U>"
+          }
+          else {
+            $text = "  $($text)"
           }
           
           Build-Candy $text
@@ -1946,7 +1936,8 @@ class List {
         $buffer = "Too much filter ? 😊"
       }
       while ($i -lt ($this.nbToDraw)) {
-        $buffer += "".PadRight(($this.linelen + 4 + $offset), " ") + "`n"
+        # $buffer += "".PadRight(($this.linelen + $offset), ".") 
+        $buffer += [candyString]::PadString("  ", ($this.linelen + $offset), " ", [Align]::Left) + "`n"
         $i++
       }
     }
@@ -2507,12 +2498,12 @@ function Build-Candy {
       [switch]$alias
     )
     $currentIndex = 0
-    $matches = [regex]::Matches($Text, $Pattern)
+    $Colormatches = [regex]::Matches($Text, $Pattern)
     $buffer = ""
-    if ($matches.Count -eq 0) {
+    if ($Colormatches.Count -eq 0) {
       return $text
     }
-    foreach ($match in $matches) {
+    foreach ($match in $Colormatches) {
       if ($match.Index -gt $currentIndex) {
         $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
       }
@@ -2540,12 +2531,12 @@ function Build-Candy {
       [switch]$alias
     )
     $currentIndex = 0
-    $matches = [regex]::Matches($Text, $Pattern)
+    $Colormatches = [regex]::Matches($Text, $Pattern)
     $buffer = ""
-    if ($matches.Count -eq 0) {
+    if ($Colormatches.Count -eq 0) {
       return $text
     }
-    foreach ($match in $matches) {
+    foreach ($match in $Colormatches) {
       if ($match.Index -gt $currentIndex) {
         $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
       }
