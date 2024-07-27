@@ -26,11 +26,12 @@ class Theme {
     $theme.GetEnumerator() | ForEach-Object {
       $key = $_.Name
       $value = $_.Value
-      # (Get-ChildItem -path env:$key).Value = $value
       Set-Item -Path "Env:$key" -Value $value
     }
   }
 }
+
+$script:esc = $([char]0x1b)
 
 $BorderTypes = @{
   "Normal"    = @{
@@ -1271,25 +1272,25 @@ class Color {
     [switch]$Underline,
     [switch]$Strike
   ) {
-    $esc = $([char]0x1b)
+    
   
     $fore = ""
     $back = ""
     $Under = ""
     $Stri = ""
     if ($ForegroundColor -ne -1) {
-      $fore = "$esc[38;5;$($ForegroundColor)m"
+      $fore = "$script:esc[38;5;$($ForegroundColor)m"
     }
     if ( $BackgroundColor -ne -1 ) {
-      $back = "$esc[48;5;$($BackgroundColor)m"
+      $back = "$script:esc[48;5;$($BackgroundColor)m"
     }
     if ($Underline) {
-      $under = "$esc[4m"
+      $under = "$script:esc[4m"
     }
     if ($Strike) {
-      $stri = "$esc[9m"
+      $stri = "$script:esc[9m"
     }
-    $close = "$esc[0m"
+    $close = "$script:esc[0m"
     $result = "$under$stri$fore$back$Text$close"
     return $result
   }
@@ -1301,18 +1302,43 @@ class Color {
     [int]$ForegroundColor = -1,
     [int]$BackgroundColor = -1
   ) {
-    $esc = $([char]0x1b)
-  
+    
     $fore = ""
     $back = ""
     $close = ""
     if ($ForegroundColor -ne -1) {
-      $fore = "$esc[38;5;$($ForegroundColor)m"
-      $close = "$esc[39m"
+      $fore = "$script:esc[38;5;$($ForegroundColor)m"
+      $close = "$script:esc[39m"
     }
     if ( $BackgroundColor -ne -1 ) {
-      $back = "$esc[48;5;$($BackgroundColor)m"
-      $close = "$esc[49m"
+      $back = "$script:esc[48;5;$($BackgroundColor)m"
+      $close = "$script:esc[49m"
+    }
+    
+    $result = "$fore$back$Text$close"
+    return $result
+  }
+
+  static [string]ApplyColorRGB(
+    [string]$text,
+    [string]$foregroundColor = "",
+    [string]$backgroundColor = ""
+  ) {
+    $result = ""
+    
+    $Fore = ""
+    $Back = ""
+    $close = ""
+    if ("" -ne $ForegroundColor) {
+      $col = [candycolor]::tocolor($foregroundcolor)
+      $fore = "$script:esc[38;2;$($col.R);$($col.G);$($col.B)m"
+      $close = "$script:esc[39m"
+    }
+    
+    if ("" -ne $BackgroundColor) {
+      $col = [candycolor]::tocolor($backgroundcolor) 
+      $back = "$script:esc[48;2;$($col.R);$($col.G);$($col.B)m"
+      $close = "$script:esc[49m"
     }
     
     $result = "$fore$back$Text$close"
@@ -1326,26 +1352,25 @@ class Color {
     [switch]$Underline,
     [switch]$Strike
   ) {
-    $esc = $([char]0x1b)
-  
+    
     $Fore = ""
     $Back = ""
     $Under = ""
     $Stri = ""
     
     if ($null -ne $Foreground) {
-      $fore = "$esc[38;2;$($Foreground.R);$($Foreground.G);$($Foreground.B)m"
+      $fore = "$script:esc[38;2;$($Foreground.R);$($Foreground.G);$($Foreground.B)m"
     }
     if ($null -ne $Background) {
-      $back = "$esc[48;2;$($Background.R);$($Background.G);$($Background.B)m"
+      $back = "$script:esc[48;2;$($Background.R);$($Background.G);$($Background.B)m"
     }
     if ($Underline) {
-      $under = "$esc[4m"
+      $under = "$script:esc[4m"
     }
     if ($Strike) {
-      $stri = "$esc[9m"
+      $stri = "$script:esc[9m"
     }
-    $close = "$esc[0m"
+    $close = "$script:esc[0m"
     $result = "$under$stri$fore$back$Text$close"
     return $result
   }
@@ -1368,35 +1393,34 @@ class Color {
     [string]$text
   ) {
     $result = ""
-    $esc = $([char]0x1b)
-  
+    
     $Fore = ""
     $Back = ""
     $sty = ""
     $close = ""
     if ($null -ne $this.Foreground) {
-      $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
-      $close = "$esc[39m"
+      $fore = "$script:esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+      $close = "$script:esc[39m"
     }
     
     if ($null -ne $this.Background) {
-      $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
-      $close = "$esc[49m"
+      $back = "$script:esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
+      $close = "$script:esc[49m"
     }
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
-      $sty = [string]::concat($sty, "$esc[4m")
+      $sty = [string]::concat($sty, "$script:esc[4m")
     }
     
     if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
-      $sty = [string]::concat($sty, "$esc[9m")
+      $sty = [string]::concat($sty, "$script:esc[9m")
     }
 
     if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
-      $sty = [string]::concat($sty, "$esc[3m")
+      $sty = [string]::concat($sty, "$script:esc[3m")
     }
 
     if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
-      $sty = [string]::concat($sty, "$esc[1m")
+      $sty = [string]::concat($sty, "$script:esc[1m")
     }
 
     
@@ -1408,31 +1432,30 @@ class Color {
     [string]$text
   ) {
     $result = ""
-    $esc = $([char]0x1b)
     
     $sty = ""
     $endsty = ""
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
-      $sty = [string]::concat($sty, "$esc[4m")
-      $endsty = [string]::concat($sty, "$esc[24m")
+      $sty = [string]::concat($sty, "$script:esc[4m")
+      $endsty = [string]::concat($sty, "$script:esc[24m")
     }
     
     
     if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
-      $sty = [string]::concat($sty, "$esc[9m")
-      $endsty = [string]::concat($sty, "$esc[24m")
+      $sty = [string]::concat($sty, "$script:esc[9m")
+      $endsty = [string]::concat($sty, "$script:esc[24m")
     }
     
 
     if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
-      $sty = [string]::concat($sty, "$esc[3m")
-      $endsty = [string]::concat($sty, "$esc[24m")
+      $sty = [string]::concat($sty, "$script:esc[3m")
+      $endsty = [string]::concat($sty, "$script:esc[24m")
     }
     
 
     if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
-      $sty = [string]::concat($sty, "$esc[1m")
-      $endsty = [string]::concat($sty, "$esc[24m")
+      $sty = [string]::concat($sty, "$script:esc[1m")
+      $endsty = [string]::concat($sty, "$script:esc[24m")
     }
     
     $result = "$sty$Text$endsty"
@@ -1442,8 +1465,7 @@ class Color {
   static [string]endStyle(
     [string]$text) {
     $result = ""
-    $esc = $([char]0x1b)
-    $close = "$esc[0m"
+    $close = "$script:esc[0m"
     $result = "$Text$close"
     return $result
   }
@@ -1451,36 +1473,35 @@ class Color {
   [string]render (
     [string]$text
   ) {
-    $esc = $([char]0x1b)
-  
+    
     $Fore = ""
     $Back = ""
     $sty = ""
     
     if ($null -ne $this.Foreground) {
-      $fore = "$esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
+      $fore = "$script:esc[38;2;$($this.Foreground.R);$($this.Foreground.G);$($this.Foreground.B)m"
     }
     
     if ($null -ne $this.Background) {
-      $back = "$esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
+      $back = "$script:esc[48;2;$($this.Background.R);$($this.Background.G);$($this.Background.B)m"
     }
     if ( ($this.style -band [Styles]::Underline) -eq [Styles]::Underline ) {
-      $sty = [string]::concat($sty, "$esc[4m")
+      $sty = [string]::concat($sty, "$script:esc[4m")
     }
     
     if (($this.style -band [styles]::Strike) -eq [Styles]::Strike) {
-      $sty = [string]::concat($sty, "$esc[9m")
+      $sty = [string]::concat($sty, "$script:esc[9m")
     }
 
     if (($this.style -band [styles]::Italic) -eq [Styles]::Italic) {
-      $sty = [string]::concat($sty, "$esc[3m")
+      $sty = [string]::concat($sty, "$script:esc[3m")
     }
 
     if (($this.style -band [styles]::Bold) -eq [Styles]::Bold) {
-      $sty = [string]::concat($sty, "$esc[1m")
+      $sty = [string]::concat($sty, "$script:esc[1m")
     }
 
-    $close = "$esc[0m"
+    $close = "$script:esc[0m"
     $result = "$sty$fore$back$Text$close"
     return $result
   }
@@ -1677,9 +1698,7 @@ class ListItem {
   [bool]$checked = $false
   [bool]$chained = $true
   [bool]$header = $false
-  [candyColor]$Color = [Colors]::White()  
-  [Color]$IconColor = [Color]::New([Colors]::White())
-
+  
   ListItem(
     [string]$text,
     [PSCustomObject]$value,
@@ -1692,27 +1711,6 @@ class ListItem {
 
   ListItem(
     [string]$text,
-    [PSCustomObject]$value,
-    [string]$Icon,
-    [candyColor]$Color
-  ) {
-    $this.text = $text
-    $this.value = $value
-    $this.Icon = $Icon
-    $this.Color = $Color
-  }
-  ListItem(
-    [string]$text,
-    [PSCustomObject]$value,
-    [candyColor]$Color
-  ) {
-    $this.text = $text
-    $this.value = $value
-    $this.Color = $Color
-  }
-
-  ListItem(
-    [string]$text,
     [PSCustomObject]$value
   ) {
     $this.text = $text
@@ -1721,35 +1719,6 @@ class ListItem {
   }
 }
 
-# function padRightUTF8 {
-#   param(
-#     [string]$text,
-#     [int]$length
-#   )
-#   $bytecount = [candyString]::GetDisplayWidth($text)
-
-#   $totalbytes = [Text.Encoding]::UTF8.GetByteCount("".PadLeft($length, " "))
-#   $diff = $totalbytes - $bytecount
-#   if ($diff -lt 0) {
-#     try {
-#       $text.Substring(0, $length)
-#     }
-#     catch {
-#       Write-Host "Error in padRightUTF8"
-#       Write-Host "text : $text"
-#       Write-Host "length : $length"
-#       Write-Host "diff : $diff"
-#       Write-Host "textlexngth : $($text.Length)"
-#       # write-host $text
-#       exit(1)
-#     }
-   
-#   }
-#   else {
-#     [string]::Concat($text, "".PadLeft($diff, " "))
-#   }
-  
-# }
 
 class List {
   [System.Collections.Generic.List[ListItem]]$items
@@ -1759,7 +1728,7 @@ class List {
   [int]$index = 0
   [int]$width = $Host.UI.RawUI.BufferSize.Width - 3
   [string]$filter = ""
-  [string]$blanks = (" " * $Host.UI.RawUI.BufferSize.Width) * ($this.height + 1)
+  [string]$blanks = " "
   [int]$linelen = 0
   [char]$selector = ">"
   [Color]$SearchColor = [Color]::new([Colors]::BlueViolet())
@@ -1800,7 +1769,8 @@ class List {
       $_.selected = $false
       $_.checked = $false
     }
-    $this.height = $global:Host.UI.RawUI.BufferSize.Height - 8
+    $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
+    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
     $this.Theme()
   }
 
@@ -1878,10 +1848,10 @@ class List {
     $i = 0
     $offset = 0
     if ($this.limit) {
-      $baseoffset = 0
+      $baseoffset = 3
     }
     else {
-      $baseoffset = 0
+      $baseoffset = 3
     }
     try {
       if ($items) {
@@ -1894,17 +1864,47 @@ class List {
             $offset = $baseoffset - 1
           }
           
-          $text = [candyString]::PadString($_.text, ($this.linelen + $offset), " ", [Align]::Left)
+          $text = $_.text
           $icon = $_.Icon 
-          if (($null -ne $icon) -and ($icon.Trim() -ne "")) {
-            $icon = $_.IconColor.render($icon)
-            $icon = $icon -replace "\e\[0m", ''
-            # $text = "$icon $text"          
+          if ($this.filter -and ($this.filter -ne "")) {
+            $filter = (Build-candy $text) -split '\e'
+            $result = $filter | ForEach-Object {
+              if ([regex]::IsMatch($_, $this.filter)) {
+                $currentIndex = 0
+                $color = [Regex]::Match($_, "\[38[\d;]*m")
+                $matches = [regex]::Matches($_, $this.filter)
+                $buffer = ""
+                foreach ($match in $matches) {
+                  if ($match.Index -gt $currentIndex) {
+                    $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
+                  }
+                  $innerText = Build-Candy -text "[White]<Blue>$($match.Groups[0].Value)</Blue>[/White]"
+                  if ($color.Success) {
+                    $innerText = [string]::concat($innerText, "$($script:esc)$($color.Value)")
+                  }
+                  else {
+                    $innerText = [string]::concat($innerText, "$($script:esc)[39m")
+                  }
+                  $buffer = [string]::concat($buffer, $innerText)
+                  $currentIndex = $match.Index + $match.Length
+                }
+              
+                if ($currentIndex -lt $_.Length) {
+                  $buffer = [string]::concat($buffer, $_.Substring($currentIndex))
+                }
+                $buffer
+              }
+              else {
+                $_
+              }
+            }
+            
+            $text = $result -join $($script:esc)
           }
-          if ($null -ne $_.Color) {
-            $c = [Color]::new($_.Color)
-            $text = $c.render($text)
+          else {
+            $text = $text
           }
+          
           if ($this.limit) {
             $text = "$icon $text"
             if ($this.index -eq $i) {
@@ -1922,53 +1922,18 @@ class List {
               $checkmark = $this.unchecked
             }
             $text = "$checkmark $icon $text"
+            $text = Build-Candy $text
+            $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
             if ($this.index -eq $i) {
-              $text = $this.SelectedColor.render("$($this.selector) $($text)")
+              $text = "<U>$($this.selector) $($text)</U>"
             }
             else {
               $text = "  $($text)"
             }
           }
-          if ($this.filter -and ($this.filter -ne "")) {
-            $filter = [regex]::Replace($text, '\e', '#') -split "#"
-            $result = $filter | ForEach-Object {
-              if ([regex]::IsMatch($_, $this.filter)) {
-                $currentIndex = 0
-                $color = [Regex]::Match($_, "\[38[\d;]*m")
-                $matches = [regex]::Matches($_, $this.filter)
-                $buffer = ""
-                foreach ($match in $matches) {
-                  if ($match.Index -gt $currentIndex) {
-                    $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
-                  }
-                  $col = [Color]::new([Colors]::RoyalBlue(), [Colors]::White())
-                  $innerText = $col.ApplyColor(($match.Groups[0].Value))
-                  if ($color.Success) {
-                    $innerText = [string]::concat($innerText, "$([char]0x1b)$($color.Value)")
-                  }
-                  else {
-                    $innerText = [string]::concat($innerText, "$([char]0x1b)[39m")
-                  }
-                  $buffer = [string]::concat($buffer, $innerText)
-                  $currentIndex = $match.Index + $match.Length
-                }
-              
-                if ($currentIndex -lt $_.Length) {
-                  $buffer = [string]::concat($buffer, $_.Substring($currentIndex))
-                }
-                $buffer
-              }
-              else {
-                $_
-              }
-            }
-            
-            $text = $result -join $([char]0x1b)
-          }
-          else {
-            $text = $text
-          }
-          $text
+          
+          Build-Candy $text
+          
           $i++
         } | Out-String
       }
@@ -2023,6 +1988,7 @@ class List {
           [Console]::setcursorposition(0, $this.Y)
           [console]::Write($this.SearchColor.Render("Search: "))
           [console]::CursorVisible = $true
+          # TODO: Utiliser Gum input pour encoder la rechercher
           $this.filter = $global:host.UI.ReadLine()
           [console]::CursorVisible = $false
           $search = $false
@@ -2038,7 +2004,7 @@ class List {
         }
         if ($this.filter -and ($this.filter -ne "")) {
           $VisibleItems = $this.items | Where-Object {
-            [regex]::IsMatch($_.text, $this.filter)
+            [regex]::IsMatch((Build-Candy $_.text), $this.filter)
           } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
           $this.pages = [math]::Ceiling($VisibleItems.Count / $this.height)
         }
@@ -2090,18 +2056,12 @@ class List {
               $car = $car.ToUpper()
             }
             $this.filter = $this.filter + $Car
-            $VisibleItems = $this.items | Where-Object {
-              $_.text -cmatch $this.filter
-            } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
             $redraw = $true
           }
           8 {
             # Backspace
             if ($this.filter.Length -gt 0) {
               $this.filter = $this.filter.Substring(0, $this.filter.Length - 1)
-              $VisibleItems = $this.items | Where-Object {
-                $_.text -match $this.filter
-              } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
               $redraw = $true
             }
           }
@@ -2552,8 +2512,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), $color, -1)
       }
       else {
-        $col = [Color]::new([candycolor]::tocolor($color))
-        $innerText = $col.ApplyColor(($match.Groups['text'].Value))
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),$color,"")
       }
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2586,8 +2545,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), -1, $color)
       }
       else {
-        $col = [Color]::new($null, [candycolor]::tocolor($color))
-        $innerText = $col.ApplyColor(-1, ($match.Groups['text'].Value))
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),"",$color)
       }      
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2599,10 +2557,8 @@ function Build-Candy {
     return $buffer  
   }
 
-
-  $colors = [candyColor]::colorList()
-  $ForegroundPattern = '<(?<color>' + $colors + ')>(?<text>.*?)<\/\k<color>>'
-  $BackgroundPattern = '\[(?<color>' + $colors + ')\](?<text>.*?)\[\/\k<color>\]'
+  $ForegroundPattern = '<(?<color>' + $($script:colors) + ')>(?<text>.*?)<\/\k<color>>'
+  $BackgroundPattern = '\[(?<color>' + $($script:colors) + ')\](?<text>.*?)\[\/\k<color>\]'
   $buffer = parseBackgroundColor -text $Text -pattern $BackgroundPattern
   $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern
 
@@ -2612,7 +2568,7 @@ function Build-Candy {
   $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern -alias
 
   #TODO: refactor the styles at only one place
-  $esc = $([char]0x1b)
+  
   $styles = @{
     "Underline" = @{
       "start" = "$esc[4m"
@@ -2665,7 +2621,8 @@ function Build-Candy {
   }
 
   
-  $buffer2 = [Color]::endStyle($buffer)
+  # $buffer2 = [Color]::endStyle($buffer)
+  $buffer2 = $buffer
 
   if ($Width -eq -1) {
     if ($FullScreen.IsPresent) {
@@ -2780,3 +2737,5 @@ Function Select-CandyColor8 {
     $color
   }
 }
+
+$script:colors = [candyColor]::colorList()

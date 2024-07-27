@@ -1855,6 +1855,13 @@ class List {
     }
     try {
       if ($items) {
+        
+        if ($this.header -ne "") {
+          $buffer = $this.header
+        }
+        else {
+          $buffer = ""
+        }
         $buffer = $items | ForEach-Object {
           $checkmark = ""
           if ($_.Icon) {
@@ -1863,7 +1870,6 @@ class List {
           else {
             $offset = $baseoffset - 1
           }
-          
           $text = $_.text
           $icon = $_.Icon 
           if ($this.filter -and ($this.filter -ne "")) {
@@ -1900,10 +1906,10 @@ class List {
             }
             
             $text = $result -join $($script:esc)
-          }
+          } # End of filter
           else {
             $text = $text
-          }
+          } # End of else (No Filter)
           
           if ($this.limit) {
             $text = "$icon $text"
@@ -1939,6 +1945,10 @@ class List {
       }
       else {
         $buffer = "Too much filter ? 😊"
+      }
+      while ($i -lt $this.nbToDraw) {
+        $buffer += "".PadRight(($this.linelen + 4 + $offset), " ") + "`n"
+        $i++
       }
     }
     catch {
@@ -1981,6 +1991,10 @@ class List {
     if ($this.title -ne "") {
       $this.DrawTitle($this.title, $true)
     }
+    $this.nbToDraw = $this.height
+    if ($this.header -ne "") {
+      $this.nbToDraw = $this.height - 2
+    }
     while (-not $stop) {
       if ($redraw) {
         if ($search) {
@@ -1998,32 +2012,28 @@ class List {
         else {
           [console]::Write("".PadLeft(80, " ")) 
         }
-        $this.nbToDraw = $this.height
-        if ($this.header -ne "") {
-          $this.nbToDraw = $this.height - 2
-        }
         if ($this.filter -and ($this.filter -ne "")) {
           $VisibleItems = $this.items | Where-Object {
             [regex]::IsMatch((Build-Candy $_.text), $this.filter)
-          } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
-          $this.pages = [math]::Ceiling($VisibleItems.Count / $this.height)
+          } | Select-Object -Skip (($this.page - 1) * $this.nbToDraw) -First $this.nbToDraw
+          $this.pages = [math]::Ceiling($VisibleItems.Count / $this.nbToDraw)
         }
         else {
-          $VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
-          $this.pages = [math]::Ceiling($this.items.Count / $this.height)
+          $VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.nbToDraw) -First $this.nbToDraw
+          $this.pages = [math]::Ceiling($this.items.Count / $this.nbToDraw)
         }
         $buffer = $this.MakeBufer($VisibleItems)
         [Console]::setcursorposition(0, $this.Y)
-        [Console]::Write($this.blanks)
-        [Console]::setcursorposition(0, ($this.Y + 1))
         if ($this.index -gt $VisibleItems.Count - 1 ) {
           $this.index = 0
         }
         if ($this.header -ne "") {
-          $out = [string]::concat("".padleft(6, " "), $this.header)
-          $out = $out.Substring(0, $this.linelen + 3)
-          $out = $this.HeaderColor.render($out)
-          [Console]::WriteLine("$out")
+          $leftoffset = ""
+          if ($this.limit -eq $false) {
+            $leftoffset = "    "
+          } 
+          $head = $this.header.PadRight($this.linelen + 3, " ")
+          Write-Candy "$leftoffset<U>$($head)</U>" 
         }
         [System.Console]::Write($buffer)
         
@@ -2512,7 +2522,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), $color, -1)
       }
       else {
-        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),$color,"")
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value), $color, "")
       }
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2545,7 +2555,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), -1, $color)
       }
       else {
-        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),"",$color)
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value), "", $color)
       }      
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2746,25 +2756,27 @@ $script:colors = [candyColor]::colorList()
 
 # Write-Candy -text "<Yellow>Test List</Yellow>" -Border "Rounded"
 $items = [System.Collections.Generic.List[ListItem]]::new()
-$items.Add([ListItem]::new("Banana", 1,"🍌"))
+$items.Add([ListItem]::new("Banana", 1, "🍌"))
 $items.Add([ListItem]::new("Apple", 2, "🍎"))
 $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
 $items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
-$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString"="Test"; "aBool"=$true}, "🟠"))
-$items.Add([ListItem]::new("Potato", 5,"🥔"))
-$items.Add([ListItem]::new("Potato 2", 6,"🥔"))
-$items.Add([ListItem]::new("Potato 3", 7,"🥔"))
-$items.Add([ListItem]::new("Potato 4",8,"🥔"))
-$items.Add([ListItem]::new("Potato 5", 9,"🥔"))
-$items.Add([ListItem]::new("Banana 2", 10,"🍌"))
-$items.Add([ListItem]::new("Apple 2", 11,"🍎"))
-$items.Add([ListItem]::new("Mandarine 2", 12,"🍊"))
-$items.Add([ListItem]::new("Grape Fruit 2", 13,"🟠"))
-$items.Add([ListItem]::new("Potato 6", 14,"🥔"))
+$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
+$items.Add([ListItem]::new("Potato", 5, "🥔"))
+$items.Add([ListItem]::new("Potato 2", 6, "🥔"))
+$items.Add([ListItem]::new("Potato 3", 7, "🥔"))
+$items.Add([ListItem]::new("Potato 4", 8, "🥔"))
+$items.Add([ListItem]::new("Potato 5", 9, "🥔"))
+$items.Add([ListItem]::new("Banana 2", 10, "🍌"))
+$items.Add([ListItem]::new("Apple 2", 11, "🍎"))
+$items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
+$items.Add([ListItem]::new("Potato 6", 14, "🥔"))
 
 $list = [List]::new($items)  
 # $list.SetHeight(20)
 # $list.SetLimit($True)
+
+$list.setheader("<26>Select your favorite fruits</26>")
 $list.checked = "◉"
 $list.unchecked = "◌"
 $list.SetTitle("<Blue>Vegetables</Blue>")
