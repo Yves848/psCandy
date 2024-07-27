@@ -2507,12 +2507,12 @@ function Build-Candy {
       [switch]$alias
     )
     $currentIndex = 0
-    $matches = [regex]::Matches($Text, $Pattern)
+    $Colormatches = [regex]::Matches($Text, $Pattern)
     $buffer = ""
-    if ($matches.Count -eq 0) {
+    if ($Colormatches.Count -eq 0) {
       return $text
     }
-    foreach ($match in $matches) {
+    foreach ($match in $Colormatches) {
       if ($match.Index -gt $currentIndex) {
         $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
       }
@@ -2540,12 +2540,12 @@ function Build-Candy {
       [switch]$alias
     )
     $currentIndex = 0
-    $matches = [regex]::Matches($Text, $Pattern)
+    $Colormatches = [regex]::Matches($Text, $Pattern)
     $buffer = ""
-    if ($matches.Count -eq 0) {
+    if ($Colormatches.Count -eq 0) {
       return $text
     }
-    foreach ($match in $matches) {
+    foreach ($match in $Colormatches) {
       if ($match.Index -gt $currentIndex) {
         $buffer = [string]::concat($buffer, $Text.Substring($currentIndex, $match.Index - $currentIndex))
       }
