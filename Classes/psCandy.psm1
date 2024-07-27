@@ -1770,7 +1770,6 @@ class List {
       $_.checked = $false
     }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
-    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
     $this.Theme()
   }
 
@@ -1855,6 +1854,13 @@ class List {
     }
     try {
       if ($items) {
+        
+        if ($this.header -ne "") {
+          $buffer = $this.header
+        }
+        else {
+          $buffer = ""
+        }
         $buffer = $items | ForEach-Object {
           $checkmark = ""
           if ($_.Icon) {
@@ -1863,7 +1869,6 @@ class List {
           else {
             $offset = $baseoffset - 1
           }
-          
           $text = $_.text
           $icon = $_.Icon 
           if ($this.filter -and ($this.filter -ne "")) {
@@ -1900,10 +1905,10 @@ class List {
             }
             
             $text = $result -join $($script:esc)
-          }
+          } # End of filter
           else {
             $text = $text
-          }
+          } # End of else (No Filter)
           
           if ($this.limit) {
             $text = "$icon $text"
@@ -1939,6 +1944,10 @@ class List {
       }
       else {
         $buffer = "Too much filter ? 😊"
+      }
+      while ($i -lt ($this.nbToDraw)) {
+        $buffer += "".PadRight(($this.linelen + 4 + $offset), " ") + "`n"
+        $i++
       }
     }
     catch {
@@ -1981,6 +1990,10 @@ class List {
     if ($this.title -ne "") {
       $this.DrawTitle($this.title, $true)
     }
+    $this.nbToDraw = $this.height
+    if ($this.header -ne "") {
+      $this.nbToDraw = $this.height - 1
+    }
     while (-not $stop) {
       if ($redraw) {
         if ($search) {
@@ -1988,7 +2001,7 @@ class List {
           [Console]::setcursorposition(0, $this.Y)
           [console]::Write($this.SearchColor.Render("Search: "))
           [console]::CursorVisible = $true
-          # TODO: Utiliser Gum input pour encoder la rechercher
+          # TODO: Utiliser Gum input pour encoder la recherche
           $this.filter = $global:host.UI.ReadLine()
           [console]::CursorVisible = $false
           $search = $false
@@ -1998,34 +2011,30 @@ class List {
         else {
           [console]::Write("".PadLeft(80, " ")) 
         }
-        $this.nbToDraw = $this.height
-        if ($this.header -ne "") {
-          $this.nbToDraw = $this.height - 2
-        }
         if ($this.filter -and ($this.filter -ne "")) {
           $VisibleItems = $this.items | Where-Object {
             [regex]::IsMatch((Build-Candy $_.text), $this.filter)
-          } | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
-          $this.pages = [math]::Ceiling($VisibleItems.Count / $this.height)
+          } | Select-Object -Skip (($this.page - 1) * $this.nbToDraw) -First $this.nbToDraw
+          $this.pages = [math]::Ceiling($VisibleItems.Count / $this.nbToDraw)
         }
         else {
-          $VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.height) -First $this.height
-          $this.pages = [math]::Ceiling($this.items.Count / $this.height)
+          $VisibleItems = $this.items | Select-Object -Skip (($this.page - 1) * $this.nbToDraw) -First $this.nbToDraw
+          $this.pages = [math]::Ceiling($this.items.Count / $this.nbToDraw)
         }
         $buffer = $this.MakeBufer($VisibleItems)
         [Console]::setcursorposition(0, $this.Y)
-        [Console]::Write($this.blanks)
-        [Console]::setcursorposition(0, ($this.Y + 1))
         if ($this.index -gt $VisibleItems.Count - 1 ) {
           $this.index = 0
         }
         if ($this.header -ne "") {
-          $out = [string]::concat("".padleft(6, " "), $this.header)
-          $out = $out.Substring(0, $this.linelen + 3)
-          $out = $this.HeaderColor.render($out)
-          [Console]::WriteLine("$out")
+          $leftoffset = ""
+          if ($this.limit -eq $false) {
+            $leftoffset = "    "
+          } 
+          $head = $this.header.PadRight(($this.width + 2 + $leftoffset.Length ), " ")
+          Write-Candy "$leftoffset<U>$($head)</U>" 
         }
-        [System.Console]::Write($buffer)
+        [Console]::Write($buffer)
         
         $this.DrawFooter()
       }
@@ -2512,7 +2521,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), $color, -1)
       }
       else {
-        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),$color,"")
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value), $color, "")
       }
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length
@@ -2545,7 +2554,7 @@ function Build-Candy {
         $innerText = [color]::Applycolor16(($match.Groups['text'].Value), -1, $color)
       }
       else {
-        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value),"",$color)
+        $innerText = [Color]::ApplyColorRGB(($match.Groups['text'].Value), "", $color)
       }      
       $buffer = [string]::concat($buffer, $innerText)
       $currentIndex = $match.Index + $match.Length

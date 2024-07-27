@@ -1770,7 +1770,6 @@ class List {
       $_.checked = $false
     }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
-    $this.blanks = (" " * $global:Host.UI.RawUI.BufferSize.Width) * ($this.height + 2)
     $this.Theme()
   }
 
@@ -1946,7 +1945,7 @@ class List {
       else {
         $buffer = "Too much filter ? 😊"
       }
-      while ($i -lt $this.nbToDraw) {
+      while ($i -lt ($this.nbToDraw)) {
         $buffer += "".PadRight(($this.linelen + 4 + $offset), " ") + "`n"
         $i++
       }
@@ -1993,7 +1992,7 @@ class List {
     }
     $this.nbToDraw = $this.height
     if ($this.header -ne "") {
-      $this.nbToDraw = $this.height - 2
+      $this.nbToDraw = $this.height - 1
     }
     while (-not $stop) {
       if ($redraw) {
@@ -2002,7 +2001,7 @@ class List {
           [Console]::setcursorposition(0, $this.Y)
           [console]::Write($this.SearchColor.Render("Search: "))
           [console]::CursorVisible = $true
-          # TODO: Utiliser Gum input pour encoder la rechercher
+          # TODO: Utiliser Gum input pour encoder la recherche
           $this.filter = $global:host.UI.ReadLine()
           [console]::CursorVisible = $false
           $search = $false
@@ -2032,10 +2031,10 @@ class List {
           if ($this.limit -eq $false) {
             $leftoffset = "    "
           } 
-          $head = $this.header.PadRight($this.linelen + 3, " ")
+          $head = $this.header.PadRight(($this.width + 2 + $leftoffset.Length ), " ")
           Write-Candy "$leftoffset<U>$($head)</U>" 
         }
-        [System.Console]::Write($buffer)
+        [Console]::Write($buffer)
         
         $this.DrawFooter()
       }
@@ -2756,6 +2755,51 @@ $script:colors = [candyColor]::colorList()
 
 # Write-Candy -text "<Yellow>Test List</Yellow>" -Border "Rounded"
 $items = [System.Collections.Generic.List[ListItem]]::new()
+$items.Add([ListItem]::new("Banana", 1, "🍌"))
+$items.Add([ListItem]::new("Apple", 2, "🍎"))
+$items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
+$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
+$items.Add([ListItem]::new("Potato", 5, "🥔"))
+$items.Add([ListItem]::new("Potato 2", 6, "🥔"))
+$items.Add([ListItem]::new("Potato 3", 7, "🥔"))
+$items.Add([ListItem]::new("Potato 4", 8, "🥔"))
+$items.Add([ListItem]::new("Potato 5", 9, "🥔"))
+$items.Add([ListItem]::new("Banana 2", 10, "🍌"))
+$items.Add([ListItem]::new("Apple 2", 11, "🍎"))
+$items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
+$items.Add([ListItem]::new("Potato 6", 14, "🥔"))
+$items.Add([ListItem]::new("Banana", 1, "🍌"))
+$items.Add([ListItem]::new("Apple", 2, "🍎"))
+$items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
+$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
+$items.Add([ListItem]::new("Potato", 5, "🥔"))
+$items.Add([ListItem]::new("Potato 2", 6, "🥔"))
+$items.Add([ListItem]::new("Potato 3", 7, "🥔"))
+$items.Add([ListItem]::new("Potato 4", 8, "🥔"))
+$items.Add([ListItem]::new("Potato 5", 9, "🥔"))
+$items.Add([ListItem]::new("Banana 2", 10, "🍌"))
+$items.Add([ListItem]::new("Apple 2", 11, "🍎"))
+$items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
+$items.Add([ListItem]::new("Potato 6", 14, "🥔"))
+$items.Add([ListItem]::new("Banana", 1, "🍌"))
+$items.Add([ListItem]::new("Apple", 2, "🍎"))
+$items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
+$items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
+$items.Add([ListItem]::new("Potato", 5, "🥔"))
+$items.Add([ListItem]::new("Potato 2", 6, "🥔"))
+$items.Add([ListItem]::new("Potato 3", 7, "🥔"))
+$items.Add([ListItem]::new("Potato 4", 8, "🥔"))
+$items.Add([ListItem]::new("Potato 5", 9, "🥔"))
+$items.Add([ListItem]::new("Banana 2", 10, "🍌"))
+$items.Add([ListItem]::new("Apple 2", 11, "🍎"))
+$items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
+$items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
+$items.Add([ListItem]::new("Potato 6", 14, "🥔"))
 $items.Add([ListItem]::new("Banana", 1, "🍌"))
 $items.Add([ListItem]::new("Apple", 2, "🍎"))
 $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
