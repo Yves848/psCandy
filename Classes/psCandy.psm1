@@ -1751,7 +1751,7 @@ class ListItem {
     $this.text = $text
     $this.value = $value
     $this.Icon = $Icon
-    $this.IconWidth = [candyString]::GetDisplayWidth($Icon)
+    $this.IconWidth = [candyString]::GetDisplayWidth((Build-Candy -Text $Icon))
   }
 
   ListItem(
@@ -1810,6 +1810,16 @@ class List {
     [System.Collections.Generic.List[ListItem]]$items
   ) {
     $this.items = $items
+    # fixing the items icon size
+    $IconWidth = $items | ForEach-Object {
+      $_.IconWidth
+    } | Measure-Object -Maximum
+    $this.items | ForEach-Object {
+      if ($_.IconWidth -lt $IconWidth.Maximum) {
+        $_.Icon = [string]::concat($_.Icon, (" " * ($IconWidth.Maximum - $_.IconWidth)))
+      }
+      $_.IconWidth = $IconWidth.Maximum
+    }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
     $this.Theme()
   }
@@ -1937,17 +1947,17 @@ class List {
     try {
       if ($items) {
         
-        if ($this.header -ne "") {
-          $buffer = $this.header
-        }
-        else {
-          $buffer = ""
-        }
+        # if ($this.header -ne "") {
+        #   $buffer = $this.header
+        # }
+        # else {
+        #   $buffer = ""
+        # }
         $buffer = $items | ForEach-Object {
           $offset = $baseoffset
           $checkmark = ""
           if ($_.Icon -ne "") {
-            $offset += 2
+            $offset += $_.IconWidth
           }
           $text = $_.text
           $icon = $_.Icon 
