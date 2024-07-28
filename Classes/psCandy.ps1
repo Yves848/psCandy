@@ -1291,20 +1291,18 @@ class Color {
     Write-Candy "🎨 <Green>Pick</Green> <Blue>A</Blue> <Red>Color</Red>" -Width ($global:Host.UI.RawUI.BufferSize.Width - 2) -Border "Rounded" -Align Center
     [System.Console]::SetCursorPosition(0, 3)
     $items = [System.Collections.Generic.List[ListItem]]::new()
-    [Colors] | Get-Member -Static | Where-Object { $_.Definition -match 'candyColor' } | ForEach-Object { 
-      $methodInfo = [colors].GetMethod($_.Name, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public) 
-      [candyColor]$candycolor = $methodinfo.Invoke($null, $null)
-      $colorName = $_.Name
-      [Color]$color = [Color]::new($candycolor)
-      $items.Add([ListItem]::new($colorName, $color, $candyColor))
+    
+    $colors = [candyColor]::colorList() -split "\|"
+    $colors | ForEach-Object {
+      $colorName = "<$($_)>$($_)</$($_)>"
+      $items.Add([ListItem]::new($colorName, $_))
     }
     $List = [List]::new($items)
-    # $List.LoadTheme($Theme)
     $List.SetLimit($true)
     $list.SetHeight(($global:Host.UI.RawUI.BufferSize.Height - 10))
     $c = $List.Display()
     if ($c) {
-      return $c.text
+      return $c.Value
     }
     return [String]::Empty
   }
@@ -1739,6 +1737,7 @@ class ListItem {
   [string]$text
   [PSCustomObject]$value
   [string]$Icon
+  [int]$IconWidth = 0
   [bool]$selected = $false
   [bool]$checked = $false
   [bool]$chained = $true
@@ -1752,6 +1751,7 @@ class ListItem {
     $this.text = $text
     $this.value = $value
     $this.Icon = $Icon
+    $this.IconWidth = [candyString]::GetDisplayWidth((Build-Candy -Text $Icon))
   }
 
   ListItem(
@@ -1810,6 +1810,16 @@ class List {
     [System.Collections.Generic.List[ListItem]]$items
   ) {
     $this.items = $items
+    # fixing the items icon size
+    $IconWidth = $items | ForEach-Object {
+      $_.IconWidth
+    } | Measure-Object -Maximum
+    $this.items | ForEach-Object {
+      if ($_.IconWidth -lt $IconWidth.Maximum) {
+        $_.Icon = [string]::concat($_.Icon, (" " * ($IconWidth.Maximum - $_.IconWidth)))
+      }
+      $_.IconWidth = $IconWidth.Maximum
+    }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
     $this.Theme()
   }
@@ -1927,32 +1937,27 @@ class List {
     }
 
     $i = 0
-    $offset = 0
+    $script:offset = 0
     if ($this.limit) {
-      $baseoffset = 5
+      $baseoffset = 2
     }
     else {
-      $baseoffset = 5
+      $baseoffset = 3
     }
     try {
       if ($items) {
         
-        if ($this.header -ne "") {
-          $buffer = $this.header
-        }
-        else {
-          $buffer = ""
-        }
+        # if ($this.header -ne "") {
+        #   $buffer = $this.header
+        # }
+        # else {
+        #   $buffer = ""
+        # }
         $buffer = $items | ForEach-Object {
+          $offset = $baseoffset
           $checkmark = ""
           if ($_.Icon -ne "") {
-            # $offset = $baseoffset - 2
-            $iconwidth = [candyString]::GetDisplayWidth($_.Icon)
-            $offset = $iconwidth
-            # $offset = ($iconwidth + 1)
-          }
-          else {
-            $offset = $baseoffset - 1
+            $offset += $_.IconWidth
           }
           $text = $_.text
           $icon = $_.Icon 
@@ -1971,13 +1976,11 @@ class List {
             }
           }
           $text = Build-Candy $text
-          $text = [candyString]::PadString($text, ($this.linelen - $offest -3 ), " ", [Align]::Left)
+          $fill = $this.linelen - $offset
+          $text = [candyString]::PadString($text,$fill, " ", [Align]::Left)
           $text = "$checkmark $icon $text"
-          # $text = [candyString]::PadString($text, ($this.linelen - $offset), " ", [Align]::Left)
-          # $filler = " " * $offset
-          $filler = ""
           if ($this.index -eq $i) {
-            $text = "<U>$($this.selector) $($text)$filler</U>"
+            $text = "<U>$($this.selector) $($text)</U>"
           }
           else {
             $text = "  $($text)"
@@ -1992,7 +1995,7 @@ class List {
         $buffer = "Too much filter ? 😊"
       }
       while ($i -lt ($this.nbToDraw)) {
-        $buffer += [candyString]::PadString("  ", ($this.linelen), " ", [Align]::Left) + "`n"
+        $buffer += [candyString]::PadString("", ($this.linelen + 2), " ", [Align]::Left) + "`n"
         $i++
       }
     }
@@ -2004,11 +2007,11 @@ class List {
     }
     if ($this.border) {
       while ($i -lt $this.height) {
-        $buffer += $this.borderType.Left + "".PadRight(($this.linelen + 4 + $offset), " ") + $this.borderType.Right + "`n"
+        $buffer += $this.borderType.Left + "".PadRight(($this.linelen + 4 + $script:offset), " ") + $this.borderType.Right + "`n"
         $i++
       }
-      $buffer = $this.borderType.TopLeft + "".PadLeft(($this.linelen + 4 + $offset), $this.borderType.Top) + $this.borderType.TopRight + "`n" + $buffer
-      $buffer = $buffer + $this.borderType.BottomLeft + "".PadLeft(($this.linelen + 4 + $offset), $this.borderType.Bottom) + $this.borderType.BottomRight
+      $buffer = $this.borderType.TopLeft + "".PadLeft(($this.linelen + 4 + $script:offset), $this.borderType.Top) + $this.borderType.TopRight + "`n" + $buffer
+      $buffer = $buffer + $this.borderType.BottomLeft + "".PadLeft(($this.linelen + 4 + $script:offset), $this.borderType.Bottom) + $this.borderType.BottomRight
     }
     return $buffer
   }
@@ -2801,66 +2804,67 @@ $script:colors = [candyColor]::colorList()
 
 # Write-Candy -text "<Yellow>Test List</Yellow>" -Border "Rounded"
 # $items = [System.Collections.Generic.List[ListItem]]::new()
-# $items.Add([ListItem]::new("Banana", 1, "🍌"))
-# $items.Add([ListItem]::new("Apple", 2, "🍎"))
-# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
-# $items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
-# $items.Add([ListItem]::new("Potato", 5, "🥔"))
-# $items.Add([ListItem]::new("Potato 2", 6, "🥔"))
-# $items.Add([ListItem]::new("Potato 3", 7, "🥔"))
-# $items.Add([ListItem]::new("Potato 4", 8, "🥔"))
-# $items.Add([ListItem]::new("Potato 5", 9, "🥔"))
-# $items.Add([ListItem]::new("Banana 2", 10, "🍌"))
-# $items.Add([ListItem]::new("Apple 2", 11, "🍎"))
-# $items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
-# $items.Add([ListItem]::new("Potato 6", 14, "🥔"))
-# $items.Add([ListItem]::new("Banana", 1, "🍌"))
-# $items.Add([ListItem]::new("Apple", 2, "🍎"))
-# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
-# $items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
-# $items.Add([ListItem]::new("Potato", 5, "🥔"))
-# $items.Add([ListItem]::new("Potato 2", 6, "🥔"))
-# $items.Add([ListItem]::new("Potato 3", 7, "🥔"))
-# $items.Add([ListItem]::new("Potato 4", 8, "🥔"))
-# $items.Add([ListItem]::new("Potato 5", 9, "🥔"))
-# $items.Add([ListItem]::new("Banana 2", 10, "🍌"))
-# $items.Add([ListItem]::new("Apple 2", 11, "🍎"))
-# $items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
-# $items.Add([ListItem]::new("Potato 6", 14, "🥔"))
-# $items.Add([ListItem]::new("Banana", 1, "🍌"))
-# $items.Add([ListItem]::new("Apple", 2, "🍎"))
-# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
-# $items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
-# $items.Add([ListItem]::new("Potato", 5, "🥔"))
-# $items.Add([ListItem]::new("Potato 2", 6, "🥔"))
-# $items.Add([ListItem]::new("Potato 3", 7, "🥔"))
-# $items.Add([ListItem]::new("Potato 4", 8, "🥔"))
-# $items.Add([ListItem]::new("Potato 5", 9, "🥔"))
-# $items.Add([ListItem]::new("Banana 2", 10, "🍌"))
-# $items.Add([ListItem]::new("Apple 2", 11, "🍎"))
-# $items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
-# $items.Add([ListItem]::new("Potato 6", 14, "🥔"))
-# $items.Add([ListItem]::new("Banana", 1, "🍌"))
-# $items.Add([ListItem]::new("Apple", 2, "🍎"))
-# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit", 4, "🟠"))
-# $items.Add([ListItem]::new("Grape Fruit(too)", @{"aString" = "Test"; "aBool" = $true }, "🟠"))
-# $items.Add([ListItem]::new("Potato", 5, "🥔"))
-# $items.Add([ListItem]::new("Potato 2", 6, "🥔"))
-# $items.Add([ListItem]::new("Potato 3", 7, "🥔"))
-# $items.Add([ListItem]::new("Potato 4", 8, "🥔"))
-# $items.Add([ListItem]::new("Potato 5", 9, "🥔"))
-# $items.Add([ListItem]::new("Banana 2", 10, "🍌"))
-# $items.Add([ListItem]::new("Apple 2", 11, "🍎"))
-# $items.Add([ListItem]::new("Mandarine 2", 12, "🍊"))
-# $items.Add([ListItem]::new("Grape Fruit 2", 13, "🟠"))
-# $items.Add([ListItem]::new("Potato 6", 14, "🥔"))
+# $icon = "<Orange>↺</Orange>"
+# $items.Add([ListItem]::new("Banana", 1, "🍎"))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
+# $items.Add([ListItem]::new("Banana", 1, " "))
+# $items.Add([ListItem]::new("Apple", 2, " "))
+# $items.Add([ListItem]::new("<Blue>Mandarine</Blue>", 3, " "))
+# $items.Add([ListItem]::new("Grape Fruit", 4, $icon))
 
 # $list = [List]::new($items)  
 # # $list.SetHeight(20)
@@ -2871,8 +2875,10 @@ $script:colors = [candyColor]::colorList()
 # $list.unchecked = "◌"
 # $list.SetTitle("<Blue>Vegetables</Blue>")
 # $list.Display()
-[console]::Clear()
-[Console]::setcursorposition(0, 0)
+# [console]::Clear()
+# [Console]::setcursorposition(0, 0)
+
+# [color]::Pick()
 Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -Width $width -Align Center
     
 $items = [System.Collections.Generic.List[ListItem]]::new()
