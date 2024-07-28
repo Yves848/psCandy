@@ -147,16 +147,52 @@ $BorderTypes = @{
 }
 
 class candyString {
+  # static [int] GetDisplayWidth([string] $Str) {
+  #   $width = 0
+  #   $Str = [regex]::Replace($Str, "\e\[[\d;]*m", '')
+  #   $length = $Str.Length
+
+  #   for ($i = 0; $i -lt $length; $i++) {
+  #     $char = $Str[$i]
+  #     $charCode = [int][char]$char
+
+  #     if ($charCode -ge 0x1100 -and (
+  #         $charCode -le 0x115F -or # Hangul Jamo init. consonants
+  #         $charCode -eq 0x2329 -or # LEFT-POINTING ANGLE BRACKET
+  #         $charCode -eq 0x232A -or # RIGHT-POINTING ANGLE BRACKET
+  #           ($charCode -ge 0x2E80 -and $charCode -le 0xA4CF -and $charCode -ne 0x303F) -or # CJK ... Yi
+  #           ($charCode -ge 0xAC00 -and $charCode -le 0xD7A3) -or # Hangul Syllables
+  #           ($charCode -ge 0xF900 -and $charCode -le 0xFAFF) -or # CJK Compatibility Ideographs
+  #           ($charCode -ge 0xFE10 -and $charCode -le 0xFE19) -or # Vertical forms
+  #           ($charCode -ge 0xFE30 -and $charCode -le 0xFE6F) -or # CJK Compatibility Forms
+  #           ($charCode -ge 0xFF00 -and $charCode -le 0xFF60) -or # Fullwidth Forms
+  #           ($charCode -ge 0xFFE0 -and $charCode -le 0xFFE6) -or # Halfwidth and Fullwidth Forms
+  #           ($charCode -ge 0x1F300 -and $charCode -le 0x1F64F) -or # Emoticons
+  #           ($charCode -ge 0x1F900 -and $charCode -le 0x1F9FF)     # Supplemental Symbols and Pictographs
+  #       )) {
+  #       $width += 2
+  #     }
+  #     else {
+  #       $width += 1
+  #     }
+  #   }
+  #   return $width
+  # }
   static [int] GetDisplayWidth([string] $Str) {
     $width = 0
     $Str = [regex]::Replace($Str, "\e\[[\d;]*m", '')
     $length = $Str.Length
 
+    $emojiRegex = [regex]::new("(\p{Cs}|\p{So}|\p{Sk}|\p{Sc}|\p{Sm})")
+
     for ($i = 0; $i -lt $length; $i++) {
       $char = $Str[$i]
       $charCode = [int][char]$char
 
-      if ($charCode -ge 0x1100 -and (
+      if ($emojiRegex.IsMatch($char)) {
+        $width += 1
+      }
+      elseif ($charCode -ge 0x1100 -and (
           $charCode -le 0x115F -or # Hangul Jamo init. consonants
           $charCode -eq 0x2329 -or # LEFT-POINTING ANGLE BRACKET
           $charCode -eq 0x232A -or # RIGHT-POINTING ANGLE BRACKET
@@ -168,7 +204,15 @@ class candyString {
             ($charCode -ge 0xFF00 -and $charCode -le 0xFF60) -or # Fullwidth Forms
             ($charCode -ge 0xFFE0 -and $charCode -le 0xFFE6) -or # Halfwidth and Fullwidth Forms
             ($charCode -ge 0x1F300 -and $charCode -le 0x1F64F) -or # Emoticons
-            ($charCode -ge 0x1F900 -and $charCode -le 0x1F9FF)     # Supplemental Symbols and Pictographs
+            ($charCode -ge 0x1F680 -and $charCode -le 0x1F6FF) -or # Transport and Map Symbols
+            ($charCode -ge 0x1F700 -and $charCode -le 0x1F77F) -or # Alchemical Symbols
+            ($charCode -ge 0x1F780 -and $charCode -le 0x1F7FF) -or # Geometric Shapes Extended
+            ($charCode -ge 0x1F800 -and $charCode -le 0x1F8FF) -or # Supplemental Arrows-C
+            ($charCode -ge 0x1F900 -and $charCode -le 0x1F9FF) -or # Supplemental Symbols and Pictographs
+            ($charCode -ge 0x1FA00 -and $charCode -le 0x1FA6F) -or # Chess Symbols
+            ($charCode -ge 0x1FA70 -and $charCode -le 0x1FAFF) -or # Symbols and Pictographs Extended-A
+            ($charCode -ge 0x20000 -and $charCode -le 0x2FFFD) -or # CJK Unified Ideographs Extension B-D
+            ($charCode -ge 0x30000 -and $charCode -le 0x3FFFD)     # CJK Unified Ideographs Extension E-F
         )) {
         $width += 2
       }
@@ -178,6 +222,7 @@ class candyString {
     }
     return $width
   }
+
 
 
   static [int] GetDisplayLength([string] $Str) {
@@ -1246,20 +1291,18 @@ class Color {
     Write-Candy "🎨 <Green>Pick</Green> <Blue>A</Blue> <Red>Color</Red>" -Width ($global:Host.UI.RawUI.BufferSize.Width - 2) -Border "Rounded" -Align Center
     [System.Console]::SetCursorPosition(0, 3)
     $items = [System.Collections.Generic.List[ListItem]]::new()
-    [Colors] | Get-Member -Static | Where-Object { $_.Definition -match 'candyColor' } | ForEach-Object { 
-      $methodInfo = [colors].GetMethod($_.Name, [System.Reflection.BindingFlags]::Static -bor [System.Reflection.BindingFlags]::Public) 
-      [candyColor]$candycolor = $methodinfo.Invoke($null, $null)
-      $colorName = $_.Name
-      [Color]$color = [Color]::new($candycolor)
-      $items.Add([ListItem]::new($colorName, $color, $candyColor))
+    
+    $colors = [candyColor]::colorList() -split "\|"
+    $colors | ForEach-Object {
+      $colorName = "<$($_)>$($_)</$($_)>"
+      $items.Add([ListItem]::new($colorName, $_))
     }
     $List = [List]::new($items)
-    # $List.LoadTheme($Theme)
     $List.SetLimit($true)
     $list.SetHeight(($global:Host.UI.RawUI.BufferSize.Height - 10))
     $c = $List.Display()
     if ($c) {
-      return $c.text
+      return $c.Value
     }
     return [String]::Empty
   }
@@ -1694,6 +1737,7 @@ class ListItem {
   [string]$text
   [PSCustomObject]$value
   [string]$Icon
+  [int]$IconWidth = 0
   [bool]$selected = $false
   [bool]$checked = $false
   [bool]$chained = $true
@@ -1707,6 +1751,7 @@ class ListItem {
     $this.text = $text
     $this.value = $value
     $this.Icon = $Icon
+    $this.IconWidth = [candyString]::GetDisplayWidth($Icon)
   }
 
   ListItem(
@@ -1840,8 +1885,49 @@ class List {
   [String] MakeBufer(
     [System.Collections.Generic.List[ListItem]]$items
   ) {
+
+    function makeFilteredItem {
+      param (
+        [string]$text
+      )
+      $filter = (Build-candy $text) -split '\e'
+      $result = $filter | ForEach-Object {
+        if ([regex]::IsMatch($_, $this.filter)) {
+          $currentIndex = 0
+          $color = [Regex]::Match($_, "\[38[\d;]*m")
+          $Filtermatches = [regex]::Matches($_, $this.filter)
+          $buffer = ""
+          foreach ($match in $Filtermatches) {
+            if ($match.Index -gt $currentIndex) {
+              $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
+            }
+            $innerText = Build-Candy -text "[White]<Blue>$($match.Groups[0].Value)</Blue>[/White]"
+            if ($color.Success) {
+              $innerText = [string]::concat($innerText, "$($script:esc)$($color.Value)")
+            }
+            else {
+              $innerText = [string]::concat($innerText, "$($script:esc)[39m")
+            }
+            $buffer = [string]::concat($buffer, $innerText)
+            $currentIndex = $match.Index + $match.Length
+          }
+        
+          if ($currentIndex -lt $_.Length) {
+            $buffer = [string]::concat($buffer, $_.Substring($currentIndex))
+          }
+          $buffer
+        }
+        else {
+          $_
+        }
+      }
+      
+      $text = $result -join $($script:esc)
+      return $text
+    }
+
     $i = 0
-    $offset = 0
+    $script:offset = 0
     if ($this.limit) {
       $baseoffset = 2
     }
@@ -1858,54 +1944,16 @@ class List {
           $buffer = ""
         }
         $buffer = $items | ForEach-Object {
+          $offset = $baseoffset
           $checkmark = ""
-          if ($_.Icon) {
-            $offset = $baseoffset - 2
-          }
-          else {
-            $offset = $baseoffset - 1
+          if ($_.Icon -ne "") {
+            $offset += 2
           }
           $text = $_.text
           $icon = $_.Icon 
           if ($this.filter -and ($this.filter -ne "")) {
-            $filter = (Build-candy $text) -split '\e'
-            $result = $filter | ForEach-Object {
-              if ([regex]::IsMatch($_, $this.filter)) {
-                $currentIndex = 0
-                $color = [Regex]::Match($_, "\[38[\d;]*m")
-                $Filtermatches = [regex]::Matches($_, $this.filter)
-                $buffer = ""
-                foreach ($match in $Filtermatches) {
-                  if ($match.Index -gt $currentIndex) {
-                    $buffer = [string]::concat($buffer, $_.Substring($currentIndex, $match.Index - $currentIndex))
-                  }
-                  $innerText = Build-Candy -text "[White]<Blue>$($match.Groups[0].Value)</Blue>[/White]"
-                  if ($color.Success) {
-                    $innerText = [string]::concat($innerText, "$($script:esc)$($color.Value)")
-                  }
-                  else {
-                    $innerText = [string]::concat($innerText, "$($script:esc)[39m")
-                  }
-                  $buffer = [string]::concat($buffer, $innerText)
-                  $currentIndex = $match.Index + $match.Length
-                }
-              
-                if ($currentIndex -lt $_.Length) {
-                  $buffer = [string]::concat($buffer, $_.Substring($currentIndex))
-                }
-                $buffer
-              }
-              else {
-                $_
-              }
-            }
-            
-            $text = $result -join $($script:esc)
-          } # End of filter
-          else {
-            $text = $text
-          } # End of else (No Filter)
-          
+            $text = makeFilteredItem $text
+          } 
           if ($this.limit) {
             $checkmark = ""
           }
@@ -1917,9 +1965,10 @@ class List {
               $checkmark = $this.unchecked
             }
           }
-          $text = "$checkmark $icon $text"
           $text = Build-Candy $text
-          $text = [candyString]::PadString($text, ($this.linelen + $offset), " ", [Align]::Left)
+          $fill = $this.linelen - $offset
+          $text = [candyString]::PadString($text,$fill, " ", [Align]::Left)
+          $text = "$checkmark $icon $text"
           if ($this.index -eq $i) {
             $text = "<U>$($this.selector) $($text)</U>"
           }
@@ -1936,8 +1985,7 @@ class List {
         $buffer = "Too much filter ? 😊"
       }
       while ($i -lt ($this.nbToDraw)) {
-        # $buffer += "".PadRight(($this.linelen + $offset), ".") 
-        $buffer += [candyString]::PadString("  ", ($this.linelen + $offset), " ", [Align]::Left) + "`n"
+        $buffer += [candyString]::PadString("", ($this.linelen + 2), " ", [Align]::Left) + "`n"
         $i++
       }
     }
@@ -1949,11 +1997,11 @@ class List {
     }
     if ($this.border) {
       while ($i -lt $this.height) {
-        $buffer += $this.borderType.Left + "".PadRight(($this.linelen + 4 + $offset), " ") + $this.borderType.Right + "`n"
+        $buffer += $this.borderType.Left + "".PadRight(($this.linelen + 4 + $script:offset), " ") + $this.borderType.Right + "`n"
         $i++
       }
-      $buffer = $this.borderType.TopLeft + "".PadLeft(($this.linelen + 4 + $offset), $this.borderType.Top) + $this.borderType.TopRight + "`n" + $buffer
-      $buffer = $buffer + $this.borderType.BottomLeft + "".PadLeft(($this.linelen + 4 + $offset), $this.borderType.Bottom) + $this.borderType.BottomRight
+      $buffer = $this.borderType.TopLeft + "".PadLeft(($this.linelen + 4 + $script:offset), $this.borderType.Top) + $this.borderType.TopRight + "`n" + $buffer
+      $buffer = $buffer + $this.borderType.BottomLeft + "".PadLeft(($this.linelen + 4 + $script:offset), $this.borderType.Bottom) + $this.borderType.BottomRight
     }
     return $buffer
   }
@@ -2739,3 +2787,40 @@ Function Select-CandyColor8 {
 }
 
 $script:colors = [candyColor]::colorList()
+
+# Define the types to export with type accelerators.
+$ExportableTypes =@(
+    [Styles],[Align],[Theme],[candyString],[candyColor],[Colors],[Color],[Option],[Border],[Spinner],[ListItem],[List],[Confirm],[Style],[Pager]
+)
+# Get the internal TypeAccelerators class to use its static methods.
+$TypeAcceleratorsClass = [psobject].Assembly.GetType(
+    'System.Management.Automation.TypeAccelerators'
+)
+# Ensure none of the types would clobber an existing type accelerator.
+# If a type accelerator with the same name exists, throw an exception.
+$ExistingTypeAccelerators = $TypeAcceleratorsClass::Get
+foreach ($Type in $ExportableTypes) {
+    if ($Type.FullName -in $ExistingTypeAccelerators.Keys) {
+        $Message = @(
+            "Unable to register type accelerator '$($Type.FullName)'"
+            'Accelerator already exists.'
+        ) -join ' - '
+
+throw [System.Management.Automation.ErrorRecord]::new(
+            [System.InvalidOperationException]::new($Message),
+            'TypeAcceleratorAlreadyExists',
+            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+            $Type.FullName
+        )
+    }
+}
+# Add type accelerators for every exportable type.
+foreach ($Type in $ExportableTypes) {
+    $TypeAcceleratorsClass::Add($Type.FullName, $Type)
+}
+# Remove type accelerators when the module is removed.
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+    foreach($Type in $ExportableTypes) {
+        $TypeAcceleratorsClass::Remove($Type.FullName)
+    }
+}.GetNewClosure()
