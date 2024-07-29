@@ -1945,18 +1945,11 @@ class List {
       $baseoffset = 3
     }
     try {
-      if ($items) {
-        
-        # if ($this.header -ne "") {
-        #   $buffer = $this.header
-        # }
-        # else {
-        #   $buffer = ""
-        # }
+      if ($items) {       
         $buffer = $items | ForEach-Object {
           $offset = $baseoffset
           $checkmark = ""
-          if ($_.Icon -ne "") {
+          if ($_.Icon -ne " ") {
             $offset += $_.IconWidth
           }
           $text = $_.text
