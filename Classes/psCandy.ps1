@@ -289,13 +289,12 @@ class candyString {
         }
       }
       Center {
-        $leftPad = $rightPad = $PadCharacter
-        while (([candyString]::GetDisplayWidth($leftPad + $InputString + $rightPad)) -lt $TotalWidth) {
-          $leftPad += $PadCharacter
-          if (([candyString]::GetDisplayWidth($leftPad + $InputString + $rightPad)) -lt $TotalWidth) {
-            $rightPad += $PadCharacter
-          }
-        }
+        # $leftPad = $rightPad = $PadCharacter
+        $width = [candyString]::GetDisplayWidth($InputString)
+        $left = [math]::floor(($TotalWidth - $width) / 2)
+        $right = $TotalWidth - $width - $left
+        $leftPad = $PadCharacter * $left
+        $rightPad = $PadCharacter * $right
         $InputString = $leftPad + $InputString + $rightPad
       }
       default {
@@ -2915,4 +2914,4 @@ $script:colors = [candyColor]::colorList()
 # # $list.SetWidth($width)
 # $index = $list.Display()
 
-Write-Candy "<Yellow>Test List</Yellow>`n<Blue>On another line</Blue>`n<U>A <Red>third</Red> line</U>" -Border "Rounded" -align Right
+Write-Candy "<Yellow>😊Test List</Yellow>`n<Blue>On another line</Blue>`n<U>A <Red>third</Red> line</U>" -Border "Rounded" -align center -fullscreen
