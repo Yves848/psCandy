@@ -1816,7 +1816,7 @@ class List {
     } | Measure-Object -Maximum
     $this.items | ForEach-Object {
       if ($_.IconWidth -lt $IconWidth.Maximum) {
-        $_.Icon = [string]::concat($_.Icon, (" " * ($IconWidth.Maximum - $_.IconWidth)))
+        $_.Icon = [candystring]::PadString($_.Icon, $IconWidth.Maximum, " ", [align]::Left)
       }
       $_.IconWidth = $IconWidth.Maximum
     }
@@ -1953,7 +1953,7 @@ class List {
             $offset += $_.IconWidth
           }
           $text = $_.text
-          $icon = $_.Icon 
+          $icon = $_.Icon
           if ($this.filter -and ($this.filter -ne "")) {
             $text = makeFilteredItem $text
           } 
@@ -1970,7 +1970,7 @@ class List {
           }
           $text = Build-Candy $text
           $fill = $this.linelen - $offset
-          $text = [candyString]::PadString($text,$fill, " ", [Align]::Left)
+          $text = [candyString]::PadString($text, $fill, " ", [Align]::Left)
           $text = "$checkmark $icon $text"
           if ($this.index -eq $i) {
             $text = "<U>$($this.selector) $($text)</U>"
@@ -2608,72 +2608,76 @@ function Build-Candy {
     return $buffer  
   }
 
-  $ForegroundPattern = '<(?<color>' + $($script:colors) + ')>(?<text>.*?)<\/\k<color>>'
-  $BackgroundPattern = '\[(?<color>' + $($script:colors) + ')\](?<text>.*?)\[\/\k<color>\]'
-  $buffer = parseBackgroundColor -text $Text -pattern $BackgroundPattern
-  $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern
+  $lines = $text -split "`n"
 
-  $ForegroundPattern = '<(?<color>\d{1,3})>(?<text>.*?)<\/\k<color>>'
-  $BackgroundPattern = '\[(?<color>\d{1,3})\](?<text>.*?)\[\/\k<color>\]'
-  $buffer = parseBackgroundColor -text $Buffer -pattern $BackgroundPattern -Alias
-  $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern -alias
+  $buffer = $lines | ForEach-Object {
+    $ForegroundPattern = '<(?<color>' + $($script:colors) + ')>(?<text>.*?)<\/\k<color>>'
+    $BackgroundPattern = '\[(?<color>' + $($script:colors) + ')\](?<text>.*?)\[\/\k<color>\]'
+    $buffer = parseBackgroundColor -text $_ -pattern $BackgroundPattern
+    $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern
 
-  #TODO: refactor the styles at only one place
+    $ForegroundPattern = '<(?<color>\d{1,3})>(?<text>.*?)<\/\k<color>>'
+    $BackgroundPattern = '\[(?<color>\d{1,3})\](?<text>.*?)\[\/\k<color>\]'
+    $buffer = parseBackgroundColor -text $Buffer -pattern $BackgroundPattern -Alias
+    $buffer = parseForegroundColor -text $buffer -pattern $ForegroundPattern -alias
+
+    #TODO: refactor the styles at only one place
   
-  $styles = @{
-    "Underline" = @{
-      "start" = "$esc[4m"
-      "end"   = "$esc[24m"
+    $styles = @{
+      "Underline" = @{
+        "start" = "$esc[4m"
+        "end"   = "$esc[24m"
+      }
+      "Bold"      = @{
+        "start" = "$esc[1m"
+        "end"   = "$esc[22m"
+      }
+      "Italic"    = @{
+        "start" = "$esc[3m"
+        "end"   = "$esc[23m"
+      }
+      "Strike"    = @{
+        "start" = "$esc[9m"
+        "end"   = "$esc[29m"
+      }
+      "Reverse"   = @{
+        "start" = "$esc[7m"
+        "end"   = "$esc[27m"
+      }
+      "U"         = @{
+        "start" = "$esc[4m"
+        "end"   = "$esc[24m"
+      }
+      "B"         = @{
+        "start" = "$esc[1m"
+        "end"   = "$esc[22m"
+      }
+      "I"         = @{
+        "start" = "$esc[3m"
+        "end"   = "$esc[23m"
+      }
+      "S"         = @{
+        "start" = "$esc[9m"
+        "end"   = "$esc[29m"
+      }
+      "R"         = @{
+        "start" = "$esc[7m"
+        "end"   = "$esc[27m"
+      }
     }
-    "Bold"      = @{
-      "start" = "$esc[1m"
-      "end"   = "$esc[22m"
+    $styles.keys | ForEach-Object {
+      $start = $styles[$_].start
+      $end = $styles[$_].end
+      if ($buffer.Contains("<$($_)>")) {
+        $buffer = $buffer -replace "<$($_)>", $start
+        $buffer = $buffer -replace "</$($_)>", $end
+      }
     }
-    "Italic"    = @{
-      "start" = "$esc[3m"
-      "end"   = "$esc[23m"
-    }
-    "Strike"    = @{
-      "start" = "$esc[9m"
-      "end"   = "$esc[29m"
-    }
-    "Reverse"   = @{
-      "start" = "$esc[7m"
-      "end"   = "$esc[27m"
-    }
-    "U"         = @{
-      "start" = "$esc[4m"
-      "end"   = "$esc[24m"
-    }
-    "B"         = @{
-      "start" = "$esc[1m"
-      "end"   = "$esc[22m"
-    }
-    "I"         = @{
-      "start" = "$esc[3m"
-      "end"   = "$esc[23m"
-    }
-    "S"         = @{
-      "start" = "$esc[9m"
-      "end"   = "$esc[29m"
-    }
-    "R"         = @{
-      "start" = "$esc[7m"
-      "end"   = "$esc[27m"
-    }
+    $buffer
   }
-  $styles.keys | ForEach-Object {
-    $start = $styles[$_].start
-    $end = $styles[$_].end
-    if ($buffer.Contains("<$($_)>")) {
-      $buffer = $buffer -replace "<$($_)>", $start
-      $buffer = $buffer -replace "</$($_)>", $end
-    }
-  }
-
   
   # $buffer2 = [Color]::endStyle($buffer)
-  $buffer2 = $buffer
+  
 
   if ($Width -eq -1) {
     if ($FullScreen.IsPresent) {
@@ -2685,20 +2689,35 @@ function Build-Candy {
   } 
 
   if ($Width -gt 0) {
-    $Buffer2 = [candyString]::PadString($Buffer2, $Width, " ", $Align)
+    $Buffer2 = $buffer | ForEach-Object {
+      [candyString]::PadString($_, $Width, " ", $Align)
+    }
+  }
+  else {
+    $buffer2 = $buffer
   }
   
   if ($Border.ToLower() -ne "none") {
     $borderType = [Border]::GetBorder($Border)
-    $bufferwidth = [candyString]::GetDisplayWidth($buffer2)
-    $bufferlen = [candyString]::GetDisplayLength($buffer2)
+    $bufferwidth = 0
+    $bufferlen = 0
+    $buffer2 | ForEach-Object {
+      $bw = [candyString]::GetDisplayWidth($_)
+      if ($bw -gt $bufferwidth) {
+        $bufferwidth = $bw 
+        $bufferlen = [candyString]::GetDisplayLength($_)
+      }
+    }
+    
     $diff = $bufferwidth - $bufferlen
-    $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" + 
-    $borderType.Left + $buffer2 + $borderType.Right + "`n" +
-    $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
+    $buffer = $borderType.TopLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Top) + $borderType.TopRight + "`n" 
+    $buffer2 | ForEach-Object {
+      $buffer += $borderType.Left + [candystring]::PadString($_,($bufferwidth - $diff)," ",$align) + $borderType.Right + "`n"
+    }
+    $buffer += $borderType.BottomLeft + "".PadLeft(($bufferwidth - $diff), $borderType.Bottom) + $borderType.BottomRight
   }
   else {
-    $buffer = $buffer2
+    $buffer = $buffer2 -join "`n"
   }
   
 
@@ -2793,7 +2812,7 @@ $script:colors = [candyColor]::colorList()
 
 
 [Console]::OutputEncoding = [System.Text.Encoding]::UTF8 
-[console]::Clear()
+# [console]::Clear()
 
 # Write-Candy -text "<Yellow>Test List</Yellow>" -Border "Rounded"
 # $items = [System.Collections.Generic.List[ListItem]]::new()
@@ -2872,26 +2891,28 @@ $script:colors = [candyColor]::colorList()
 # [Console]::setcursorposition(0, 0)
 
 # [color]::Pick()
-Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -Width $width -Align Center
+# Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -Width $width -Align Center
     
-$items = [System.Collections.Generic.List[ListItem]]::new()
-# $items.Add([ListItem]::new("Find Packages", 0))
-# $items.Add([ListItem]::new("List Installed Packages", 1))
-# $items.Add([ListItem]::new("Install Packages", 2))
-# $items.Add([ListItem]::new("Update Packages", 3))
-# $items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4))
-# $items.Add([ListItem]::new("Build Script", 5))
-# $items.Add([ListItem]::new("Exit", 100))
-$items.Add([ListItem]::new("Find Packages", 0, "🔎"))
-$items.Add([ListItem]::new("List Installed Packages", 1, "📃"))
-$items.Add([ListItem]::new("Install Packages", 2, "📦"))
-$items.Add([ListItem]::new("Update Packages", 3, "🌀"))
-$items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4, "🗑️"))
-$items.Add([ListItem]::new("Build Script", 5, "📜"))
-$items.Add([ListItem]::new("Exit", 100, "❌"))
+# $items = [System.Collections.Generic.List[ListItem]]::new()
+# # $items.Add([ListItem]::new("Find Packages", 0))
+# # $items.Add([ListItem]::new("List Installed Packages", 1))
+# # $items.Add([ListItem]::new("Install Packages", 2))
+# # $items.Add([ListItem]::new("Update Packages", 3))
+# # $items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4))
+# # $items.Add([ListItem]::new("Build Script", 5))
+# # $items.Add([ListItem]::new("Exit", 100))
+# $items.Add([ListItem]::new("Find Packages", 0, "🔎"))
+# $items.Add([ListItem]::new("List Installed Packages", 1, "📃"))
+# $items.Add([ListItem]::new("Install Packages", 2, "📦"))
+# $items.Add([ListItem]::new("Update Packages", 3, "🌀"))
+# $items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4, "🗑️"))
+# $items.Add([ListItem]::new("Build Script", 5, "📜"))
+# $items.Add([ListItem]::new("Exit", 100, "❌"))
     
 
-$list = [List]::new($items)  
-$list.SetLimit($true)
-# $list.SetWidth($width)
-$index = $list.Display()
+# $list = [List]::new($items)  
+# $list.SetLimit($true)
+# # $list.SetWidth($width)
+# $index = $list.Display()
+
+Write-Candy "<Yellow>Test List</Yellow>`n<Blue>On another line</Blue>`n<U>A <Red>third</Red> line</U>" -Border "Rounded" -align Right
