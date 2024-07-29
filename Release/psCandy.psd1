@@ -42,7 +42,7 @@
     NestedModules      = @()
 
     # Functions to export from this module
-    FunctionsToExport  = @('Write-Candy','Confirm-Candy','Select-CandyColor','Select-CandyColor8')
+    FunctionsToExport  = @('Write-Candy','Confirm-Candy','Select-CandyColor','Select-CandyColor8','Build-Candy')
 
     # Cmdlets to export from this module
     CmdletsToExport    = @()
