@@ -1749,8 +1749,8 @@ class ListItem {
   ) {
     $this.text = $text
     $this.value = $value
-    $this.Icon = $Icon
     $this.IconWidth = [candyString]::GetDisplayWidth((Build-Candy -Text $Icon))
+    $this.Icon = $Icon
   }
 
   ListItem(
@@ -1814,9 +1814,6 @@ class List {
       $_.IconWidth
     } | Measure-Object -Maximum
     $this.items | ForEach-Object {
-      if ($_.IconWidth -lt $IconWidth.Maximum) {
-        $_.Icon = [candystring]::PadString($_.Icon, $IconWidth.Maximum, " ", [align]::Left)
-      }
       $_.IconWidth = $IconWidth.Maximum
     }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
@@ -2892,7 +2889,7 @@ $script:colors = [candyColor]::colorList()
 # [color]::Pick()
 # Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -Width $width -Align Center
     
-# $items = [System.Collections.Generic.List[ListItem]]::new()
+$items = [System.Collections.Generic.List[ListItem]]::new()
 # # $items.Add([ListItem]::new("Find Packages", 0))
 # # $items.Add([ListItem]::new("List Installed Packages", 1))
 # # $items.Add([ListItem]::new("Install Packages", 2))
@@ -2904,14 +2901,14 @@ $script:colors = [candyColor]::colorList()
 # $items.Add([ListItem]::new("List Installed Packages", 1, "📃"))
 # $items.Add([ListItem]::new("Install Packages", 2, "📦"))
 # $items.Add([ListItem]::new("Update Packages", 3, "🌀"))
-# $items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4, "🗑️"))
-# $items.Add([ListItem]::new("Build Script", 5, "📜"))
-# $items.Add([ListItem]::new("Exit", 100, "❌"))
+$items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4, "🗑️"))
+$items.Add([ListItem]::new("Build Script", 5, "📜"))
+$items.Add([ListItem]::new("Exit", 100, "❌"))
     
 
-# $list = [List]::new($items)  
-# $list.SetLimit($true)
-# # $list.SetWidth($width)
-# $index = $list.Display()
+$list = [List]::new($items)  
+$list.SetLimit($true)
+# $list.SetWidth($width)
+$index = $list.Display()
 
-Write-Candy "<Yellow>😊Test List</Yellow>`n<Blue>On another line</Blue>`n<U>A <Red>third</Red> line</U>" -Border "Rounded" -align center -fullscreen
+# Write-Candy "<Yellow>😊Test List</Yellow>`n<Blue>On another line</Blue>`n<U>A <Red>third</Red> line</U>" -Border "Rounded" -align center -fullscreen
