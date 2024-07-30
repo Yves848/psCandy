@@ -13,85 +13,32 @@ To install, use
 ```Powershell
   Install-module -Name psCandy -Scope CurrentUser
 ```
+
 Of course, it work on any platform that support Powershell
 
 ![](./Images/Zorin.png)
 
-**5 classes are enable :**
+**5 classes are enable**
 
-- Color
-- Spinner
-- List
-- Confirm
-- Style
+- [Color](#color)
+- [Spinner](#spinner)
+- [List](#list)
+- [Confirm](#confirm)
+- [Style](#style)
 - Pager (in progress)
 
-**Functions :**
+**Functions**
 
-- Write-Candy (inspired from https://github.com/SwissPowershell/SPS-Host)
-- Confirm-Candy
-- Select-CandyColor
-- Select-CandyColor8
+- [Build-Candy](./Docs/Build-Candy.md)
+- [Write-Candy](./Docs/Write-Candy.md)
+- [Confirm-Candy](#confirm-candy)
+- [Select-CandyColor](#select-candycolor)
+- [Select-CandyColor8](#select-candycolor8)
 
-Here is little demo https://youtu.be/K88I4mK_OYQ
+**Formatting tags**
+
+Here is little demo <https://youtu.be/K88I4mK_OYQ>
 ***
-
-## Functions
-
-### Write-Candy
-
-This is a function that output string, using tags to format the output.
-
-```powershell
-  Write-Candy [-Text] "String" [[-Border "Type"] [-Width] [-Fullscreen] [-Align]]
-```
-
-*Parameters:*  
-
-\-Text : The text to display
-\-Border : If specified, draw a border around the string displayed.
-Bord
-
-The tags can be :
-
-- \<Color\> : to set the foreground color
-- \[color\] : to set the background color
-- \<style\> : the set the style (Underline, Bold, Italic, Reversed, .....)
-
-The colors are the names that the static methods of [Colors] class return.
-
-The colors names can be retrieved with the ``` Select-candyColor ``` or ``` Select-candyColor8 ``` function.
-
-The styles can be used in their "long" or short forms 
-
-- \<U\> = \<Underline\>
-- \<B\> = \<Bold\>
-- \<S\> = \<Strike\>
-- \<I\> = \<Italic\>
-
-Example :
-
-```Powershell
-Write-Candy "Test"
-Write-Candy "<Red>Hello</Red> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
-Write-Candy "<Green><Bold>Have</Bold></Green>  a 🌝 <Italic><Yellow>Day !</Yellow></Italic>" -width 80 -Align Right -Border "Rounded"
-Write-Candy "Hope it will be <Underline>Bright</Underline>" -width 80 -Align Center -Border "Rounded"
-Write-Candy "Another Test 🌝 📦 📦" -width 80 -Align Center -Border "Rounded"
-Write-Candy "<DarkGreen><Underline>Another</Underline>   Test</DarkGreen>" -Border "Double"
-
-Write-Candy "Using <B><U>8bits</U><B> color tags" -fullscreen  -Align Center
-
-Write-Candy "<1>Hello</1> 🌍 World!" -width ($Host.UI.RawUI.BufferSize.Width -2) -Align Center -Border "Thick"
-Write-Candy "<34><Underline>Another</Underline>   Test</34>" -Border "Double"
-```
-
-The function accept the parameter from the pipe.
-
-Result :
-
-![](./Images/write-candy1.png)
-
-The tags can be impricated to use multiple styles on a same piece of string.
 
 ## Select-candyColor
 
@@ -114,8 +61,6 @@ While selecting a color code, one can press "b" to switch the background of the 
 Another press on "b" returns to normal background.
 
 ![](./Images/pick8-1_1.gif)
-
-
 
 ## Confirm-Candy
 
@@ -186,6 +131,7 @@ Example :
 
 Returns 8
 ***
+
 ```powershell
   [candyString]::TruncateString([string]$InputString,[int]$MaxWidth)
 ```
@@ -193,13 +139,13 @@ Returns 8
 This method truncate a string at a certain width (if needed).
 If the **real** length of the string is greater than the MaxWidth parameter, the string is truncated and an "ellipsis" is added at the end.
 
-Example : 
+Example :
 
 ```powershell
   [candyString]::TruncateString("Hello 世界,This is a very long string to truncate",15)
 ```
 
-Returns 
+Returns
 
 ```
   Hello 世界,Thi.
@@ -215,7 +161,7 @@ This method returns a string padded to the ```$TotalWidth``` with the ```$PadCha
 
 As for ```TruncateString``` the ```$TotalWidth``` is calculated on then **real** length of the string.
 
-The available directions are defined by an enum 
+The available directions are defined by an enum
 
 ```powershell
   enum Align {
@@ -224,6 +170,7 @@ The available directions are defined by an enum
     Right
   }
 ```
+
 ***
 
 ### Color
@@ -696,7 +643,7 @@ Style([string]$text)
 
 Every other parameters are set by some setters.
 
-### The setters :
+### The setters
 
 - SetColor (2 overloads)
 
@@ -780,3 +727,5 @@ $Style.Render()
 Result :
 
 ![](./Images/Style1.png)
+
+```Write-Candy``` is inspired from <https://github.com/SwissPowershell/SPS-Host>

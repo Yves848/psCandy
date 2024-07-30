@@ -1,0 +1,10 @@
+{
+  "LIST_SEARCHCOLOR" : "BlueViolet",
+  "LIST_HEADERCOLOR" : "BlueViolet",
+  "LIST_SELECTEDCOLOR" : "Green",
+  "LIST_FILTERCOLOR" : "Orange",
+  "LIST_NOFILTERCOLOR" : "Green",
+  "LIST_UNCHECKED" : "○",
+  "LIST_CHECKED" : "●",
+  "LIST_SELECTED_STYLE" : "Underline"
+}
