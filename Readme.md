@@ -28,8 +28,8 @@ Of course, it work on any platform that support Powershell
 
 **Functions :**
 
-- Write-Candy (inspired from <https://github.com/SwissPowershell/SPS-Host>)
 - [Build-Candy](./Docs/Build-Candy.md)
+- Write-Candy
 - Confirm-Candy
 - Select-CandyColor
 - Select-CandyColor8
@@ -781,3 +781,6 @@ $Style.Render()
 Result :
 
 ![](./Images/Style1.png)
+
+
+```Write-Candy``` is inspired from <https://github.com/SwissPowershell/SPS-Host>
