@@ -2881,7 +2881,7 @@ $script:colors = [candyColor]::colorList()
 # [console]::Clear()
 # [Console]::setcursorposition(0, 0)
 
-[color]::Pick()
+# [color]::Pick()
 # Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -Width $width -Align Center
     
 # $items = [System.Collections.Generic.List[ListItem]]::new()
@@ -2923,3 +2923,7 @@ $script:colors = [candyColor]::colorList()
 # # $list.SetLimit($true)
 # # # $list.SetWidth($width)
 # $index = $list.Display()
+
+$text = Build-Candy "This is the first line"  -width 60
+$text += Build-Candy "`nThis is the second line" -width 60 -align Right
+Write-Candy $text -Border "Rounded" -width 60

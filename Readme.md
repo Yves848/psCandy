@@ -29,7 +29,7 @@ Of course, it work on any platform that support Powershell
 **Functions :**
 
 - Write-Candy (inspired from <https://github.com/SwissPowershell/SPS-Host>)
-- Build-Candy
+- [Build-Candy](./Docs/Build-Candy.md)
 - Confirm-Candy
 - Select-CandyColor
 - Select-CandyColor8
