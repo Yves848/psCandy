@@ -289,13 +289,12 @@ class candyString {
         }
       }
       Center {
-        $leftPad = $rightPad = $PadCharacter
-        while (([candyString]::GetDisplayWidth($leftPad + $InputString + $rightPad)) -lt $TotalWidth) {
-          $leftPad += $PadCharacter
-          if (([candyString]::GetDisplayWidth($leftPad + $InputString + $rightPad)) -lt $TotalWidth) {
-            $rightPad += $PadCharacter
-          }
-        }
+        # $leftPad = $rightPad = $PadCharacter
+        $width = [candyString]::GetDisplayWidth($InputString)
+        $left = [math]::floor(($TotalWidth - $width) / 2)
+        $right = $TotalWidth - $width - $left
+        $leftPad = $PadCharacter * $left
+        $rightPad = $PadCharacter * $right
         $InputString = $leftPad + $InputString + $rightPad
       }
       default {
@@ -1750,8 +1749,8 @@ class ListItem {
   ) {
     $this.text = $text
     $this.value = $value
-    $this.Icon = $Icon
     $this.IconWidth = [candyString]::GetDisplayWidth((Build-Candy -Text $Icon))
+    $this.Icon = $Icon
   }
 
   ListItem(
@@ -1815,9 +1814,6 @@ class List {
       $_.IconWidth
     } | Measure-Object -Maximum
     $this.items | ForEach-Object {
-      if ($_.IconWidth -lt $IconWidth.Maximum) {
-        $_.Icon = [candystring]::PadString($_.Icon, $IconWidth.Maximum, " ", [align]::Left)
-      }
       $_.IconWidth = $IconWidth.Maximum
     }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
@@ -2809,3 +2805,37 @@ Function Select-CandyColor8 {
 }
 
 $script:colors = [candyColor]::colorList()
+
+$ExportableTypes =@(
+    [Styles],[Align],[Theme],[candyString],[candyColor],[Colors],[Color],[Option],[Border],[Spinner],[ListItem],[List],[Confirm],[Style],[Pager]
+)
+$TypeAcceleratorsClass = [psobject].Assembly.GetType(
+    'System.Management.Automation.TypeAccelerators'
+)
+
+$ExistingTypeAccelerators = $TypeAcceleratorsClass::Get
+foreach ($Type in $ExportableTypes) {
+    if ($Type.FullName -in $ExistingTypeAccelerators.Keys) {
+        $Message = @(
+            "Unable to register type accelerator '$($Type.FullName)'"
+            'Accelerator already exists.'
+        ) -join ' - '
+
+throw [System.Management.Automation.ErrorRecord]::new(
+            [System.InvalidOperationException]::new($Message),
+            'TypeAcceleratorAlreadyExists',
+            [System.Management.Automation.ErrorCategory]::InvalidOperation,
+            $Type.FullName
+        )
+    }
+}
+
+foreach ($Type in $ExportableTypes) {
+    $TypeAcceleratorsClass::Add($Type.FullName, $Type)
+}
+
+$MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {
+    foreach($Type in $ExportableTypes) {
+        $TypeAcceleratorsClass::Remove($Type.FullName)
+    }
+}.GetNewClosure()

@@ -3,7 +3,7 @@
     RootModule         = 'psCandy.psm1'
 
     # Version number of this module.
-    ModuleVersion      = '0.3.1'
+    ModuleVersion      = '0.3.2'
 
     # ID used to uniquely identify this module
     GUID               = 'e2d0c0d5-2e33-4ec7-8db5-bc786c1eb7d3'
@@ -57,7 +57,7 @@
     ModuleList         = @()
 
     # List of all files packaged with this module
-    FileList           = @('psCandy.psm1')
+    FileList           = @('psCandy.psm1','theme.json')
 
     # Private data to pass to the module specified in RootModule/ModuleToProcess
     PrivateData       = @{
