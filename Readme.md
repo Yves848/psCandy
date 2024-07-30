@@ -32,15 +32,15 @@ Of course, it work on any platform that support Powershell
 - [Build-Candy](./Docs/Build-Candy.md)
 - [Write-Candy](./Docs/Write-Candy.md)
 - Confirm-Candy
-- [Select-CandyColor](#Select-Candycolor)
-- Select-CandyColor8
+- [Select-CandyColor](#select-candycolor)
+- [Select-CandyColor8](#select-candycolor8)
 
 **Formatting tags**
 
 Here is little demo <https://youtu.be/K88I4mK_OYQ>
 ***
 
-## Select-candyColor {#Select-Candycolor}
+## Select-candyColor {#select-candycolor}
 
 This function allow to visually choose a color name.
 
@@ -52,7 +52,7 @@ If the optional parameter *-clipboard* is mentioned, the name of the color will 
 
 ![](./Images/Color_pick.png)
 
-### Select-candyColor8
+## Select-candyColor8
 
 This function displays an 8bit color picking grid.
 It makes easy to choose an 8bit color tag to use in ``` write-candy ``` strings
