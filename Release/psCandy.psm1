@@ -1278,7 +1278,7 @@ class Color {
     }
     $List = [List]::new($items)
     $List.SetLimit($true)
-    $list.SetHeight(($global:Host.UI.RawUI.BufferSize.Height - 10))
+    $list.SetHeight(($global:Host.UI.RawUI.BufferSize.Height - 9))
     $c = $List.Display()
     if ($c) {
       return $c.Value
@@ -1921,7 +1921,7 @@ class List {
     $i = 0
     $script:offset = 0
     if ($this.limit) {
-      $baseoffset = 2
+      $baseoffset = 3
     }
     else {
       $baseoffset = 3

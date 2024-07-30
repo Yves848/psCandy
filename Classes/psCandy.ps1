@@ -1278,7 +1278,7 @@ class Color {
     }
     $List = [List]::new($items)
     $List.SetLimit($true)
-    $list.SetHeight(($global:Host.UI.RawUI.BufferSize.Height - 10))
+    $list.SetHeight(($global:Host.UI.RawUI.BufferSize.Height - 9))
     $c = $List.Display()
     if ($c) {
       return $c.Value
@@ -1921,7 +1921,7 @@ class List {
     $i = 0
     $script:offset = 0
     if ($this.limit) {
-      $baseoffset = 2
+      $baseoffset = 3
     }
     else {
       $baseoffset = 3
@@ -2881,10 +2881,10 @@ $script:colors = [candyColor]::colorList()
 # [console]::Clear()
 # [Console]::setcursorposition(0, 0)
 
-# [color]::Pick()
+[color]::Pick()
 # Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -Width $width -Align Center
     
-$items = [System.Collections.Generic.List[ListItem]]::new()
+# $items = [System.Collections.Generic.List[ListItem]]::new()
 # # $items.Add([ListItem]::new("Find Packages", 0))
 # # $items.Add([ListItem]::new("List Installed Packages", 1))
 # # $items.Add([ListItem]::new("Install Packages", 2))
@@ -2908,18 +2908,18 @@ $items = [System.Collections.Generic.List[ListItem]]::new()
 
 # Write-Candy "<Yellow>😊Test List</Yellow>`n<Blue>On another line</Blue>`n<U>A <Red>third</Red> line</U>" -Border "Rounded" -align center -fullscreen
 
-$width = $Host.UI.RawUI.BufferSize.Width - 8
-$items = [System.Collections.Generic.List[ListItem]]::new()
+# $width = $Host.UI.RawUI.BufferSize.Width - 8
+# $items = [System.Collections.Generic.List[ListItem]]::new()
 
-$items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "🗑️"))
-$items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "🔎"))
-$items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "↺ "))
-$items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "🌀"))
-$items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0))
-$items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "❌"))
-$header = [candyString]::PadString("Find Packages",$width,".",[Align]::Right)
-$list = [List]::new($items)
-$list.SetHeader($header)
-# $list.SetLimit($true)
-# # $list.SetWidth($width)
-$index = $list.Display()
+# $items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "🗑️"))
+# $items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "🔎"))
+# $items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "↺ "))
+# $items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "🌀"))
+# $items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0))
+# $items.Add([ListItem]::new([candyString]::PadString("Find Packages",$width,".",[Align]::Left), 0, "❌"))
+# $header = [candyString]::PadString("Find Packages",$width,".",[Align]::Right)
+# $list = [List]::new($items)
+# $list.SetHeader($header)
+# # $list.SetLimit($true)
+# # # $list.SetWidth($width)
+# $index = $list.Display()
