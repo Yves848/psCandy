@@ -40,7 +40,7 @@ Of course, it work on any platform that support Powershell
 Here is little demo <https://youtu.be/K88I4mK_OYQ>
 ***
 
-## Select-candyColor {#select-candycolor}
+## Select-candyColor
 
 This function allow to visually choose a color name.
 
