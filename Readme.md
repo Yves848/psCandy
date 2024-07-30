@@ -20,18 +20,18 @@ Of course, it work on any platform that support Powershell
 
 **5 classes are enable**
 
-- Color
-- Spinner
-- List
-- Confirm
-- Style
+- [Color](#color)
+- [Spinner](#spinner)
+- [List](#list)
+- [Confirm](#confirm)
+- [Style](#style)
 - Pager (in progress)
 
 **Functions**
 
 - [Build-Candy](./Docs/Build-Candy.md)
 - [Write-Candy](./Docs/Write-Candy.md)
-- Confirm-Candy
+- [Confirm-Candy](#confirm-candy)
 - [Select-CandyColor](#select-candycolor)
 - [Select-CandyColor8](#select-candycolor8)
 
