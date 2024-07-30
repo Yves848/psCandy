@@ -28,12 +28,13 @@ Of course, it work on any platform that support Powershell
 
 **Functions :**
 
-- Write-Candy (inspired from https://github.com/SwissPowershell/SPS-Host)
+- Write-Candy (inspired from <https://github.com/SwissPowershell/SPS-Host>)
+- Build-Candy
 - Confirm-Candy
 - Select-CandyColor
 - Select-CandyColor8
 
-Here is little demo https://youtu.be/K88I4mK_OYQ
+Here is little demo <https://youtu.be/K88I4mK_OYQ>
 ***
 
 ## Functions
