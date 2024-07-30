@@ -1760,6 +1760,7 @@ class ListItem {
     $this.text = $text
     $this.value = $value
     $this.Icon = ""
+    $this.IconWidth = 0
   }
 }
 
@@ -1814,6 +1815,9 @@ class List {
       $_.IconWidth
     } | Measure-Object -Maximum
     $this.items | ForEach-Object {
+      if ($_.Icon.Trim() -eq "") {
+        $_.Icon = "  "
+      } 
       $_.IconWidth = $IconWidth.Maximum
     }
     $this.height = ($global:Host.UI.RawUI.BufferSize.Height - 6) - $this.Y
@@ -1944,12 +1948,17 @@ class List {
       if ($items) {       
         $buffer = $items | ForEach-Object {
           $offset = $baseoffset
-          $checkmark = ""
-          if ($_.Icon -ne " ") {
-            $offset += $_.IconWidth
-          }
-          $text = $_.text
+          # $checkmark = ""
           $icon = $_.Icon
+          # if ($_.Icon -ne "") {
+            $offset += $_.IconWidth
+          # }
+          # else {
+          #   $icon = "  "
+          #   $offset += 3
+          # }
+          $text = $_.text
+          
           if ($this.filter -and ($this.filter -ne "")) {
             $text = makeFilteredItem $text
           } 
@@ -2814,24 +2823,11 @@ $TypeAcceleratorsClass = [psobject].Assembly.GetType(
 )
 
 $ExistingTypeAccelerators = $TypeAcceleratorsClass::Get
-foreach ($Type in $ExportableTypes) {
-    if ($Type.FullName -in $ExistingTypeAccelerators.Keys) {
-        $Message = @(
-            "Unable to register type accelerator '$($Type.FullName)'"
-            'Accelerator already exists.'
-        ) -join ' - '
-
-throw [System.Management.Automation.ErrorRecord]::new(
-            [System.InvalidOperationException]::new($Message),
-            'TypeAcceleratorAlreadyExists',
-            [System.Management.Automation.ErrorCategory]::InvalidOperation,
-            $Type.FullName
-        )
-    }
-}
 
 foreach ($Type in $ExportableTypes) {
+  if ($Type.FullName -notin $ExistingTypeAccelerators.Keys) {
     $TypeAcceleratorsClass::Add($Type.FullName, $Type)
+  }
 }
 
 $MyInvocation.MyCommand.ScriptBlock.Module.OnRemove = {

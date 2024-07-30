@@ -39,9 +39,10 @@ function Get-StringByteLength {
 }
 
 # Example usage:
-$string = "こんにちは世界123" # This is a Japanese greeting containing multibyte characters
+# $string = "こんにちは世界123🗑️" # This is a Japanese greeting containing multibyte characters
+$string = "1↺"
 $length = Get-StringByteLength -InputString $string
-Write-Output "The length of the string in bytes is: $length"
+Write-Output "The length of the string $($string) in bytes is: $length"
 
 
 # Example usage:
@@ -76,15 +77,16 @@ function Get-StringFullLength {
 
 # Example usage:
 
-$string = "こんにちは世界 🌍🗑️" # This includes a Japanese greeting and a globe emoji
-# $string = "こんにちは世界" # This includes a Japanese greeting and a globe emoji
-$length = Get-StringFullLength -InputString $string
-Write-Output "The length of the string including emojis is: $length"
+# $string = "こんにちは世界 🌍🗑️" # This includes a Japanese greeting and a globe emoji
+# # $string = "こんにちは世界" # This includes a Japanese greeting and a globe emoji
+# $length = Get-StringFullLength -InputString $string
+# Write-Output "The length of the string including emojis is: $length"
 
-$string = "こんにちは世界 🌍" # This includes a Japanese greeting and a globe emoji
+# $string = "こんにちは世界 🌍" # This includes a Japanese greeting and a globe emoji
+$string = "↺🌍🗑️"
 # $string = "こんにちは世界" # This includes a Japanese greeting and a globe emoji
 $length = Get-StringFullLength -InputString $string
-Write-Output "The length of the string including emojis is: $length"
+Write-Output "The length of the string $($string) including emojis is: $length"
 
 
 function Get-StringByteLength {
@@ -100,6 +102,7 @@ function Get-StringByteLength {
 }
 
 # Example usage:
-$string = "こんにちは世界 🌍" # This includes a Japanese greeting and a globe emoji
+# $string = "こんにちは世界 🌍" # This includes a Japanese greeting and a globe emoji
+$string = "↺"
 $length = Get-StringByteLength -InputString $string
-Write-Output "The length of the string in bytes is: $length"
+Write-Output "The length of the string $($string) in bytes is: $length"
