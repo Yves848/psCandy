@@ -36,6 +36,8 @@ Of course, it work on any platform that support Powershell
 - [Select-CandyColor8](#select-candycolor8)
 
 **Formatting tags**
+- [Colors](./Docs/Formatting%20tags.md#color-tags)  
+- [Styles](./Docs/Formatting%20tags.md#style-tags)
 
 Here is little demo <https://youtu.be/K88I4mK_OYQ>
 ***
