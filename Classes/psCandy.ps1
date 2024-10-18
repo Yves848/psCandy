@@ -1295,7 +1295,6 @@ class Color {
     [switch]$Strike
   ) {
     
-  
     $fore = ""
     $back = ""
     $Under = ""
@@ -2882,29 +2881,28 @@ $script:colors = [candyColor]::colorList()
 # [Console]::setcursorposition(0, 0)
 
 # [color]::Pick()
-# Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -Width $width -Align Center
+Write-Candy -Text "<Yellow>Welcome to Winpack</Yellow> <CornflowerBlue><Italic>$($script:version)</Italic></CornflowerBlue>" -Border "rounded" -fullscreen -Align Center
     
-# $items = [System.Collections.Generic.List[ListItem]]::new()
-# # $items.Add([ListItem]::new("Find Packages", 0))
-# # $items.Add([ListItem]::new("List Installed Packages", 1))
-# # $items.Add([ListItem]::new("Install Packages", 2))
-# # $items.Add([ListItem]::new("Update Packages", 3))
-# # $items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4))
-# # $items.Add([ListItem]::new("Build Script", 5))
-# # $items.Add([ListItem]::new("Exit", 100))
-# $items.Add([ListItem]::new("Find Packages", 0, "🔎"))
-# $items.Add([ListItem]::new("List Installed Packages", 1, "📃"))
-# $items.Add([ListItem]::new("Install Packages", 2, "📦"))
+$items = [System.Collections.Generic.List[ListItem]]::new()
+# $items.Add([ListItem]::new("Find Packages", 0))
+# $items.Add([ListItem]::new("List Installed Packages", 1))
+# $items.Add([ListItem]::new("Install Packages", 2))
 # $items.Add([ListItem]::new("Update Packages", 3))
-# $items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4, "🗑️"))
-# $items.Add([ListItem]::new("Build Script", 5, "📜"))
-# $items.Add([ListItem]::new("Exit", 100, "❌"))
-    
+# $items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4))
+# $items.Add([ListItem]::new("Build Script", 5))
+# $items.Add([ListItem]::new("Exit", 100))
+$items.Add([ListItem]::new("Find Packages", 0, "🔎"))
+$items.Add([ListItem]::new("List Installed Packages", 1, "📃"))
+$items.Add([ListItem]::new("Install Packages", 2, "📦"))
+$items.Add([ListItem]::new("Update Packages", 3))
+$items.Add([ListItem]::new("<Red>Uninstall Packages</Red>", 4, "🗑️"))
+$items.Add([ListItem]::new("Build Script", 5, "📜"))
+$items.Add([ListItem]::new("Exit", 100, "❌"))
 
-# $list = [List]::new($items)  
-# $list.SetLimit($true)
-# # $list.SetWidth($width)
-# $index = $list.Display()
+$list = [List]::new($items)
+$list.SetLimit($true)
+# $list.SetWidth($width)
+$index = $list.Display()
 
 # Write-Candy "<Yellow>😊Test List</Yellow>`n<Blue>On another line</Blue>`n<U>A <Red>third</Red> line</U>" -Border "Rounded" -align center -fullscreen
 
@@ -2924,6 +2922,6 @@ $script:colors = [candyColor]::colorList()
 # # # $list.SetWidth($width)
 # $index = $list.Display()
 
-$text = Build-Candy "This is the first line"  -width 60
-$text += Build-Candy "`nThis is the second line" -width 60 -align Right
-Write-Candy $text -Border "Rounded" -width 60
+# $text = Build-Candy "This is the first line"  -width 60
+# $text += Build-Candy "`nThis is the second line" -width 60 -align Right
+# Write-Candy $text -Border "Rounded" -width 60
