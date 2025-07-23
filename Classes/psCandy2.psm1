@@ -31,14 +31,13 @@ Function Parse-CandyMessage {
     }
     
     $parsedMessage = foreach ($match in $matches) {
-        if ($match.Groups[1].Success) {
-            "$($match.Groups[1].Value)"
-        } elseif ($match.Groups[2].Success) {
-            "</>"
-        }
+        
+            Write-Host $match.Groups[1].Value
+        
     }
     
     return $parsedMessage -join ''
 } 
 
 Export-ModuleMember -Function *
+Export-ModuleMember -Variable *

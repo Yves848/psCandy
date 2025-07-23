@@ -1,2 +1,2 @@
-$script:regex = [regex]::new('(\<[\w]+\/?[\w+]+\>)|(\<\/\>)')
+$script:regex = [regex]::new('\<([\w]*\/?[\w]*)\>')
 
