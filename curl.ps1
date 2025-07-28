@@ -1,0 +1,1 @@
+curl.exe -w "%{http_code}" http://PDFConverter.integrale.home:5000/convert -X POST -F "file=@test.docx" -F "method=file" --output output.pdf
