@@ -24,20 +24,20 @@ Function Parse-CandyMessage {
     }
     
     # Use the regex to parse the message
-    $matches = $regex.Matches($Message)
+    $m = $regex.Matches($Message)
     
-    if ($matches.Count -eq 0) {
+    if ($m.Count -eq 0) {
         return $Message
     }
     
-    $parsedMessage = foreach ($match in $matches) {
-        
-            Write-Host $match.Groups[1].Value
-        
+    $parsedMessage = foreach ($match in $m) {
+        Write-Host ("$($match.Groups[1].Value) - Index : $($match.Index) - Length : $($match.Length)")
     }
     
     return $parsedMessage -join ''
 } 
 
+$color = [AnsiColor]::ansi('blue')
+Write-Host $color
 Export-ModuleMember -Function *
 Export-ModuleMember -Variable *

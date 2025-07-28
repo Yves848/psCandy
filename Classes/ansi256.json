@@ -1,0 +1,1022 @@
+{
+  "red-700-3": {
+    "ansi": 163,
+    "rgb": "#d700af"
+  },
+  "red-400-7": {
+    "ansi": 101,
+    "rgb": "#87875f"
+  },
+  "green-900-6": {
+    "ansi": 82,
+    "rgb": "#5fff00"
+  },
+  "red-700-10": {
+    "ansi": 172,
+    "rgb": "#d78700"
+  },
+  "red-900-27": {
+    "ansi": 223,
+    "rgb": "#ffd7af"
+  },
+  "blue-900-4": {
+    "ansi": 45,
+    "rgb": "#00d7ff"
+  },
+  "green-900-20": {
+    "ansi": 156,
+    "rgb": "#afff87"
+  },
+  "green-500-11": {
+    "ansi": 109,
+    "rgb": "#87afaf"
+  },
+  "green-700-16": {
+    "ansi": 149,
+    "rgb": "#afd75f"
+  },
+  "gray-600-15": {
+    "ansi": 247,
+    "rgb": "#9e9e9e"
+  },
+  "red-400-2": {
+    "ansi": 90,
+    "rgb": "#870087"
+  },
+  "gray-900-0": {
+    "ansi": 231,
+    "rgb": "#ffffff"
+  },
+  "green-700-4": {
+    "ansi": 44,
+    "rgb": "#00d7d7"
+  },
+  "gray-600-16": {
+    "ansi": 248,
+    "rgb": "#a8a8a8"
+  },
+  "green-700-0": {
+    "ansi": 40,
+    "rgb": "#00d700"
+  },
+  "blue-500-5": {
+    "ansi": 67,
+    "rgb": "#5f87af"
+  },
+  "blue-700-6": {
+    "ansi": 68,
+    "rgb": "#5f87d7"
+  },
+  "blue-900-1": {
+    "ansi": 27,
+    "rgb": "#005fff"
+  },
+  "gray-50-1": {
+    "ansi": 233,
+    "rgb": "#121212"
+  },
+  "cyan": {
+    "ansi": 6,
+    "rgb": "#008080"
+  },
+  "blue-700-8": {
+    "ansi": 92,
+    "rgb": "#8700d7"
+  },
+  "gray-400-0": {
+    "ansi": 102,
+    "rgb": "#878787"
+  },
+  "green-700-9": {
+    "ansi": 80,
+    "rgb": "#5fd7d7"
+  },
+  "magenta": {
+    "ansi": 5,
+    "rgb": "#800080"
+  },
+  "blue-900-22": {
+    "ansi": 177,
+    "rgb": "#d787ff"
+  },
+  "red-700-0": {
+    "ansi": 160,
+    "rgb": "#d70000"
+  },
+  "bright-black": {
+    "ansi": 8,
+    "rgb": "#808080"
+  },
+  "green-700-14": {
+    "ansi": 116,
+    "rgb": "#87d7d7"
+  },
+  "red-900-0": {
+    "ansi": 196,
+    "rgb": "#ff0000"
+  },
+  "green-700-18": {
+    "ansi": 151,
+    "rgb": "#afd7af"
+  },
+  "red-900-13": {
+    "ansi": 209,
+    "rgb": "#ff875f"
+  },
+  "green-500-4": {
+    "ansi": 70,
+    "rgb": "#5faf00"
+  },
+  "gray-500-14": {
+    "ansi": 246,
+    "rgb": "#949494"
+  },
+  "red-900-12": {
+    "ansi": 208,
+    "rgb": "#ff8700"
+  },
+  "blue-900-12": {
+    "ansi": 105,
+    "rgb": "#8787ff"
+  },
+  "blue-700-2": {
+    "ansi": 32,
+    "rgb": "#0087d7"
+  },
+  "red-200-0": {
+    "ansi": 52,
+    "rgb": "#5f0000"
+  },
+  "blue-900-20": {
+    "ansi": 165,
+    "rgb": "#d700ff"
+  },
+  "green": {
+    "ansi": 2,
+    "rgb": "#008000"
+  },
+  "red-700-7": {
+    "ansi": 168,
+    "rgb": "#d75f87"
+  },
+  "red-900-10": {
+    "ansi": 206,
+    "rgb": "#ff5fd7"
+  },
+  "red-900-22": {
+    "ansi": 218,
+    "rgb": "#ffafd7"
+  },
+  "red-900-7": {
+    "ansi": 203,
+    "rgb": "#ff5f5f"
+  },
+  "red-900-20": {
+    "ansi": 216,
+    "rgb": "#ffaf87"
+  },
+  "blue-500-6": {
+    "ansi": 91,
+    "rgb": "#8700af"
+  },
+  "green-400-4": {
+    "ansi": 65,
+    "rgb": "#5f875f"
+  },
+  "gray-100-3": {
+    "ansi": 235,
+    "rgb": "#262626"
+  },
+  "blue-900-16": {
+    "ansi": 135,
+    "rgb": "#af5fff"
+  },
+  "red-400-3": {
+    "ansi": 94,
+    "rgb": "#875f00"
+  },
+  "bright-magenta": {
+    "ansi": 13,
+    "rgb": "#ff00ff"
+  },
+  "red-500-9": {
+    "ansi": 137,
+    "rgb": "#af875f"
+  },
+  "red-900-6": {
+    "ansi": 202,
+    "rgb": "#ff5f00"
+  },
+  "red-900-1": {
+    "ansi": 197,
+    "rgb": "#ff005f"
+  },
+  "blue-500-1": {
+    "ansi": 25,
+    "rgb": "#005faf"
+  },
+  "green-200-1": {
+    "ansi": 23,
+    "rgb": "#005f5f"
+  },
+  "red-700-2": {
+    "ansi": 162,
+    "rgb": "#d70087"
+  },
+  "red-400-1": {
+    "ansi": 89,
+    "rgb": "#87005f"
+  },
+  "gray-800-21": {
+    "ansi": 253,
+    "rgb": "#dadada"
+  },
+  "green-400-5": {
+    "ansi": 66,
+    "rgb": "#5f8787"
+  },
+  "red-500-14": {
+    "ansi": 144,
+    "rgb": "#afaf87"
+  },
+  "blue-700-5": {
+    "ansi": 62,
+    "rgb": "#5f5fd7"
+  },
+  "white": {
+    "ansi": 7,
+    "rgb": "#c0c0c0"
+  },
+  "red-500-1": {
+    "ansi": 125,
+    "rgb": "#af005f"
+  },
+  "blue-900-13": {
+    "ansi": 111,
+    "rgb": "#87afff"
+  },
+  "green-700-15": {
+    "ansi": 148,
+    "rgb": "#afd700"
+  },
+  "green-900-16": {
+    "ansi": 122,
+    "rgb": "#87ffd7"
+  },
+  "green-900-8": {
+    "ansi": 84,
+    "rgb": "#5fff87"
+  },
+  "red-500-10": {
+    "ansi": 138,
+    "rgb": "#af8787"
+  },
+  "red-700-5": {
+    "ansi": 166,
+    "rgb": "#d75f00"
+  },
+  "red-700-14": {
+    "ansi": 176,
+    "rgb": "#d787d7"
+  },
+  "blue-900-14": {
+    "ansi": 117,
+    "rgb": "#87d7ff"
+  },
+  "green-500-2": {
+    "ansi": 36,
+    "rgb": "#00af87"
+  },
+  "red-700-18": {
+    "ansi": 181,
+    "rgb": "#d7afaf"
+  },
+  "red-900-15": {
+    "ansi": 211,
+    "rgb": "#ff87af"
+  },
+  "green-700-13": {
+    "ansi": 115,
+    "rgb": "#87d7af"
+  },
+  "green-200-0": {
+    "ansi": 22,
+    "rgb": "#005f00"
+  },
+  "gray-200-0": {
+    "ansi": 59,
+    "rgb": "#5f5f5f"
+  },
+  "gray-100-2": {
+    "ansi": 234,
+    "rgb": "#1c1c1c"
+  },
+  "blue-700-12": {
+    "ansi": 128,
+    "rgb": "#af00d7"
+  },
+  "green-700-11": {
+    "ansi": 113,
+    "rgb": "#87d75f"
+  },
+  "red-900-8": {
+    "ansi": 204,
+    "rgb": "#ff5f87"
+  },
+  "blue-700-4": {
+    "ansi": 56,
+    "rgb": "#5f00d7"
+  },
+  "blue-400-1": {
+    "ansi": 24,
+    "rgb": "#005f87"
+  },
+  "green-500-1": {
+    "ansi": 35,
+    "rgb": "#00af5f"
+  },
+  "gray-900-22": {
+    "ansi": 254,
+    "rgb": "#e4e4e4"
+  },
+  "red-900-34": {
+    "ansi": 230,
+    "rgb": "#ffffd7"
+  },
+  "red-700-12": {
+    "ansi": 174,
+    "rgb": "#d78787"
+  },
+  "gray-400-10": {
+    "ansi": 242,
+    "rgb": "#6c6c6c"
+  },
+  "red-700-1": {
+    "ansi": 161,
+    "rgb": "#d7005f"
+  },
+  "green-700-6": {
+    "ansi": 77,
+    "rgb": "#5fd75f"
+  },
+  "blue-900-5": {
+    "ansi": 57,
+    "rgb": "#5f00ff"
+  },
+  "green-900-12": {
+    "ansi": 118,
+    "rgb": "#87ff00"
+  },
+  "blue-900-8": {
+    "ansi": 75,
+    "rgb": "#5fafff"
+  },
+  "red-700-21": {
+    "ansi": 185,
+    "rgb": "#d7d75f"
+  },
+  "red-900-14": {
+    "ansi": 210,
+    "rgb": "#ff8787"
+  },
+  "blue-900-17": {
+    "ansi": 141,
+    "rgb": "#af87ff"
+  },
+  "green-900-28": {
+    "ansi": 194,
+    "rgb": "#d7ffd7"
+  },
+  "green-700-10": {
+    "ansi": 112,
+    "rgb": "#87d700"
+  },
+  "red-900-9": {
+    "ansi": 205,
+    "rgb": "#ff5faf"
+  },
+  "blue-500-3": {
+    "ansi": 55,
+    "rgb": "#5f00af"
+  },
+  "blue-700-14": {
+    "ansi": 140,
+    "rgb": "#af87d7"
+  },
+  "green-900-15": {
+    "ansi": 121,
+    "rgb": "#87ffaf"
+  },
+  "green-700-1": {
+    "ansi": 41,
+    "rgb": "#00d75f"
+  },
+  "red-500-13": {
+    "ansi": 143,
+    "rgb": "#afaf5f"
+  },
+  "green-900-11": {
+    "ansi": 87,
+    "rgb": "#5fffff"
+  },
+  "green-700-19": {
+    "ansi": 152,
+    "rgb": "#afd7d7"
+  },
+  "blue-700-10": {
+    "ansi": 104,
+    "rgb": "#8787d7"
+  },
+  "blue-900-11": {
+    "ansi": 99,
+    "rgb": "#875fff"
+  },
+  "green-900-21": {
+    "ansi": 157,
+    "rgb": "#afffaf"
+  },
+  "blue-900-3": {
+    "ansi": 39,
+    "rgb": "#00afff"
+  },
+  "gray-700-19": {
+    "ansi": 251,
+    "rgb": "#c6c6c6"
+  },
+  "blue-900-21": {
+    "ansi": 171,
+    "rgb": "#d75fff"
+  },
+  "red-400-4": {
+    "ansi": 95,
+    "rgb": "#875f5f"
+  },
+  "red-700-15": {
+    "ansi": 178,
+    "rgb": "#d7af00"
+  },
+  "red-900-11": {
+    "ansi": 207,
+    "rgb": "#ff5fff"
+  },
+  "red-900-2": {
+    "ansi": 198,
+    "rgb": "#ff0087"
+  },
+  "red-500-7": {
+    "ansi": 133,
+    "rgb": "#af5faf"
+  },
+  "blue-500-7": {
+    "ansi": 97,
+    "rgb": "#875faf"
+  },
+  "red-700-17": {
+    "ansi": 180,
+    "rgb": "#d7af87"
+  },
+  "green-900-4": {
+    "ansi": 50,
+    "rgb": "#00ffd7"
+  },
+  "green-900-18": {
+    "ansi": 154,
+    "rgb": "#afff00"
+  },
+  "blue-400-2": {
+    "ansi": 54,
+    "rgb": "#5f0087"
+  },
+  "green-700-3": {
+    "ansi": 43,
+    "rgb": "#00d7af"
+  },
+  "red-700-11": {
+    "ansi": 173,
+    "rgb": "#d7875f"
+  },
+  "gray-400-11": {
+    "ansi": 243,
+    "rgb": "#767676"
+  },
+  "red-500-8": {
+    "ansi": 136,
+    "rgb": "#af8700"
+  },
+  "green-900-0": {
+    "ansi": 46,
+    "rgb": "#00ff00"
+  },
+  "red-900-23": {
+    "ansi": 219,
+    "rgb": "#ffafff"
+  },
+  "green-900-2": {
+    "ansi": 48,
+    "rgb": "#00ff87"
+  },
+  "red-900-18": {
+    "ansi": 214,
+    "rgb": "#ffaf00"
+  },
+  "green-400-3": {
+    "ansi": 64,
+    "rgb": "#5f8700"
+  },
+  "red-500-0": {
+    "ansi": 124,
+    "rgb": "#af0000"
+  },
+  "green-500-6": {
+    "ansi": 72,
+    "rgb": "#5faf87"
+  },
+  "red-400-0": {
+    "ansi": 88,
+    "rgb": "#870000"
+  },
+  "green-400-1": {
+    "ansi": 29,
+    "rgb": "#00875f"
+  },
+  "red-900-26": {
+    "ansi": 222,
+    "rgb": "#ffd787"
+  },
+  "red-500-11": {
+    "ansi": 139,
+    "rgb": "#af87af"
+  },
+  "red-700-6": {
+    "ansi": 167,
+    "rgb": "#d75f5f"
+  },
+  "bright-green": {
+    "ansi": 10,
+    "rgb": "#00ff00"
+  },
+  "blue-700-13": {
+    "ansi": 134,
+    "rgb": "#af5fd7"
+  },
+  "red-500-2": {
+    "ansi": 126,
+    "rgb": "#af0087"
+  },
+  "gray-500-0": {
+    "ansi": 145,
+    "rgb": "#afafaf"
+  },
+  "blue-900-6": {
+    "ansi": 63,
+    "rgb": "#5f5fff"
+  },
+  "red-700-22": {
+    "ansi": 186,
+    "rgb": "#d7d787"
+  },
+  "green-900-9": {
+    "ansi": 85,
+    "rgb": "#5fffaf"
+  },
+  "bright-yellow": {
+    "ansi": 11,
+    "rgb": "#ffff00"
+  },
+  "blue-200-0": {
+    "ansi": 17,
+    "rgb": "#00005f"
+  },
+  "red-900-5": {
+    "ansi": 201,
+    "rgb": "#ff00ff"
+  },
+  "bright-white": {
+    "ansi": 15,
+    "rgb": "#ffffff"
+  },
+  "blue-900-9": {
+    "ansi": 81,
+    "rgb": "#5fd7ff"
+  },
+  "red-900-29": {
+    "ansi": 225,
+    "rgb": "#ffd7ff"
+  },
+  "red-900-16": {
+    "ansi": 212,
+    "rgb": "#ff87d7"
+  },
+  "green-900-1": {
+    "ansi": 47,
+    "rgb": "#00ff5f"
+  },
+  "yellow": {
+    "ansi": 3,
+    "rgb": "#808000"
+  },
+  "red-700-19": {
+    "ansi": 182,
+    "rgb": "#d7afd7"
+  },
+  "gray-200-5": {
+    "ansi": 237,
+    "rgb": "#3a3a3a"
+  },
+  "gray-500-13": {
+    "ansi": 245,
+    "rgb": "#8a8a8a"
+  },
+  "blue-900-23": {
+    "ansi": 183,
+    "rgb": "#d7afff"
+  },
+  "blue-900-7": {
+    "ansi": 69,
+    "rgb": "#5f87ff"
+  },
+  "green-900-7": {
+    "ansi": 83,
+    "rgb": "#5fff5f"
+  },
+  "gray-50-0": {
+    "ansi": 232,
+    "rgb": "#080808"
+  },
+  "blue-700-3": {
+    "ansi": 38,
+    "rgb": "#00afd7"
+  },
+  "blue-500-0": {
+    "ansi": 19,
+    "rgb": "#0000af"
+  },
+  "blue-500-2": {
+    "ansi": 31,
+    "rgb": "#0087af"
+  },
+  "red-900-32": {
+    "ansi": 228,
+    "rgb": "#ffff87"
+  },
+  "green-900-25": {
+    "ansi": 191,
+    "rgb": "#d7ff5f"
+  },
+  "blue-700-9": {
+    "ansi": 98,
+    "rgb": "#875fd7"
+  },
+  "blue-900-2": {
+    "ansi": 33,
+    "rgb": "#0087ff"
+  },
+  "gray-700-0": {
+    "ansi": 188,
+    "rgb": "#d7d7d7"
+  },
+  "gray-200-6": {
+    "ansi": 238,
+    "rgb": "#444444"
+  },
+  "red-500-6": {
+    "ansi": 132,
+    "rgb": "#af5f87"
+  },
+  "red-900-21": {
+    "ansi": 217,
+    "rgb": "#ffafaf"
+  },
+  "blue-400-3": {
+    "ansi": 60,
+    "rgb": "#5f5f87"
+  },
+  "green-900-19": {
+    "ansi": 155,
+    "rgb": "#afff5f"
+  },
+  "green-700-17": {
+    "ansi": 150,
+    "rgb": "#afd787"
+  },
+  "red-700-20": {
+    "ansi": 184,
+    "rgb": "#d7d700"
+  },
+  "blue-700-1": {
+    "ansi": 26,
+    "rgb": "#005fd7"
+  },
+  "bright-red": {
+    "ansi": 9,
+    "rgb": "#ff0000"
+  },
+  "red-500-12": {
+    "ansi": 142,
+    "rgb": "#afaf00"
+  },
+  "bright-blue": {
+    "ansi": 12,
+    "rgb": "#0000ff"
+  },
+  "red-500-3": {
+    "ansi": 127,
+    "rgb": "#af00af"
+  },
+  "green-900-24": {
+    "ansi": 190,
+    "rgb": "#d7ff00"
+  },
+  "green-900-17": {
+    "ansi": 123,
+    "rgb": "#87ffff"
+  },
+  "green-500-8": {
+    "ansi": 106,
+    "rgb": "#87af00"
+  },
+  "blue-900-0": {
+    "ansi": 21,
+    "rgb": "#0000ff"
+  },
+  "red-900-19": {
+    "ansi": 215,
+    "rgb": "#ffaf5f"
+  },
+  "green-500-0": {
+    "ansi": 34,
+    "rgb": "#00af00"
+  },
+  "green-900-10": {
+    "ansi": 86,
+    "rgb": "#5fffd7"
+  },
+  "green-900-29": {
+    "ansi": 195,
+    "rgb": "#d7ffff"
+  },
+  "green-900-26": {
+    "ansi": 192,
+    "rgb": "#d7ff87"
+  },
+  "green-700-7": {
+    "ansi": 78,
+    "rgb": "#5fd787"
+  },
+  "red-900-4": {
+    "ansi": 200,
+    "rgb": "#ff00d7"
+  },
+  "blue-700-7": {
+    "ansi": 74,
+    "rgb": "#5fafd7"
+  },
+  "green-700-2": {
+    "ansi": 42,
+    "rgb": "#00d787"
+  },
+  "red-700-8": {
+    "ansi": 169,
+    "rgb": "#d75faf"
+  },
+  "red-700-16": {
+    "ansi": 179,
+    "rgb": "#d7af5f"
+  },
+  "green-500-5": {
+    "ansi": 71,
+    "rgb": "#5faf5f"
+  },
+  "gray-300-7": {
+    "ansi": 239,
+    "rgb": "#4e4e4e"
+  },
+  "red-900-17": {
+    "ansi": 213,
+    "rgb": "#ff87ff"
+  },
+  "gray-800-20": {
+    "ansi": 252,
+    "rgb": "#d0d0d0"
+  },
+  "red-900-33": {
+    "ansi": 229,
+    "rgb": "#ffffaf"
+  },
+  "gray-300-8": {
+    "ansi": 240,
+    "rgb": "#585858"
+  },
+  "red-400-6": {
+    "ansi": 100,
+    "rgb": "#878700"
+  },
+  "gray-700-18": {
+    "ansi": 250,
+    "rgb": "#bcbcbc"
+  },
+  "blue": {
+    "ansi": 4,
+    "rgb": "#000080"
+  },
+  "green-900-23": {
+    "ansi": 159,
+    "rgb": "#afffff"
+  },
+  "red-900-3": {
+    "ansi": 199,
+    "rgb": "#ff00af"
+  },
+  "blue-500-8": {
+    "ansi": 103,
+    "rgb": "#8787af"
+  },
+  "green-500-9": {
+    "ansi": 107,
+    "rgb": "#87af5f"
+  },
+  "blue-900-18": {
+    "ansi": 147,
+    "rgb": "#afafff"
+  },
+  "red-900-31": {
+    "ansi": 227,
+    "rgb": "#ffff5f"
+  },
+  "red-200-1": {
+    "ansi": 53,
+    "rgb": "#5f005f"
+  },
+  "blue-700-0": {
+    "ansi": 20,
+    "rgb": "#0000d7"
+  },
+  "gray-500-12": {
+    "ansi": 244,
+    "rgb": "#808080"
+  },
+  "green-400-2": {
+    "ansi": 30,
+    "rgb": "#008787"
+  },
+  "black": {
+    "ansi": 0,
+    "rgb": "#000000"
+  },
+  "red-700-4": {
+    "ansi": 164,
+    "rgb": "#d700d7"
+  },
+  "gray-700-17": {
+    "ansi": 249,
+    "rgb": "#b2b2b2"
+  },
+  "blue-400-0": {
+    "ansi": 18,
+    "rgb": "#000087"
+  },
+  "green-900-3": {
+    "ansi": 49,
+    "rgb": "#00ffaf"
+  },
+  "green-900-13": {
+    "ansi": 119,
+    "rgb": "#87ff5f"
+  },
+  "green-900-14": {
+    "ansi": 120,
+    "rgb": "#87ff87"
+  },
+  "blue-700-15": {
+    "ansi": 146,
+    "rgb": "#afafd7"
+  },
+  "red-500-4": {
+    "ansi": 130,
+    "rgb": "#af5f00"
+  },
+  "red-400-5": {
+    "ansi": 96,
+    "rgb": "#875f87"
+  },
+  "blue-500-4": {
+    "ansi": 61,
+    "rgb": "#5f5faf"
+  },
+  "bright-cyan": {
+    "ansi": 14,
+    "rgb": "#00ffff"
+  },
+  "green-900-27": {
+    "ansi": 193,
+    "rgb": "#d7ffaf"
+  },
+  "green-500-3": {
+    "ansi": 37,
+    "rgb": "#00afaf"
+  },
+  "red": {
+    "ansi": 1,
+    "rgb": "#800000"
+  },
+  "green-500-7": {
+    "ansi": 73,
+    "rgb": "#5fafaf"
+  },
+  "gray-200-4": {
+    "ansi": 236,
+    "rgb": "#303030"
+  },
+  "red-900-25": {
+    "ansi": 221,
+    "rgb": "#ffd75f"
+  },
+  "gray-400-9": {
+    "ansi": 241,
+    "rgb": "#626262"
+  },
+  "blue-900-24": {
+    "ansi": 189,
+    "rgb": "#d7d7ff"
+  },
+  "blue-700-11": {
+    "ansi": 110,
+    "rgb": "#87afd7"
+  },
+  "green-700-5": {
+    "ansi": 76,
+    "rgb": "#5fd700"
+  },
+  "green-900-5": {
+    "ansi": 51,
+    "rgb": "#00ffff"
+  },
+  "green-400-0": {
+    "ansi": 28,
+    "rgb": "#008700"
+  },
+  "red-900-28": {
+    "ansi": 224,
+    "rgb": "#ffd7d7"
+  },
+  "gray-900-23": {
+    "ansi": 255,
+    "rgb": "#eeeeee"
+  },
+  "blue-900-10": {
+    "ansi": 93,
+    "rgb": "#8700ff"
+  },
+  "blue-900-15": {
+    "ansi": 129,
+    "rgb": "#af00ff"
+  },
+  "green-900-22": {
+    "ansi": 158,
+    "rgb": "#afffd7"
+  },
+  "red-900-24": {
+    "ansi": 220,
+    "rgb": "#ffd700"
+  },
+  "red-200-2": {
+    "ansi": 58,
+    "rgb": "#5f5f00"
+  },
+  "red-700-13": {
+    "ansi": 175,
+    "rgb": "#d787af"
+  },
+  "red-700-23": {
+    "ansi": 187,
+    "rgb": "#d7d7af"
+  },
+  "blue-900-19": {
+    "ansi": 153,
+    "rgb": "#afd7ff"
+  },
+  "green-700-8": {
+    "ansi": 79,
+    "rgb": "#5fd7af"
+  },
+  "red-900-30": {
+    "ansi": 226,
+    "rgb": "#ffff00"
+  },
+  "green-500-10": {
+    "ansi": 108,
+    "rgb": "#87af87"
+  },
+  "red-700-9": {
+    "ansi": 170,
+    "rgb": "#d75fd7"
+  },
+  "red-500-5": {
+    "ansi": 131,
+    "rgb": "#af5f5f"
+  },
+  "green-700-12": {
+    "ansi": 114,
+    "rgb": "#87d787"
+  }
+}
