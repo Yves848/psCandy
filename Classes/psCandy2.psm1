@@ -11,7 +11,7 @@ function Write-CandyMessage {
     }
     
     # Output the message to the console
-    Write-Host "$($AnsiColors.BrightGreen)$Message$($AnsiColors.Reset)"
+    Write-Host "$($CandyAnsi.BrightGreen)$Message$($CandyAnsi.Reset)"
 }
 
 Function Parse-CandyMessage {
@@ -50,7 +50,13 @@ function write-test {
     Write-Host $convertedText
 }
 
-$color = [AnsiColor]::ansi('blue')
-Write-Host $color
-Export-ModuleMember -Function *
+function Get-BorderType {
+    param(
+        [string]$type
+    )
+    $script:BorderTypes[$type]
+}
+
+#Write-Host $script:colors.psObject.properties
+Export-ModuleMember -Function write-test, Get-BorderType
 Export-ModuleMember -Variable *
