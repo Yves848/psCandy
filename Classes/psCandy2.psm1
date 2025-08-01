@@ -12,7 +12,7 @@ function Write-CandyMessage {
     
     # Output the message to the console
     Write-Host "$($AnsiColors.BrightGreen)$Message$($AnsiColors.Reset)"
-  }
+}
 
 Function Parse-CandyMessage {
     param (
@@ -36,6 +36,19 @@ Function Parse-CandyMessage {
     
     return $parsedMessage -join ''
 } 
+
+function write-test {
+    param (
+        [string]$text
+    )
+    
+    if (-not $text) {
+        throw "Text cannot be null or empty."
+    }
+    
+    $convertedText = [Candy]::ParseMessage($text)
+    Write-Host $convertedText
+}
 
 $color = [AnsiColor]::ansi('blue')
 Write-Host $color
