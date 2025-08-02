@@ -1,4 +1,4 @@
-. $PSScriptRoot/classes.ps1
+﻿. $PSScriptRoot/classes.ps1
 . $PSScriptRoot/consts.ps1
 
 function Write-CandyMessage {

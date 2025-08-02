@@ -1,5 +1,7 @@
-$script:regex = [regex]::new('\<([\w\-]*\/?[\w\-]*)\>')
+﻿$script:regex = [regex]::new('\<([\w\-]*\/?[\w\-]*)\>')
 
+$script:stack = [System.Collections.Stack]::new()
+$script:output = [System.Text.StringBuilder]::new()
 $script:esc = [char]27
 $script:reset = "$($script:esc)[0m"
 $script:attr = Get-Content -Path .\ansi256.json | ConvertFrom-Json
@@ -110,14 +112,17 @@ class CandyAnsi {
 
 class Candy {
     static [string]ParseMessage([string]$Message) {
-        $stack = [System.Collections.Stack]::new()
+        
         $currentIndex = 0
+        $stack = $script:stack
+        $stack.clear()
 
         # Use the regex to parse the message
         $m = $script:regex.Matches($Message)
 
         $position = 0
-        $output = [System.Text.StringBuilder]::new()
+        $output = $script:output
+        $script:output.clear()
         while ($position -lt $Message.Length) {
             $match = $m | Where-Object { $_.Index -eq $position }
             if ($match) {

@@ -1,4 +1,4 @@
-$script:BorderTypes = @{
+﻿$script:BorderTypes = @{
     "Normal"    = @{
         "Top"          = "─"
         "Bottom"       = "─"
