@@ -14,29 +14,6 @@ function Write-CandyMessage {
     Write-Host "$($CandyAnsi.BrightGreen)$Message$($CandyAnsi.Reset)"
 }
 
-Function Parse-CandyMessage {
-    param (
-        [string]$Message
-    )
-    
-    if (-not $Message) {
-        throw "Message cannot be null or empty."
-    }
-    
-    # Use the regex to parse the message
-    $m = $regex.Matches($Message)
-    
-    if ($m.Count -eq 0) {
-        return $Message
-    }
-    
-    $parsedMessage = foreach ($match in $m) {
-        Write-Host ("$($match.Groups[1].Value) - Index : $($match.Index) - Length : $($match.Length)")
-    }
-    
-    return $parsedMessage -join ''
-} 
-
 function write-test {
     param (
         [string]$text
@@ -46,8 +23,7 @@ function write-test {
         throw "Text cannot be null or empty."
     }
     
-    $convertedText = [Candy]::ParseMessage($text)
-    Write-Host $convertedText
+    Write-Host $([Candy]::Parse($text))
 }
 
 function Get-BorderType {

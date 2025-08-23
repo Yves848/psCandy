@@ -111,17 +111,15 @@ class CandyAnsi {
 }
 
 class Candy {
-    static [string]ParseMessage([string]$Message) {
-        
+    static [string]Parse([string]$Message) {
         $currentIndex = 0
         $stack = $script:stack
+        $output = $script:output
         $stack.clear()
 
         # Use the regex to parse the message
         $m = $script:regex.Matches($Message)
-
         $position = 0
-        $output = $script:output
         $script:output.clear()
         while ($position -lt $Message.Length) {
             $match = $m | Where-Object { $_.Index -eq $position }
@@ -158,5 +156,9 @@ class Candy {
         $output.Append($Message.Substring($currentIndex)) | Out-Null
         $output.Append($script:reset) | Out-Null
         return $output.ToString()
+    }
+
+    static [string]clean([string]$text) {
+        return [regex]::Replace($text, "\e\[[\d;]*m", '')
     }
 }
